@@ -24,7 +24,7 @@ $(NAME): $(OBJS)
 	$(CC) $(FLAGS) $^ -o $@
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
-	mkdir -p $(SRCS_DIR)
+	mkdir -p $(OBJS_DIR)
 	$(CC) $(FLAGS) -c $^ -o $@
 
 
