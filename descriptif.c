@@ -102,9 +102,26 @@
 
 
 
+// faire la socket, c'est la commmunication client - server.
 
 
 
+// TCP/IP -> sys/socket.h
+// creation de socket et de son fd par socket()
+// bind -> permet de speciifer le tupe de com associete au socket tcp ou UDP.
+// socket -> bind -> listen() -> accept() Read() write() close()
+
+// famille : represente la fa,ille de protocole AF_INET une addresse internet sur 4 octets, l'adresse ip ainsi qu'un numero de port.
+// TYPE : SOCK_STREAM.
+// protocole -> 0 pour TCP.
+// verifier le -1 du FD.
+// bind -> fd, 
+// TCP AF_INET -> sockaddr_in netinet/in.h
+
+// short 2 octet, sin_family -> AF_INET
+// sin port -> htons - 6667 big endian
+// sin_addr -> htonl - ANNYDDR. 
+// sinzero -> mettre des zero. bzero.
 
 
 
@@ -121,3 +138,22 @@
 // OPER <name> <password>
 // regular channel #, local channel & -> first joined, is the operator.
 // MODE -> sujet et doc different.
+
+
+
+
+/* 🧠 Analogie :
+Imagine une maison (IP) avec plusieurs pièces (ports).
+
+L’IP te donne l'adresse de la maison.
+
+Le port te dit à quelle porte frapper pour parler au bon service.
+
+Tu peux avoir plusieurs serveurs différents sur une même machine, chacun écoutant sur un port différent, mais avec la même IP. */
+
+// port en gros la piece dans laquelle le client doit frappe il connait la maison via l'Ip manque la piece "l'endroit ou dort lapplication"
+
+
+
+// recv verifier le 512 bytes. // et aussi le no signal.
+// faire les signaux , ctrl C eT D.
