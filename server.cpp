@@ -6,7 +6,7 @@
 /*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 09:06:34 by macos             #+#    #+#             */
-/*   Updated: 2025/08/07 17:05:05 by macos            ###   ########.fr       */
+/*   Updated: 2025/08/09 08:48:35 by macos            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <iostream>
 #include <unistd.h>
+#include <sys/epoll.h>  
 
 #include <string>
 
@@ -69,7 +70,8 @@ int create_server()
     fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1)
         return(std::cout << "ERR_FD" << std::endl, 50);
-    //fcntl(fd, F_SETFL, O_NONBLOCK); // Rendre non bloquant
+    fcntl(fd, F_SETFL, O_NONBLOCK); // Rendre non bloquant
+    // fcntl(fd, F_SETFL, fcntl(fd, F_GETFL, 0) | O_NONBLOCK); // pas besoin on a pas d'autre flag sur nos fd 
     int yes = 1;
     if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) 
         return(50);
@@ -82,10 +84,28 @@ int create_server()
 int wait_client(int hote)
 {
     int fd;
+    int nfds; // ce sont les fd qui se sont sois connexte sois quelqu'un a ecris dedans.
     struct sockaddr_in client;
     socklen_t size_of_client;
+    struct epoll_event events;
+    fd = epoll_create1(0);
     while(1)
     {
+        nfds = epoll_wait(fd, &events, 5, 0);
+        if (nfds == -1)
+            return(std::cout << "EPOLL WAIT", 50); //dois-je quitte si ca foire
+        for (int i = 0; i < nfds i++)
+        {
+            if (events)
+        }
+        // nfds = nombre de reaction
+        // event de epoll wait, c'est un tableau imaginaire ou imaginons la reactions 1 = fdserveur alors ca veut dire que quelquun tente de parler a mon serveur
+        // ensuite si ca correspond a un autre fd, j'ecoute simplement ce fd.
+        // nfds = epoll wait.. attend qu'un client lui parle // et tu le met dans ta liste de client.
+        // ensuite tu boucles sur tout ces fds qui ont reagis pour les faire parler.
+        // si dans le tableau events(ou ya les fd qui ont reagis) y en a un qui est egal au fd client 
+        // ca veut dire que quelquun veut parler a notre fd, du coup je l'accept je prend son fd je le met dans ma liste de clientfd a surveiller pour les prohaines actions et la j'ecoute avec recv
+        // si non j'ecoute car c'est un client deja connecte, si la len est 0 le client s'est deco on close et le retire dans notre liste de surveillance.
         fd = accept(hote, reinterpret_cast<struct sockaddr*>(&client), &size_of_client); // tester sans la boucle, peut etre que accept je reste dessus tant que j'ai pas de demande. ou c'est listen qui est passif et qui attend.
         if (fd == -1)
             return(std::cout << "ERR_ACCEPT" << std::endl ,close(fd), close(hote), 50);
