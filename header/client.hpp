@@ -64,7 +64,7 @@ class Client
         std::string translationclient_to_server(std::string message);
         int epfd;
         int hote;
-        struct epoll_event events;
+        struct epoll_event event;
         struct sockaddr_in client;
         socklen_t size_of_client;
         std::vector<int> client_list;

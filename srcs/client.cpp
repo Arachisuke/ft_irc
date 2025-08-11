@@ -6,7 +6,7 @@ Client::Client()
 }
 Client::~Client()
 {
-    epoll_ctl(this->epfd, EPOLL_CTL_DEL, this->fd, &this->events); // CTLDEL
+    epoll_ctl(this->epfd, EPOLL_CTL_DEL, this->fd, NULL); // CTLDEL
     close(this->fd);
     std::cout << "Client disconnected" << std::endl;
 }
@@ -54,6 +54,8 @@ int Client::Init(int epfd, int hote)
     this->fd = accept(hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client);
     if (fd == -1)
         return(-1);
+    fcntl(this->fd, F_SETFL, O_NONBLOCK);
+
     return(0);
 }
 
@@ -81,8 +83,6 @@ void Client::Send_Welcome()
 
 void Client::Integrate()
 {
-  this->events.data.fd = this->fd; // ??
-  this->events.events = EPOLLOUT;
-  epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->events);
-  fcntl(fd, F_SETFL, O_NONBLOCK); // non bloquant
+    this->event.events = EPOLLIN; // Surveiller lecture (ajoute le client à epoll)
+    epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->event);
 }
