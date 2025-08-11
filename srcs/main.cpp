@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:35:30 by macos             #+#    #+#             */
-/*   Updated: 2025/08/11 08:07:36 by macos            ###   ########.fr       */
+/*   Updated: 2025/08/11 15:12:01 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,8 @@
 #include "../header/server.hpp"
 #include <string>
 
-void clearsinzero(struct sockaddr_in *addr)
-{
-    for (int i = 0; i < 8; ++i)
-        addr->sin_zero[i] = 0;
-}
+//deplacement de sinzero dans la class Server
+
 void translationclient_to_irc(std::string& s) {
     if (!s.empty() && s[s.size() - 1] == '\n')
         s.erase(s.size() - 1, 1);
@@ -54,7 +51,7 @@ std::string lecture(int client, int *bytes) //lit en str, transforme en std::str
         return(NULL);
 }
 
-void PushMsg(int client, std::string msg, int special)
+void PushMsg(int client, std::string msg, int special) // 2 pushMsg un dans le main et un dans la class Client normal?
 {
     if (!this->RPL_WELCOME)
         return(this->Send_Welcome(), (void)0);
@@ -80,7 +77,7 @@ int create_server(class Server& Server) // mettre le truc de reference.
         return(std::cout << "ERR_LISTEN" << std::endl, 50);
     return fd;
 }
-Client& find_client(std::vector<Clients> client_list, int fd)
+Client& find_client(std::vector<Client> client_list, int fd) // correction Clients en Client
 {
     for (size_t i = 0; i < client_list.size() - 1; i++)
     {
@@ -90,7 +87,7 @@ Client& find_client(std::vector<Clients> client_list, int fd)
     return(NULL);
 }
 
-int wait_client(class Server, std::vector<Clients> client_list)
+int wait_client(class Server, std::vector<Client> client_list) // correction Clients en Client
 {
     int nfds; // nombre de fd en event
         
