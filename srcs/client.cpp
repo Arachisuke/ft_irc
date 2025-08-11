@@ -1,7 +1,4 @@
-#include "client.hpp"
-
-#include "client.hpp"
-
+#include "../header/client.hpp"
 
 Client::Client()
 {
@@ -40,6 +37,8 @@ void  Client::ReadMsg()
 }
 void Client::PushMsg(std::string msg)
 {
+    if (this.RPL_WELCOME == 0)
+        return (this->Send_Welcome(), (void)0);
     msg.push_back('\r'); 
     msg.push_back('\n'); // a verifie si c'est vraiment la norme.
     send(client, msg.c_str(), msg.size(), MSG_DONTWAIT);
@@ -74,6 +73,7 @@ void Client::Send_Welcome()
     ":Hueco Mundo 001 " + this->nickname +
     " :Welcome to the Hueco Mundo Network, " + this->nickname + "!~" + this->username + "@localhost\r\n";
     std::cout << welcome_msg;
+    this.RPL_WELCOME = 1;
 }
 
 void Client::Integrate(int hote)

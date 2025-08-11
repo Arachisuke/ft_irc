@@ -10,7 +10,7 @@ FLAGS:= -Wall -Wextra -Werror -std=c++98 -g3
 SRCS_DIR:= ./srcs
 OBJS_DIR:= ./objs
 
-FILES:= server.cpp
+FILES:= main.cpp client.cpp server.cpp
 
 SRCS:= $(addprefix $(SRCS_DIR)/, $(FILES))
 OBJS:= $(addprefix $(OBJS_DIR)/, $(FILES:.cpp=.o))

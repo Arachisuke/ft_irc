@@ -10,55 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <fcntl.h>
-#include <iostream>
-#include <unistd.h>
-#include <vector>
 #include "../header/client.hpp"
 #include "../header/server.hpp"
-#include <string>
 
-void translationclient_to_irc(std::string& s) {
-    if (!s.empty() && s[s.size() - 1] == '\n')
-        s.erase(s.size() - 1, 1);
-    if (!s.empty() && s[s.size() - 1] == '\r')
-        s.erase(s.size() - 1, 1);
-}
-
-std::string lecture(int client, int *bytes) //lit en str, transforme en std::string, clarifie la string, la renvoie
-{
-    char lecture[512];
-    
-    *bytes = recv(client, &lecture, sizeof(lecture), MSG_NOSIGNAL);
-    if (*bytes == -1)
-    {
-        std::cout << "ERR_READ" << std::endl;
-        close(client);
-        return(NULL);
-    }
-    else if (*bytes > 0)
-    {
-        std::string message(lecture, *bytes);
-        translationclient_to_irc(message); // necessite une protection si le *bytes = 0.
-        return(message);
-    }
-    else
-        return(NULL);
-}
-
-void PushMsg(int client, std::string msg, int special)
-{
-    if (!this->RPL_WELCOME)
-        return(this->Send_Welcome(), (void)0);
-    // fonction avec des booleans, ex : RPLWELCOME a 0 ? ca veut dire je dois envoyer RPLWELCOME. ne pas oublier de le mettre en EPOLLIN apres.
-    (void)special; // je me le reserve pour apres
-    msg.push_back('\r'); 
-    msg.push_back('\n'); // a verifie si c'est vraiment la norme.
-    send(client, msg.c_str(), msg.size(), MSG_DONTWAIT);
-}
 int create_server(class Server& Server) // mettre le truc de reference.
 {
     int epfd;
