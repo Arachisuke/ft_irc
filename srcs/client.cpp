@@ -6,7 +6,7 @@ Client::Client()
 }
 Client::~Client()
 {
-    epoll_ctl(epfd, EPOLL_CTL_DEL,this->fd,  events); // CTLDEL
+    epoll_ctl(this->epfd, EPOLL_CTL_DEL, this->fd, &this->events); // CTLDEL
     close(this->fd);
     std::cout << "Client disconnected" << std::endl;
 }
@@ -37,9 +37,9 @@ void  Client::ReadMsg()
 }
 void Client::PushMsg(std::string msg)
 {
-    if (this.RPL_WELCOME == 0)
+    if (this->RPL_WELCOME == 0)
         return (this->Send_Welcome(), (void)0);
-    msg.push_back('\r'); 
+    msg.push_back('\r');
     msg.push_back('\n'); // a verifie si c'est vraiment la norme.
     send(client, msg.c_str(), msg.size(), MSG_DONTWAIT);
 }
@@ -48,7 +48,7 @@ int Client::Init(int hote)
 {
   this->size_of_client = sizeof(this->client);
   this->hote = hote;
-  this->fd = accept(hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client); 
+  this->fd = accept(hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client);
   if (fd == -1)
     return(-1);
   return(0);
@@ -73,7 +73,7 @@ void Client::Send_Welcome()
     ":Hueco Mundo 001 " + this->nickname +
     " :Welcome to the Hueco Mundo Network, " + this->nickname + "!~" + this->username + "@localhost\r\n";
     std::cout << welcome_msg;
-    this.RPL_WELCOME = 1;
+    this->RPL_WELCOME = 1;
 }
 
 void Client::Integrate(int hote)
