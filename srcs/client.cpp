@@ -41,7 +41,7 @@ void Client::PushMsg(std::string msg)
 {
     msg.push_back('\r'); 
     msg.push_back('\n'); // a verifie si c'est vraiment la norme.
-    send(client, msg.c_str(), msg.size(), MSG_DONTWAIT);
+    send(this->fd, msg.c_str(), msg.size(), MSG_DONTWAIT); // correction du premier parametre
 }
 
 int Client::Init(int hote)
