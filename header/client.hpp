@@ -3,12 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/11 15:36:13 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/08/11 19:58:23 by macos            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
 
 #include <iostream>
 #include <unistd.h>
@@ -35,37 +38,40 @@
 class Client
 {
 
-public:
-    Client();         // ajout constructeur par defaut
-    Client(int hote); // pas implementee?
-    ~Client();
-    void ReadMsg();
-    void PushMsg(std::string msg);
-    int Init(int hote);
-    int fd;
-    int RPL_WELCOME;
-    int RPL_INFO;
-    int RPL;
+    public:
+        Client();
+        ~Client();
+        void Send_Welcome();
+        void Integrate();
+        int Registration();
+        void ReadMsg();
+        void PushMsg(std::string msg);
+        int Init(int epfd, int hote);
+        int fd;
+        int RPL_WELCOME;
+        int RPL_INFO;
+        int RPL;
 
-    std::string nickname;   // 9 length
-    std::string username;   // 9 length
-    std::string realname;   // 128 length
-    std::string hostname;   // 63 length
+
+    std::string nickname; // 9 length
+    std::string username; // 9 length
+    std::string realname;  // 128 length
+    std::string hostname; // 63 length
     std::string servername; // 63 length
-    std::string mode;       // 3 length
-
-    int Registration(int hote); // ajout declaration de la fonction car defini .cpp
-private:
-    std::string translationclient_to_server(std::string message);
-    void Send_Welcome();              // ajout declaration de la fonction car defini .cpp
-    void Client::Integrate(int hote); // ajout declaration de la fonction car defini .cpp
-    int epfd;
-    int hote;
-    struct epoll_event events;
-    struct sockaddr_in client;
-    socklen_t size_of_client;
-    std::vector<int> client_list;
-    std::string password;
-    std::string entry;
-    int bytes;
+    std::string mode; // 3 length 
+    private:
+        std::string translationclient_to_server(std::string message);
+        int epfd;
+        int hote;
+        struct epoll_event event;
+        struct sockaddr_in client;
+        socklen_t size_of_client;
+        std::vector<int> client_list;
+        std::string password;
+        std::string entry;
+        int bytes;
+         
+        
 };
+
+    #endif
