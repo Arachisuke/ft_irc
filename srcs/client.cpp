@@ -17,6 +17,8 @@ std::string Client::translationclient_to_server(std::string s)
           s.erase(s.size() - 1, 1);
       if (!s.empty() && s[s.size() - 1] == '\r')
           s.erase(s.size() - 1, 1);
+
+    return(s);
 }
 void  Client::ReadMsg()
 {
@@ -41,29 +43,30 @@ void Client::PushMsg(std::string msg)
         return (this->Send_Welcome(), (void)0);
     msg.push_back('\r');
     msg.push_back('\n'); // a verifie si c'est vraiment la norme.
-    send(client, msg.c_str(), msg.size(), MSG_DONTWAIT);
+    send(this->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
 }
 
-int Client::Init(int hote)
+int Client::Init(int epfd, int hote)
 {
-  this->size_of_client = sizeof(this->client);
-  this->hote = hote;
-  this->fd = accept(hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client);
-  if (fd == -1)
-    return(-1);
-  return(0);
+    this->size_of_client = sizeof(this->client);
+    this->epfd = epfd;
+    this->hote = hote;
+    this->fd = accept(hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client);
+    if (fd == -1)
+        return(-1);
+    return(0);
 }
 
-int Client::Registration(int hote) // est ce que le server doit lui ecrire un truc ou rien du tout.
+int Client::Registration() // est ce que le server doit lui ecrire un truc ou rien du tout.
 {
-    this->readMsg();
+    this->ReadMsg();
     if (entry != password) // Error on le laisse pas entrer
         return(1);
-    this->readMsg();
+    this->ReadMsg();
     this->nickname = this->entry;
-    this->readMsg();
+    this->ReadMsg();
     this->username = this->entry;
-    this->Integrate(hote);
+    this->Integrate();
 
     return(0);
 }
@@ -76,9 +79,8 @@ void Client::Send_Welcome()
     this->RPL_WELCOME = 1;
 }
 
-void Client::Integrate(int hote)
+void Client::Integrate()
 {
-  this->epfd = epoll_create1(0);
   this->events.data.fd = this->fd; // ??
   this->events.events = EPOLLOUT;
   epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->events);
