@@ -10,23 +10,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #ifndef SERVER_HPP
-# define SERVER_HPP
+#define SERVER_HPP
 
 #include "client.hpp"
 
 class Server {
 public:
-    Server();
-    ~Server();
-    int Init(int epfd);
-    struct sockaddr_in hote;
-    std::string password;
-    int fd;
-    int epfd;
-    struct epoll_event events[5];
-    int bytes;
+  Server();
+  ~Server();
+  int Init(int epfd);
+  struct sockaddr_in hote;
+  std::string password;
+  int fd;
+  int epfd;
+  struct epoll_event events[5];
+  int bytes;
 };
 
-    #endif
+#endif
