@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/10 16:45:16 by macos            ###   ########.fr       */
+/*   Updated: 2025/08/11 15:12:47 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "server.hpp"
+#include "../header/server.hpp"
 
 Server::Server(int port, std::string password) : _port(port), _password(password)
 {}
@@ -34,4 +34,10 @@ int Server::Init(int epfd)
     this->epfd = epfd;
     this->events.events = EPOLLIN;
     epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->events);
+    return (0); // ajout du return en cas de succes
+}
+void Server::clearsinzero(struct sockaddr_in *addr) // ajout de la fonction sinzero initialement dans le main
+{
+    for (int i = 0; i < 8; ++i)
+        addr->sin_zero[i] = 0;
 }
