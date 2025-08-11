@@ -46,11 +46,12 @@ int wait_client(class Server Server, std::vector<Client> client_list)
 
     while(1)
     {
-        nfds = epoll_wait(Server.epfd, Server.events, 5, 0);
+        nfds = epoll_wait(Server.epfd, Server.events, 5, -1);        
+        std::cout << "Server is running on port 6667" << std::endl;
+
         if (nfds == -1)
             return(std::cout << "EPOLL WAIT", 50); // a verifier si c'est la bonne erreur a renvoyer
         std::cout << "Server is running on port 6667" << std::endl;
-
         for (int i = 0; i < nfds ; ++i)
         {
             if (Server.events[i].data.fd == Server.fd) // newclientconnexion cree une class Clients
