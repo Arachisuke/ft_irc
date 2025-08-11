@@ -10,6 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+
+#ifndef CLIENT_HPP
+# define CLIENT_HPP
+
 #include <iostream>
 #include <unistd.h>
 #include <string>
@@ -67,3 +71,5 @@ class Client
          
         
 };
+
+    #endif
