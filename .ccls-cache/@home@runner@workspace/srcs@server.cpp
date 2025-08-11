@@ -38,7 +38,7 @@ int Server::Init(int epfd)
         return(std::cout << "ERR_FD" << std::endl, 50);
     fcntl(fd, F_SETFL, O_NONBLOCK); // Rendre non bloquant
     this->epfd = epfd;
-    this->events.events = EPOLLIN;
-    epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->events);
+    this->events[0].events = EPOLLIN;
+    epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, this->events);
     return(0);
 }

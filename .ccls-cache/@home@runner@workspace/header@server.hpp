@@ -22,9 +22,10 @@ public:
     ~Server();
     int Init(int epfd);
     struct sockaddr_in hote;
+    std::string password;
     int fd;
     int epfd;
-    struct epoll_event events;
+    struct epoll_event events[5];
     int bytes;
 };
 

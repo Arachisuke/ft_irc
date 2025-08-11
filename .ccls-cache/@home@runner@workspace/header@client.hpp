@@ -40,11 +40,14 @@ class Client
 {
 
     public:
-        Client(int hote);
+        Client();
         ~Client();
+        void Send_Welcome();
+        void Integrate();
+        int Registration();
         void ReadMsg();
         void PushMsg(std::string msg);
-        int Init(int hote);
+        int Init(int epfd, int hote);
         int fd;
         int RPL_WELCOME;
         int RPL_INFO;

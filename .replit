@@ -3,6 +3,11 @@ compile = "make"
 
 [nix]
 channel = "stable-25_05"
+packages = ["gdb"]
 
 [deployment]
 build = ["sh", "-c", "make"]
+
+[[ports]]
+localPort = 6667
+externalPort = 80
