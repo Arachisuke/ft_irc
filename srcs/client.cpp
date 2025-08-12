@@ -50,6 +50,7 @@ int Client::ReadMsg()
 void Client::PushMsg(std::string msg)
 {
     if (this->RPL_WELCOME == 0)
+
         this->Send_Welcome();
     else
     {
@@ -67,6 +68,7 @@ int Client::Init(int epfd, int hote)
     this->size_of_client = sizeof(this->client);
     this->epfd = epfd;
     this->hote = hote;
+
     this->fd = accept(this->hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client);
     if (fd == -1)
         return(-1);
@@ -88,7 +90,6 @@ int Client::Registration()
     this->event.events = EPOLLOUT;
     this->event.data.fd = this->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->event);
-    
     return(0);
 }
 void Client::Send_Welcome()
