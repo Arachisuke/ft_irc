@@ -6,12 +6,13 @@
 /*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:35:30 by macos             #+#    #+#             */
-/*   Updated: 2025/08/11 08:07:36 by macos            ###   ########.fr       */
+/*   Updated: 2025/08/11 19:57:15 by macos            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/client.hpp"
 #include "../header/server.hpp"
+
 
 int create_server(class Server& Server, int port) // mettre le truc de reference.
 {
@@ -41,6 +42,7 @@ int wait_client(class Server Server, std::vector<Client*> client_list)
 
     while(1)
     {
+
         nfds = epoll_wait(Server.epfd, Server.events, 5, -1);
         if (nfds == -1)
             return(std::cout << "ERR_EPOLL_WAIT", -1); 
@@ -97,18 +99,19 @@ int main(int argc, char **argv)
 {
     if (argc != 3) 
         return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl, 1);
+
     std::vector<Client*> client_list; // vector de class clients.
     Server Server(client_list);
     Server.password = argv[2];
 
     if (std::atoi(argv[1]) < 1024 || std::atoi(argv[1]) > 65535)
         return (std::cerr << "Port must be between 1024 and 65535" << std::endl, 1);
+    
     if (create_server(Server, std::atoi(argv[1]))) // gerer les erreurs
         return(1);
     
     if (wait_client(Server, client_list)) // gerer les erreurs
         return(1);
-    
     return 0;
 }
 

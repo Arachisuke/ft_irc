@@ -6,13 +6,14 @@
 /*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/10 16:45:16 by macos            ###   ########.fr       */
+/*   Updated: 2025/08/11 19:57:56 by macos            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/server.hpp"
 
 Server::Server( std::vector<Client*>& client_list) : server_to_client_list(client_list)
+
 {}
 
 void Server::close_all_client()
@@ -31,6 +32,7 @@ Server::~Server() {
 }
 
 void clearsinzero(struct sockaddr_in *addr)
+
 {
     for (int i = 0; i < 8; ++i)
         addr->sin_zero[i] = 0;
@@ -38,6 +40,7 @@ void clearsinzero(struct sockaddr_in *addr)
 
 int Server::Init(int epfd, int port)
 {
+
     int yes = 1;
     this->hote.sin_family = AF_INET;
     this->hote.sin_port = htons(port); 
@@ -45,7 +48,9 @@ int Server::Init(int epfd, int port)
     clearsinzero(&hote);
     this->fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1)
+
         return(std::cout << "ERR_FD" << std::endl, -1);
+
     if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) 
         return(close(this->fd), 50);
 
