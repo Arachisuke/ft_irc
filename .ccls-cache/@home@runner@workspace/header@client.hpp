@@ -52,14 +52,16 @@ class Client
         int fd;
         int RPL_WELCOME;
         int RPL_INFO;
-        int Registration_Status;
+        int Password_Status;
+        int Nickname_Status;
+        int Username_Status;
+        std::string entry;
+
+
 
 
     std::string nickname; // 9 length
     std::string username; // 9 length
-    std::string realname;  // 128 length
-    std::string hostname; // 63 length
-    std::string servername; // 63 length
     std::string mode; // 3 length 
     private:
         std::string translationclient_to_server(std::string message);
@@ -70,10 +72,7 @@ class Client
         socklen_t size_of_client;
         std::vector<int> client_list;
         std::string password;
-        std::string entry;
-        int bytes;
-         
-        
+        int bytes;       
 };
 
     #endif

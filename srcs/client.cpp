@@ -4,7 +4,9 @@ Client::Client(std::vector<Client*>& client_list, std::string password) : client
 {
     this->password = password;
     this->RPL_WELCOME = 0;
-    this->Registration_Status = 0;
+    this->Password_Status = 0;
+    this->Nickname_Status = 0;
+    this->Username_Status = 0;
 }
 Client::~Client()
 {
@@ -23,16 +25,12 @@ std::string Client::translationclient_to_server(std::string s)
 
     return(s);
 }
+
 int Client::ReadMsg()
 {
     char lecture[512];
 
-    if (this->Registration_Status == 0)
-    {
-        if (this->Registration())
-            return(send(this->fd, "Wrong Password\r\n", 16, MSG_DONTWAIT), 1);
-    }
-    this->bytes = recv(this->fd, &lecture, sizeof(lecture), 0);
+    this->bytes = recv(this->fd, &lecture, sizeof(lecture), MSG_DONTWAIT);
     if (this->bytes == -1)
     {
         std::cout << "ERR_READ" << std::endl;
@@ -44,13 +42,13 @@ int Client::ReadMsg()
         std::string message(lecture, this->bytes);
         this->entry = this->translationclient_to_server(message);
     }
-    // else == 0 / erreur
+    // else == 0 | 513 ? / erreur
     return(0);
 }
+
 void Client::PushMsg(std::string msg)
 {
     if (this->RPL_WELCOME == 0)
-
         this->Send_Welcome();
     else
     {
@@ -73,25 +71,12 @@ int Client::Init(int epfd, int hote)
     if (fd == -1)
         return(-1);
     fcntl(this->fd, F_SETFL, O_NONBLOCK);
-    this->Integrate();
+    this->event.events = EPOLLIN; // Surveiller lecture (ajoute le client à epoll)
+    this->event.data.fd = this->fd;
+    epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->event);
     return(0);
 }
 
-int Client::Registration()
-{
-    this->Registration_Status = 1;
-    this->ReadMsg();
-    if (entry != password)
-        return(1);
-    this->ReadMsg();
-    this->nickname = this->entry;
-    this->ReadMsg();
-    this->username = this->entry;
-    this->event.events = EPOLLOUT;
-    this->event.data.fd = this->fd;
-    epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->event);
-    return(0);
-}
 void Client::Send_Welcome()
 {
     std::string welcome_msg =
@@ -99,11 +84,4 @@ void Client::Send_Welcome()
     " :Welcome to the Hueco Mundo Network, " + this->nickname + "!~" + this->username + "@localhost\r\n";
     std::cout << welcome_msg;
     this->RPL_WELCOME = 1;
-}
-
-void Client::Integrate()
-{
-    this->event.events = EPOLLIN; // Surveiller lecture (ajoute le client à epoll)
-    this->event.data.fd = this->fd;
-    epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->event);
 }
