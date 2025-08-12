@@ -13,57 +13,48 @@
 #include "../header/client.hpp"
 #include "../header/server.hpp"
 
-int create_server(class Server& Server) // mettre le truc de reference.
+int create_server(class Server& Server, int port) // mettre le truc de reference.
 {
     int epfd;
     epfd = epoll_create1(0);
-    if (Server.Init(epfd)) // gerer les erreurs.
-        return(1);
+    if (Server.Init(epfd, port)) // gerer les erreurs.
+        return(-1);
     return 0;
 }
 
-int find_client(std::vector<Client> client_list, int fd)
+int find_client(std::vector<Client*> client_list, int fd)
 {
     if (client_list.empty())
         return (-1);
-    for (size_t i = 0; i < client_list.size() - 1; i++)
+    for (size_t i = 0; i < client_list.size(); i++)
     {
-        std::cout << client_list[i].fd << std::endl;
-        std::cout << fd << std::endl;
-       if  (client_list[i].fd == fd)
+       if  (client_list[i]->fd == fd)
             return(i);
     }
     return(-1);
 }
 
-int wait_client(class Server Server, std::vector<Client> client_list)
+int wait_client(class Server Server, std::vector<Client*> client_list)
 {
-    int nfds; // nombre de fd en Server.events
+    int nfds;
     int nbrclient;
 
     while(1)
     {
         nfds = epoll_wait(Server.epfd, Server.events, 5, -1);
-        sleep(3);
         if (nfds == -1)
-            return(std::cout << "EPOLL WAIT", 50); // a verifier si c'est la bonne erreur a renvoyer
+            return(std::cout << "ERR_EPOLL_WAIT", -1); 
         for (int i = 0; i < nfds ; ++i)
         {
-
-
-            std::cout << "fd du server : " << Server.fd << std::endl;
-            std::cout << "fdreactionnel : " << Server.events[i].data.fd << std::endl;
-            
-            if (Server.events[i].data.fd == Server.fd) // newclientconnexion cree une class Clients
+            if (nfds && Server.events[i].data.fd == Server.fd) // new client
             {
-                Client Clients;
-               if (Clients.Init(Server.epfd, Server.fd))
-                   return(std::cout << "Accept" << std::endl, 1);
-                if (Clients.Registration())
-                   return(std::cout << "Wrong Password" << std::endl, 1);
+                Client* Clients = new Client(client_list, Server.password);
+                if (Clients->Init(Server.epfd, Server.fd))
+                    return(std::cout << "ERR_ACCEPT" << std::endl, delete Clients, 1); // vu que j'arrete a fd-1, je peux pas avoir de fd negatif. du coup pas ce cas a gerer.
                 client_list.push_back(Clients);
+                std::cout << "New client connected" << std::endl;
             }
-            else
+            else if (nfds && Server.events[i].data.fd != Server.fd) // client already connected
             {
                 nbrclient = find_client(client_list, Server.events[i].data.fd);
                 if (nbrclient == -1)
@@ -72,17 +63,28 @@ int wait_client(class Server Server, std::vector<Client> client_list)
                     continue;
                 }
                 if (Server.events[i].events == EPOLLIN)
-                    client_list[nbrclient].ReadMsg();
-                if (Server.events[i].events == EPOLLOUT) // comment marche une discussion server/client 
                 {
-                    client_list[nbrclient].PushMsg("MON MSG");
-                    Server.events[i].events = EPOLLIN;
-                    epoll_ctl(Server.epfd, EPOLL_CTL_MOD, Server.events[i].data.fd,  &Server.events[i]); // CTLMOD.
+                    if (client_list[nbrclient]->ReadMsg()) // WRONG PASSWORD
+                    {
+                        close(client_list[nbrclient]->fd); // pour close le fd fuite de memoire fd
+                        delete client_list[nbrclient];
+                        client_list.erase(client_list.begin() + nbrclient);
+                    }
+                        continue;
                 }
-                if (Server.events[i].events == EPOLLHUP) // deconnexion
-                    client_list.erase(client_list.begin() + nbrclient);
-                if (Server.events[i].events == EPOLLERR) // error, pas encore implementer
+                if (Server.events[i].events == EPOLLOUT) 
+                    client_list[nbrclient]->PushMsg("MON MSG");
+                if (Server.events[i].events == EPOLLHUP)
                 {
+                    close(client_list[nbrclient]->fd); // pour close le fd fuite de memoire fd
+                    delete client_list[nbrclient]; // pour delete le client les leaks.
+                    std::cout << "Client disconnected" << std::endl;
+                    client_list.erase(client_list.begin() + nbrclient); // pour enlever le client de la liste.
+                }
+                if (Server.events[i].events == EPOLLERR)
+                {
+                    close(client_list[nbrclient]->fd);
+                    delete client_list[nbrclient];
                     std::cout << "ERROR\r" << std::endl;
                     client_list.erase(client_list.begin() + nbrclient);
                 }
@@ -95,16 +97,17 @@ int main(int argc, char **argv)
 {
     if (argc != 3) 
         return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl, 1);
-    std::vector<Client> client_list; // vector de class clients.
-    Server Server;
+    std::vector<Client*> client_list; // vector de class clients.
+    Server Server(client_list);
     Server.password = argv[2];
 
     if (std::atoi(argv[1]) < 1024 || std::atoi(argv[1]) > 65535)
         return (std::cerr << "Port must be between 1024 and 65535" << std::endl, 1);
-    if (create_server(Server)) // gerer les erreurs
+    if (create_server(Server, std::atoi(argv[1]))) // gerer les erreurs
         return(1);
     
-    wait_client(Server, client_list); // gerer les erreurs
+    if (wait_client(Server, client_list)) // gerer les erreurs
+        return(1);
     
     return 0;
 }

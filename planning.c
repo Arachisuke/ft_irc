@@ -54,9 +54,18 @@ if (event[i].data.fd == listen_fd)
 // class client -> nom, prenom, fd, channel actuelle, role actuelle. avec sa struct sockaddr, et son socklen. et ++++ @@@@
 // finir la fonction server avec les modifs de class, @@@@
 // finir de faire la fonction PUSHMSG -> booleans, si RPLWELCOME vaut 0 -> push RPLWELCOME. les autres se sera des consequences de cmd du coup c la cmd elle meme qui renvera le bon msg @@@@@
- // ensuite verifier si EPOLL marche.
-// faire les signaux
-// verifier mes messages envoyer et recu et leur normes.
+ // ensuite verifier si EPOLL marche. @@@@@
+
 
 // faire les commandes partiels.
 // comment une discussion entre un server/client se passe ? le serveur lui parle le client repond ? ou il peut y avoir des monologues ? c'est pour gerer le epollin et epollout, est ce que une fois que j'ai envoye un msg je le repasse en epollin pour ecouter sa reponse comme a linverse sil menvoie un msg je le met en epollout afin de traiter sa demande.
+
+
+        
+// est ce que je dois arreter le server si ya une erreur ? dans un client ou un fd negatif etc.
+
+
+        
+// enlever le prompt, de server il sers a rien, et enlever le prompt de client quand ya une erreur, et mettre un msg d'erreur
+// faire les signaux
+// verifier mes messages envoyer et recu et leur normes.

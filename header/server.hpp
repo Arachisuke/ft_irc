@@ -17,10 +17,12 @@
 
 class Server {
 public:
-  Server();
+  Server(std::vector<Client*>& client_list);
   ~Server();
-  int Init(int epfd);
+  int Init(int epfd, int port);
+  void close_all_client();
   struct sockaddr_in hote;
+  std::vector<Client*>& server_to_client_list;
   std::string password;
   int fd;
   int epfd;

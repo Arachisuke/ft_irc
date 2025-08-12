@@ -40,18 +40,19 @@ class Client
 {
 
     public:
-        Client();
+        Client( std::vector<Client*>& client_list, std::string password);
         ~Client();
         void Send_Welcome();
+        std::vector<Client*>& client_to_client_list;
         void Integrate();
         int Registration();
-        void ReadMsg();
+        int ReadMsg(); 
         void PushMsg(std::string msg);
         int Init(int epfd, int hote);
         int fd;
         int RPL_WELCOME;
         int RPL_INFO;
-        int RPL;
+        int Registration_Status;
 
 
     std::string nickname; // 9 length
