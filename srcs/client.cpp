@@ -1,13 +1,16 @@
 #include "../header/client.hpp"
 
-Client::Client()
+Client::Client(std::vector<Client*>& client_list, std::string password) : client_to_client_list(client_list)
 {
-   this->RPL_WELCOME = 0;
+    this->password = password;
+    this->RPL_WELCOME = 0;
+    this->Registration_Status = 0;
 }
 Client::~Client()
 {
     epoll_ctl(this->epfd, EPOLL_CTL_DEL, this->fd, NULL); // CTLDEL
-    close(this->fd);
+    if (fd > 0)
+        close(this->fd);
     std::cout << "Client disconnected" << std::endl;
 }
 
@@ -20,15 +23,21 @@ std::string Client::translationclient_to_server(std::string s)
 
     return(s);
 }
-void  Client::ReadMsg()
+int Client::ReadMsg()
 {
     char lecture[512];
 
-  this->bytes = recv(this->fd, &lecture, sizeof(lecture), MSG_NOSIGNAL);
+    if (this->Registration_Status == 0)
+    {
+        if (this->Registration())
+            return(send(this->fd, "Wrong Password\r\n", 16, MSG_DONTWAIT), 1);
+    }
+    this->bytes = recv(this->fd, &lecture, sizeof(lecture), 0);
     if (this->bytes == -1)
     {
         std::cout << "ERR_READ" << std::endl;
         close(this->fd);
+        return(1);
     }
     else if (this->bytes > 0)
     {
@@ -36,14 +45,21 @@ void  Client::ReadMsg()
         this->entry = this->translationclient_to_server(message);
     }
     // else == 0 / erreur
+    return(0);
 }
 void Client::PushMsg(std::string msg)
 {
     if (this->RPL_WELCOME == 0)
-        return (this->Send_Welcome(), (void)0);
-    msg.push_back('\r');
-    msg.push_back('\n'); // a verifie si c'est vraiment la norme.
-    send(this->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+        this->Send_Welcome();
+    else
+    {
+        msg.push_back('\r');
+        msg.push_back('\n'); // a verifie si c'est vraiment la norme.
+        send(this->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+    }
+    this->event.events = EPOLLIN;
+    this->event.data.fd = this->fd;
+    epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->event);
 }
 
 int Client::Init(int epfd, int hote)
@@ -51,25 +67,28 @@ int Client::Init(int epfd, int hote)
     this->size_of_client = sizeof(this->client);
     this->epfd = epfd;
     this->hote = hote;
-    this->fd = accept(hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client);
+    this->fd = accept(this->hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client);
     if (fd == -1)
         return(-1);
     fcntl(this->fd, F_SETFL, O_NONBLOCK);
-
+    this->Integrate();
     return(0);
 }
 
-int Client::Registration() // est ce que le server doit lui ecrire un truc ou rien du tout.
+int Client::Registration()
 {
+    this->Registration_Status = 1;
     this->ReadMsg();
-    if (entry != password) // Error on le laisse pas entrer
+    if (entry != password)
         return(1);
     this->ReadMsg();
     this->nickname = this->entry;
     this->ReadMsg();
     this->username = this->entry;
-    this->Integrate();
-
+    this->event.events = EPOLLOUT;
+    this->event.data.fd = this->fd;
+    epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->event);
+    
     return(0);
 }
 void Client::Send_Welcome()
@@ -84,5 +103,6 @@ void Client::Send_Welcome()
 void Client::Integrate()
 {
     this->event.events = EPOLLIN; // Surveiller lecture (ajoute le client à epoll)
+    this->event.data.fd = this->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->event);
 }
