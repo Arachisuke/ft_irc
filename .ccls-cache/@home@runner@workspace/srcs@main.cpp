@@ -66,13 +66,32 @@ int wait_client(class Server Server, std::vector<Client*> client_list)
                 }
                 if (Server.events[i].events == EPOLLIN)
                 {
-                    if (client_list[nbrclient]->ReadMsg()) // WRONG PASSWORD
+                    if (client_list[nbrclient]->Password_Status == 0)
                     {
-                        close(client_list[nbrclient]->fd); // pour close le fd fuite de memoire fd
-                        delete client_list[nbrclient];
-                        client_list.erase(client_list.begin() + nbrclient);
+                        client_list[nbrclient]->ReadMsg();
+                        client_list[nbrclient]->Password_Status = 1;
                     }
-                        continue;
+                    if (client_list[nbrclient]->entry != Server.password)  // WRONG PASSWORD
+                    {
+                            client_list[nbrclient]->PushMsg("WRONG PASSWORD"); // oblige d'etre en epollout pour pushmsg?
+                            close(client_list[nbrclient]->fd); // pour close le fd fuite de memoire fd
+                            delete client_list[nbrclient];
+                            client_list.erase(client_list.begin() + nbrclient);
+                            continue;
+                    }
+                    else if (client_list[nbrclient]->Nickname_Status == 0)
+                   {
+                        client_list[nbrclient]->ReadMsg(); // big 3
+                        client_list[nbrclient]->nickname = client_list[nbrclient]->entry;
+                        client_list[nbrclient]->Nickname_Status = 1;
+                    }
+                    else if (client_list[nbrclient]->Username_Status == 0)
+                    {
+                        client_list[nbrclient]->ReadMsg(); // big 3
+                        client_list[nbrclient]->username = client_list[nbrclient]->entry;
+                        client_list[nbrclient]->Username_Status = 1;
+                    }
+                    
                 }
                 if (Server.events[i].events == EPOLLOUT) 
                     client_list[nbrclient]->PushMsg("MON MSG");
@@ -104,7 +123,7 @@ int main(int argc, char **argv)
     Server Server(client_list);
     Server.password = argv[2];
 
-    if (std::atoi(argv[1]) < 1024 || std::atoi(argv[1]) > 65535)
+    if (std::atoi(argv[1]) < 1024 || std::atoi(argv[1]) > 65535) // supp atoi.
         return (std::cerr << "Port must be between 1024 and 65535" << std::endl, 1);
     
     if (create_server(Server, std::atoi(argv[1]))) // gerer les erreurs

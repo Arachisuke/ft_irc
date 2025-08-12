@@ -1,6 +1,6 @@
 ######################################################
 ## ARGUMENTS
-NAME:= ft_irc
+NAME:= ircserv
 CC:= c++
 FLAGS:= -Wall -Wextra -Werror -std=c++98 -g3
 

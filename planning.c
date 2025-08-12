@@ -69,3 +69,17 @@ if (event[i].data.fd == listen_fd)
 // enlever le prompt, de server il sers a rien, et enlever le prompt de client quand ya une erreur, et mettre un msg d'erreur
 // faire les signaux
 // verifier mes messages envoyer et recu et leur normes.
+
+
+// registration au propre.
+// je l'enregistre en client et le met en epollin.
+        // il est en epollin il a reagis, je lui demande le mdp, je le remet en epollin.
+        // je lui demande le nickname, je le remet en epollin.
+        // je lui demande le username, je le met en epollout pour lui envoyer le msg de bienvenue.
+        // je le remet en epollin pour qu'il puisse faire autre chose
+// faire la fonction Le big 3, Close, Delete, et Erase. + MSG client disconnected
+        // rajouter le try and catch
+        // atoi supprimer ou faire ton atoi
+        // ne pas oublier les signaux.
+
+        // est ce a jour ?
