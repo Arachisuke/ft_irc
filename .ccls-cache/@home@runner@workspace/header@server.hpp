@@ -20,7 +20,7 @@ public:
   Server(std::vector<Client*>& client_list);
   ~Server();
   int Init(int epfd, int port);
-  void close_all_client();
+  void Finish();
   struct sockaddr_in hote;
   std::vector<Client*>& server_to_client_list;
   std::string password;

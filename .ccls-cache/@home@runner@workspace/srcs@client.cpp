@@ -7,6 +7,7 @@ Client::Client(std::vector<Client*>& client_list, std::string password) : client
     this->Password_Status = 0;
     this->Nickname_Status = 0;
     this->Username_Status = 0;
+    this->fd = -1;
 }
 Client::~Client()
 {
@@ -33,22 +34,18 @@ void Client::ReadMsg(int nbrclient)
     this->bytes = recv(this->fd, &lecture, sizeof(lecture), MSG_DONTWAIT);
     if (this->bytes == -1)
     {
-        std::cout << "ERR_RECV : " << errno << std::endl;
-        std::cout << "Buffer : " << lecture << std::endl;
-
         if (errno == EAGAIN || errno == EWOULDBLOCK) // pas de message a lire
             return ;
-        return(this->Big_3(this->client_list, nbrclient, "ERR_READ"));
+        return(this->Big_3(this->client_to_client_list, nbrclient, "ERR_READ"));
     }
-    else if (this->bytes == 0)
+    else if (this->bytes == 0) // controleD cmd controleD ? ou cmd controleD cmd ? 
     {
-        return(this->Big_3(this->client_list, nbrclient, NULL));
+        return(this->Big_3(this->client_to_client_list, nbrclient, NULL));
     }
     else if (this->bytes > 0)
     {
         std::string message(lecture, this->bytes);
         this->entry = this->translationclient_to_server(message);
-        std::cout << "Message received: " << this->entry << std::endl;
     }
 }
 
@@ -97,32 +94,25 @@ void   Client:: Registration(int nbrclient)
         return ;
     if (this->Password_Status == 0)
     {
-        this->ReadMsg();
+        this->ReadMsg(nbrclient);
         this->Password_Status = 1;
-        std::cout << "entry : " << this->entry << std::endl;
-        std::cout << "password : " << this->entry << std::endl;
         if (this->entry != this->password)  // WRONG PASSWORD
             return (Big_3(this->client_to_client_list, nbrclient, "Wrong Password"));
         return ;
     }
     else if (this->Nickname_Status == 0)
     {
-        this->ReadMsg(); // big 3
+        this->ReadMsg(nbrclient); // big 3
         this->nickname = this->entry;
         this->Nickname_Status = 1;
-        std::cout << "entry : " << this->entry << std::endl;
-        std::cout << "nickname : " << this->nickname << std::endl;
         return ;
     }
     else if (this->Username_Status == 0)
     {
         
-        this->ReadMsg(); // big 3
+        this->ReadMsg(nbrclient); // big 3
         this->username = this->entry;
         this->Username_Status = 1;
-        std::cout << "entry : " << this->entry << std::endl;
-        std::cout << "username : " << this->username << std::endl;
-
     }
     this->event.events = EPOLLOUT; // Surveiller lecture (ajoute le client à epoll)
     this->event.data.fd = this->fd;
@@ -136,8 +126,9 @@ void Client::Big_3(std::vector<Client*>& client_list, int nbrclient, std::string
         ERROR_MSG.push_back('\n'); // a verifie si c'est vraiment la norme.
         send(this->fd, ERROR_MSG.c_str(), ERROR_MSG.size(), MSG_DONTWAIT);
     }
-    client_list.erase(client_list.begin() + nbrclient);
-    std::cout << "Client disconnected" << std::endl;
+    if (client_list[nbrclient])
+        client_list.erase(client_list.begin() + nbrclient);
+    std::cout << "Client disconnected\r\n" << std::endl;
     delete this;
     return ;
 }

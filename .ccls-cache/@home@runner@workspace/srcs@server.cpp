@@ -12,22 +12,23 @@
 
 #include "../header/server.hpp"
 
-Server::Server( std::vector<Client*>& client_list) : server_to_client_list(client_list)
+Server::Server(std::vector<Client*>& client_list) : server_to_client_list(client_list)
+{
+    this->fd = -1;
+}
 
-{}
-
-void Server::close_all_client()
+void Server::Finish()
 {
     for (size_t i = 0; i < this->server_to_client_list.size(); i++)
     {
         if (this->server_to_client_list[i] && this->server_to_client_list[i]->fd != -1)
-            close(this->server_to_client_list[i]->fd);
-        delete this->server_to_client_list[i];
+           delete this->server_to_client_list[i]; // delete le client qui appel le destructeur qui lui close le fd.
     }
+    close(this->fd);
 }
 Server::~Server() {
     
-    this->close_all_client();
+    this->Finish();
     std::cout << "Server shutdown" << std::endl;
 }
 
