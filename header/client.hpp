@@ -14,27 +14,7 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-#include <iostream>
-#include <unistd.h>
-#include <string>
-#include <cstring>
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <fcntl.h>
-#include <iostream>
-#include <unistd.h>
-#include <string>
-#include <iostream>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <string>
-#include <cstring>
-#include <fcntl.h>
-#include <sys/epoll.h>
-#include <vector>
-#include <cstdlib>
+#include "header.hpp"
 
 class Client
 {
@@ -44,9 +24,10 @@ class Client
         ~Client();
         void Send_Welcome();
         std::vector<Client*>& client_to_client_list;
+        void Big_3(std::vector<Client*>& client_list, int nbrclient, std::string ERROR_MSG);
         void Integrate();
-        int Registration();
-        int ReadMsg(); 
+        void Registration(int nbrclient);
+        void ReadMsg(int nbrclient); 
         void PushMsg(std::string msg);
         int Init(int epfd, int hote);
         int fd;
