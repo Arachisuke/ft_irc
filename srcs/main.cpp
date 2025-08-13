@@ -11,10 +11,10 @@
 /* ************************************************************************** */
 
 #include "../header/server.hpp"
-#include "big_3.cpp"
 
+bool stop = false;
 
-
+void handler(int) { stop = true; }
 
 int create_server(class Server& Server, int port) // mettre le truc de reference.
 {
@@ -44,41 +44,33 @@ int wait_client(class Server Server, std::vector<Client*> client_list)
     int nfds;
     int nbrclient;
 
-    while(1)
+    while(!stop)
     {
         nfds = epoll_wait(Server.epfd, Server.events, 5, -1);
-        if (nfds == -1)
-            return(std::cout << "ERR_EPOLL_WAIT", -1); 
+        if (nfds == -1) // que faire ?
+            Server.Finish(); 
         for (int i = 0; i < nfds ; ++i)
         {
             if (nfds && Server.events[i].data.fd == Server.fd) // new client
             {
                 Client* Clients = new Client(client_list, Server.password);
                 if (Clients->Init(Server.epfd, Server.fd))
-                    return(std::cout << "ERR_ACCEPT" << std::endl, delete Clients, 1); // vu que j'arrete a fd-1, je peux pas avoir de fd negatif. du coup pas ce cas a gerer.
+                {
+                    Clients->Big_3(client_list, nbrclient, "ERR_ACCEPT");
+                    continue;
+                }
                 client_list.push_back(Clients);
-                std::cout << "New client connected" << std::endl;
+                std::cout << "New client connected\r\n" << std::endl;
             }
             else if (nfds && Server.events[i].data.fd != Server.fd) // client already connected
             {
                 nbrclient = find_client(client_list, Server.events[i].data.fd);
-                if (nbrclient == -1)
-                {
-                    std::cout << "ERR_FIND_CLIENT" << std::endl;
-                    continue;
-                }
-                for (int i = 0; i < nfds; i++)
-                {
-                    std::cout << "type d'event" << i << " : " << Server.events[i].events << std::endl;
-                    std::cout << "FD reactionnel" << i << " : " << Server.events[i].data.fd << std::endl;
-                    std::cout << "FD du client trouver" << i << " : " << client_list[nbrclient]->fd << std::endl;
-                }
                 if (Server.events[i].events == EPOLLIN)
                 {
                    if (!client_list[nbrclient]->Username_Status)
-                        client_list[nbrclient]->Registration(nbrclient); // Wrong password ... ?
+                        client_list[nbrclient]->Registration(nbrclient);
                     else
-                        client_list[nbrclient]->ReadMsg(nbrclient); // cmd.
+                        client_list[nbrclient]->ReadMsg(nbrclient);
                 }
                 else if (Server.events[i].events == EPOLLOUT) 
                     client_list[nbrclient]->PushMsg("MON MSG");
@@ -97,7 +89,8 @@ int main(int argc, char **argv)
     if (argc != 3) 
         return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl, 1);
 
-    std::vector<Client*> client_list; // vector de class clients.
+    signal(SIGINT, &handler); // implementation pas termine.
+    std::vector<Client*> client_list; 
     Server Server(client_list);
     Server.password = argv[2];
 
@@ -112,10 +105,10 @@ int main(int argc, char **argv)
         std::cerr << "Invalid port number." << std::endl;
     int n = static_cast<int>(val);
 
-    if (create_server(Server, n)) // gerer les erreurs
+    if (create_server(Server, n))
         return(1);
     
-    if (wait_client(Server, client_list)) // gerer les erreurs
+    if (wait_client(Server, client_list))
         return(1);
     return 0;
 }

@@ -18,6 +18,7 @@
 #include <cstdlib>
 #include <cerrno>
 #include <climits>
+#include <csignal>
 
 
     #endif

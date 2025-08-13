@@ -82,9 +82,15 @@ if (event[i].data.fd == listen_fd)
         // est ce a jour ? @@@@
 
         
+        
+        
+        
         // le big3, possiblement mal implemente car c'est une methode interne dangereux si quelqu'un l'appel.
         // verifier mes messages envoyer et recu et leur normes.
         // ne pas oublier les signaux.
         // faire les commandes partiels.
         // refaire proprement le BIG3, et les messages d'erreurs. -> ou close le fd etc ...
+        // INIT LES FD a -1 !!!!! @@@@
+        // commencer les commandes -> JOIN etc.
+        // faire la class CHANNEL.
 
