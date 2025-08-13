@@ -26,29 +26,35 @@ std::string Client::translationclient_to_server(std::string s)
     return(s);
 }
 
-int Client::ReadMsg()
+void Client::ReadMsg(int nbrclient)
 {
     char lecture[512];
 
     this->bytes = recv(this->fd, &lecture, sizeof(lecture), MSG_DONTWAIT);
     if (this->bytes == -1)
     {
-        std::cout << "ERR_READ" << std::endl;
-        close(this->fd);
-        return(1);
+        std::cout << "ERR_RECV : " << errno << std::endl;
+        std::cout << "Buffer : " << lecture << std::endl;
+
+        if (errno == EAGAIN || errno == EWOULDBLOCK) // pas de message a lire
+            return ;
+        return(this->Big_3(this->client_list, nbrclient, "ERR_READ"));
+    }
+    else if (this->bytes == 0)
+    {
+        return(this->Big_3(this->client_list, nbrclient, NULL));
     }
     else if (this->bytes > 0)
     {
         std::string message(lecture, this->bytes);
         this->entry = this->translationclient_to_server(message);
+        std::cout << "Message received: " << this->entry << std::endl;
     }
-    // else == 0 | 513 ? / erreur
-    return(0);
 }
 
 void Client::PushMsg(std::string msg)
 {
-    if (this->RPL_WELCOME == 0)
+    if (this->RPL_WELCOME == 0 && this->Username_Status == 1)
         this->Send_Welcome();
     else
     {
@@ -80,8 +86,58 @@ int Client::Init(int epfd, int hote)
 void Client::Send_Welcome()
 {
     std::string welcome_msg =
-    ":Hueco Mundo 001 " + this->nickname +
-    " :Welcome to the Hueco Mundo Network, " + this->nickname + "!~" + this->username + "@localhost\r\n";
-    std::cout << welcome_msg;
+    ": Hueco Mundo 001 " + this->nickname +
+    " : Welcome to the Hueco Mundo Network, " + this->nickname + "!~" + this->username + "@localhost\r\n";
+    send(this->fd, welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);
     this->RPL_WELCOME = 1;
+}
+void   Client:: Registration(int nbrclient)
+{
+    if (this->Username_Status)
+        return ;
+    if (this->Password_Status == 0)
+    {
+        this->ReadMsg();
+        this->Password_Status = 1;
+        std::cout << "entry : " << this->entry << std::endl;
+        std::cout << "password : " << this->entry << std::endl;
+        if (this->entry != this->password)  // WRONG PASSWORD
+            return (Big_3(this->client_to_client_list, nbrclient, "Wrong Password"));
+        return ;
+    }
+    else if (this->Nickname_Status == 0)
+    {
+        this->ReadMsg(); // big 3
+        this->nickname = this->entry;
+        this->Nickname_Status = 1;
+        std::cout << "entry : " << this->entry << std::endl;
+        std::cout << "nickname : " << this->nickname << std::endl;
+        return ;
+    }
+    else if (this->Username_Status == 0)
+    {
+        
+        this->ReadMsg(); // big 3
+        this->username = this->entry;
+        this->Username_Status = 1;
+        std::cout << "entry : " << this->entry << std::endl;
+        std::cout << "username : " << this->username << std::endl;
+
+    }
+    this->event.events = EPOLLOUT; // Surveiller lecture (ajoute le client à epoll)
+    this->event.data.fd = this->fd;
+    epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->event);  
+}
+void Client::Big_3(std::vector<Client*>& client_list, int nbrclient, std::string ERROR_MSG)
+{
+    if (!ERROR_MSG.empty())
+    {
+        ERROR_MSG.push_back('\r');
+        ERROR_MSG.push_back('\n'); // a verifie si c'est vraiment la norme.
+        send(this->fd, ERROR_MSG.c_str(), ERROR_MSG.size(), MSG_DONTWAIT);
+    }
+    client_list.erase(client_list.begin() + nbrclient);
+    std::cout << "Client disconnected" << std::endl;
+    delete this;
+    return ;
 }

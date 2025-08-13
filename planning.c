@@ -57,7 +57,6 @@ if (event[i].data.fd == listen_fd)
  // ensuite verifier si EPOLL marche. @@@@@
 
 
-// faire les commandes partiels.
 // comment une discussion entre un server/client se passe ? le serveur lui parle le client repond ? ou il peut y avoir des monologues ? c'est pour gerer le epollin et epollout, est ce que une fois que j'ai envoye un msg je le repasse en epollin pour ecouter sa reponse comme a linverse sil menvoie un msg je le met en epollout afin de traiter sa demande.
 
 
@@ -68,7 +67,6 @@ if (event[i].data.fd == listen_fd)
         
 // enlever le prompt, de server il sers a rien, et enlever le prompt de client quand ya une erreur, et mettre un msg d'erreur
 // faire les signaux
-// verifier mes messages envoyer et recu et leur normes.
 
 
 // registration au propre.
@@ -76,10 +74,17 @@ if (event[i].data.fd == listen_fd)
         // il est en epollin il a reagis, je lui demande le mdp, je le remet en epollin.
         // je lui demande le nickname, je le remet en epollin.
         // je lui demande le username, je le met en epollout pour lui envoyer le msg de bienvenue.
-        // je le remet en epollin pour qu'il puisse faire autre chose
-// faire la fonction Le big 3, Close, Delete, et Erase. + MSG client disconnected
-        // rajouter le try and catch
-        // atoi supprimer ou faire ton atoi
-        // ne pas oublier les signaux.
+        // je le remet en epollin pour qu'il puisse faire autre chose @@@@
+// faire la fonction Le big 3, Close, Delete, et Erase. + MSG client disconnected @@@@
+        // rajouter le try and catch@@@@
+        // atoi supprimer ou faire ton atoi @@@@
 
-        // est ce a jour ?
+        // est ce a jour ? @@@@
+
+        
+        // le big3, possiblement mal implemente car c'est une methode interne dangereux si quelqu'un l'appel.
+        // verifier mes messages envoyer et recu et leur normes.
+        // ne pas oublier les signaux.
+        // faire les commandes partiels.
+        // refaire proprement le BIG3, et les messages d'erreurs. -> ou close le fd etc ...
+

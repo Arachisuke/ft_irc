@@ -10,8 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../header/client.hpp"
 #include "../header/server.hpp"
+#include "big_3.cpp"
+
+
 
 
 int create_server(class Server& Server, int port) // mettre le truc de reference.
@@ -35,6 +37,8 @@ int find_client(std::vector<Client*> client_list, int fd)
     return(-1);
 }
 
+
+
 int wait_client(class Server Server, std::vector<Client*> client_list)
 {
     int nfds;
@@ -42,7 +46,6 @@ int wait_client(class Server Server, std::vector<Client*> client_list)
 
     while(1)
     {
-
         nfds = epoll_wait(Server.epfd, Server.events, 5, -1);
         if (nfds == -1)
             return(std::cout << "ERR_EPOLL_WAIT", -1); 
@@ -64,51 +67,26 @@ int wait_client(class Server Server, std::vector<Client*> client_list)
                     std::cout << "ERR_FIND_CLIENT" << std::endl;
                     continue;
                 }
+                for (int i = 0; i < nfds; i++)
+                {
+                    std::cout << "type d'event" << i << " : " << Server.events[i].events << std::endl;
+                    std::cout << "FD reactionnel" << i << " : " << Server.events[i].data.fd << std::endl;
+                    std::cout << "FD du client trouver" << i << " : " << client_list[nbrclient]->fd << std::endl;
+                }
                 if (Server.events[i].events == EPOLLIN)
                 {
-                    if (client_list[nbrclient]->Password_Status == 0)
-                    {
-                        client_list[nbrclient]->ReadMsg();
-                        client_list[nbrclient]->Password_Status = 1;
-                    }
-                    if (client_list[nbrclient]->entry != Server.password)  // WRONG PASSWORD
-                    {
-                            client_list[nbrclient]->PushMsg("WRONG PASSWORD"); // oblige d'etre en epollout pour pushmsg?
-                            close(client_list[nbrclient]->fd); // pour close le fd fuite de memoire fd
-                            delete client_list[nbrclient];
-                            client_list.erase(client_list.begin() + nbrclient);
-                            continue;
-                    }
-                    else if (client_list[nbrclient]->Nickname_Status == 0)
-                   {
-                        client_list[nbrclient]->ReadMsg(); // big 3
-                        client_list[nbrclient]->nickname = client_list[nbrclient]->entry;
-                        client_list[nbrclient]->Nickname_Status = 1;
-                    }
-                    else if (client_list[nbrclient]->Username_Status == 0)
-                    {
-                        client_list[nbrclient]->ReadMsg(); // big 3
-                        client_list[nbrclient]->username = client_list[nbrclient]->entry;
-                        client_list[nbrclient]->Username_Status = 1;
-                    }
-                    
+                   if (!client_list[nbrclient]->Username_Status)
+                        client_list[nbrclient]->Registration(nbrclient); // Wrong password ... ?
+                    else
+                        client_list[nbrclient]->ReadMsg(nbrclient); // cmd.
                 }
-                if (Server.events[i].events == EPOLLOUT) 
+                else if (Server.events[i].events == EPOLLOUT) 
                     client_list[nbrclient]->PushMsg("MON MSG");
-                if (Server.events[i].events == EPOLLHUP)
-                {
-                    close(client_list[nbrclient]->fd); // pour close le fd fuite de memoire fd
-                    delete client_list[nbrclient]; // pour delete le client les leaks.
-                    std::cout << "Client disconnected" << std::endl;
-                    client_list.erase(client_list.begin() + nbrclient); // pour enlever le client de la liste.
-                }
-                if (Server.events[i].events == EPOLLERR)
-                {
-                    close(client_list[nbrclient]->fd);
-                    delete client_list[nbrclient];
-                    std::cout << "ERROR\r" << std::endl;
-                    client_list.erase(client_list.begin() + nbrclient);
-                }
+                else if (Server.events[i].events == EPOLLHUP)
+                    client_list[nbrclient]->Big_3(client_list, nbrclient, "HUP");
+
+                else if (Server.events[i].events == EPOLLERR)
+                    client_list[nbrclient]->Big_3(client_list, nbrclient, "ERR");
             }
         }
     }
@@ -123,10 +101,18 @@ int main(int argc, char **argv)
     Server Server(client_list);
     Server.password = argv[2];
 
-    if (std::atoi(argv[1]) < 1024 || std::atoi(argv[1]) > 65535) // supp atoi.
-        return (std::cerr << "Port must be between 1024 and 65535" << std::endl, 1);
-    
-    if (create_server(Server, std::atoi(argv[1]))) // gerer les erreurs
+    std::string str = argv[1];
+    const char* s = str.c_str();
+    char* end;
+    errno = 0;
+    long val = strtol(s, &end, 10);
+    if (errno == ERANGE || val > INT_MAX || val < INT_MIN)
+        std::cerr << "Port number out of range." << std::endl;
+    if (*end != '\0')
+        std::cerr << "Invalid port number." << std::endl;
+    int n = static_cast<int>(val);
+
+    if (create_server(Server, n)) // gerer les erreurs
         return(1);
     
     if (wait_client(Server, client_list)) // gerer les erreurs
