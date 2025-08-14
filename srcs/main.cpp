@@ -11,12 +11,13 @@
 /* ************************************************************************** */
 
 #include "../header/server.hpp"
+#include "../header/client.hpp"
 
 bool stop = false;
 
 void handler(int) { stop = true; }
 
-int create_server(class Server& Server, int port) // mettre le truc de reference.
+int create_server(Server& Server, int port) // mettre le truc de reference.
 {
     int epfd;
     epfd = epoll_create1(0);
@@ -39,7 +40,7 @@ int find_client(std::vector<Client*> client_list, int fd)
 
 
 
-int wait_client(class Server Server, std::vector<Client*> client_list)
+int wait_client(Server Server, std::vector<Client*> client_list)
 {
     int nfds;
     int nbrclient;
@@ -48,7 +49,7 @@ int wait_client(class Server Server, std::vector<Client*> client_list)
     {
         nfds = epoll_wait(Server.epfd, Server.events, 5, -1);
         if (nfds == -1) // que faire ?
-            Server.Finish(); 
+            Server.Finish();
         for (int i = 0; i < nfds ; ++i)
         {
             if (nfds && Server.events[i].data.fd == Server.fd) // new client
@@ -62,7 +63,7 @@ int wait_client(class Server Server, std::vector<Client*> client_list)
                 client_list.push_back(Clients);
                 std::cout << "New client connected\r\n" << std::endl;
             }
-            else if (nfds && Server.events[i].data.fd != Server.fd) // client already connected
+            else if (nfds && Server.events[i].data.fd != Server.fd)
             {
                 nbrclient = find_client(client_list, Server.events[i].data.fd);
                 if (Server.events[i].events == EPOLLIN)
@@ -99,7 +100,7 @@ int main(int argc, char **argv)
     char* end;
     errno = 0;
     long val = strtol(s, &end, 10);
-    if (errno == ERANGE || val > INT_MAX || val < INT_MIN)
+    if (errno == ERANGE || val > 65535 || val <= 0)
         std::cerr << "Port number out of range." << std::endl;
     if (*end != '\0')
         std::cerr << "Invalid port number." << std::endl;
@@ -112,17 +113,3 @@ int main(int argc, char **argv)
         return(1);
     return 0;
 }
-
-// fonction send + ajout de la norme
-// fonction recve + suppression de la norme 
-// les fonctions doivent etre aglomerer dans une autre grosse fonctions.
-// je prend recve dans une fonction lecture, et dedans je recve + suppression et je renvoie un std::string ou pas en vrai ca depend si j'ai encore du traitement de texte a faire aprs ca.
-// et pareil pour send.
-
-
-
-
-
-// afficher PASS ? 
-    // nickname ?? sortir un prompt pour poser la question ?
-// gerer la fonction quit.
