@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:35:30 by macos             #+#    #+#             */
-/*   Updated: 2025/08/11 19:57:15 by macos            ###   ########.fr       */
+/*   Updated: 2025/08/14 13:09:00 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,6 @@ int find_client(std::vector<Client*> client_list, int fd)
     return(-1);
 }
 
-
-
 int wait_client(Server Server, std::vector<Client*> client_list)
 {
     int nfds;
@@ -67,12 +65,7 @@ int wait_client(Server Server, std::vector<Client*> client_list)
             {
                 nbrclient = find_client(client_list, Server.events[i].data.fd);
                 if (Server.events[i].events == EPOLLIN)
-                {
-                   if (!client_list[nbrclient]->Username_Status)
-                        client_list[nbrclient]->Registration(nbrclient);
-                    else
-                        client_list[nbrclient]->ReadMsg(nbrclient);
-                }
+                    client_list[nbrclient]->ReadMsg(nbrclient);
                 else if (Server.events[i].events == EPOLLOUT) 
                     client_list[nbrclient]->PushMsg("MON MSG");
                 else if (Server.events[i].events == EPOLLHUP)
@@ -89,7 +82,7 @@ int main(int argc, char **argv)
 {
     if (argc != 3) 
         return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl, 1);
-
+    
     signal(SIGINT, &handler); // implementation pas termine.
     std::vector<Client*> client_list; 
     Server Server(client_list);

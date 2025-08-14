@@ -28,11 +28,6 @@
 // epoll_ctl - >surveille ce fd. ex : epollin par ex lecture dispo
 // 
 
-nfds = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
-
-for i = 0 < nfds
-
-if (event[i].data.fd == listen_fd)
 // nfds = nombre de reaction
         // event de epoll wait, c'est un tableau imaginaire ou imaginons la reactions 1 = fdserveur alors ca veut dire que quelquun tente de parler a mon serveur
         // ensuite si ca correspond a un autre fd, j'ecoute simplement ce fd.
@@ -136,3 +131,10 @@ if (event[i].data.fd == listen_fd)
                         
 
         
+
+
+        // commande partiel @@@@@
+        // parse du msg et rediriger selon la cmd envoyer si la cmd c'est pass, bah du coup va dans registration sinon si c une autre cmd et que je suis aps co msg erreur
+
+        // PARSE CMD. stdmap cmd = fonction.
+        // fonction
