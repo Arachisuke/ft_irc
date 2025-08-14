@@ -13,7 +13,21 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include "client.hpp"
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <iostream>
+#include <arpa/inet.h>
+#include <sys/epoll.h>
+#include <vector>
+#include <cstdlib>
+#include <cerrno>
+#include <climits>
+#include <csignal>
 
 class Server {
 public:

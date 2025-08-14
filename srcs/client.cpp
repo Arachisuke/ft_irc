@@ -14,13 +14,17 @@ Client::~Client()
     epoll_ctl(this->epfd, EPOLL_CTL_DEL, this->fd, NULL); // CTLDEL
     if (fd > 0)
         close(this->fd);
-    std::cout << "Client disconnected" << std::endl;
+    std::cout << "Client disconnected\r\n" << std::endl;
 }
 
 std::string Client::translationclient_to_server(std::string s)
 {
+    
+    
      if (!s.empty() && s[s.size() - 1] == '\n')
           s.erase(s.size() - 1, 1);
+    else
+         
       if (!s.empty() && s[s.size() - 1] == '\r')
           s.erase(s.size() - 1, 1);
 
@@ -29,6 +33,7 @@ std::string Client::translationclient_to_server(std::string s)
 
 void Client::ReadMsg(int nbrclient)
 {
+    
     char lecture[512];
 
     this->bytes = recv(this->fd, &lecture, sizeof(lecture), MSG_DONTWAIT);
@@ -38,19 +43,30 @@ void Client::ReadMsg(int nbrclient)
             return ;
         return(this->Big_3(this->client_to_client_list, nbrclient, "ERR_READ"));
     }
-    else if (this->bytes == 0) // controleD cmd controleD ? ou cmd controleD cmd ? 
+    else if (this->bytes == 0) // controleD cmd controleD ..
     {
         return(this->Big_3(this->client_to_client_list, nbrclient, NULL));
     }
     else if (this->bytes > 0)
     {
-        std::string message(lecture, this->bytes);
-        this->entry = this->translationclient_to_server(message);
+        buffer.append(lecture, this->bytes); // je recup tout. 3 cas .. premier cas Pong / second cas pong/rn // troisiÃ¨me cas pong/rn/pong/rn
+        while(1)
+        {
+            size_t pos = buffer.find("\r\n"); // 1) pas trouve donc je return 2) trouve donc je recupere le message et je le traite.
+            if (pos == std::string::npos)
+                return; // message pas complet.
+            this->entry = buffer.substr(0, pos);
+            buffer.erase(0, pos + 2);
+        }
     }
+    
 }
+
+
 
 void Client::PushMsg(std::string msg)
 {
+    
     if (this->RPL_WELCOME == 0 && this->Username_Status == 1)
         this->Send_Welcome();
     else
@@ -66,6 +82,7 @@ void Client::PushMsg(std::string msg)
 
 int Client::Init(int epfd, int hote)
 {
+    
     this->size_of_client = sizeof(this->client);
     this->epfd = epfd;
     this->hote = hote;

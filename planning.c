@@ -85,12 +85,54 @@ if (event[i].data.fd == listen_fd)
         
         
         
-        // le big3, possiblement mal implemente car c'est une methode interne dangereux si quelqu'un l'appel.
-        // verifier mes messages envoyer et recu et leur normes.
+        // le big3, possiblement mal implemente car c'est une methode interne dangereux si quelqu'un l'appel. @@@@@
+        // verifier mes messages envoyer et recu et leur normes.@@@@@@
         // ne pas oublier les signaux.
         // faire les commandes partiels.
         // refaire proprement le BIG3, et les messages d'erreurs. -> ou close le fd etc ...
         // INIT LES FD a -1 !!!!! @@@@
         // commencer les commandes -> JOIN etc.
         // faire la class CHANNEL.
+        // if JOIN envoyez a la place de PASS, envoyer msg d'erreur t'es pas connecte.
+        // relire la DOC.
+        
+        // parse les commandes. -> SI pas connecte (bool connecte) renvoyez l'erreur correspondante a ce qu'on m'as envoye.
+        // 
 
+
+
+          // parse les commandes. -> SI pas connecte (bool connecte) renvoyez l'erreur correspondante a ce qu'on m'as envoye.
+        
+        // je dois envoyer la cmd + son param. et s'il se trompe envoye le man de la cmd ?
+        
+        // cmd partiel
+
+
+// Parse_cmd -> if pas connecte -> msg d'erreur.
+// Parse_cmd -> if connecte -> cmd -> si cmd existe -> cmd(param) -> si param existe -> 
+
+
+        // theorie du parsing
+        // rajouter le booleen connecte ou non.
+        // si pas connecte -> msg d'erreur correspondant a la cmd envoyer.
+        // verifie son prototype sur la doc.
+        // si connecte -> cmd(param) -> si cmd existe -> cmd(param) -> si param existe -> si tout est bon on lance la cmd.
+
+
+        // theorie de la cmd partiel.
+        // tant que t'as pas recu /r/n continue de lire.
+        // si t'as recu /r/n -> parse la cmd.
+        // si la cmd est bonne -> execute la cmd.
+        // si la cmd est mauvaise -> msg d'erreur.
+        // si la cmd est partiel -> continue de lire.
+        // si la cmd est complete -> execute la cmd.
+        // si la cmd est complete -> si la cmd est bonne -> execute la cmd.
+        // si la cmd est complete -> si la cmd est mauvaise -> msg d'erreur.
+
+
+        // lire tant que elle est pas fini
+        // changer la fonction translation to client comme ca elle stock la cmd tant qu'elle est pas fini.
+        // une fois fini -> elle passe au parse. (verifie si la cmd est bonne, si elle est bonne verifie si je suis co)
+                        
+
+        

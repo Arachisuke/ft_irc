@@ -14,7 +14,21 @@
 #ifndef CLIENT_HPP
 # define CLIENT_HPP
 
-#include "header.hpp"
+#include <iostream>
+#include <string>
+#include <cstring>
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#include <iostream>
+#include <arpa/inet.h>
+#include <sys/epoll.h>
+#include <vector>
+#include <cstdlib>
+#include <cerrno>
+#include <climits>
+#include <csignal>
 
 class Client
 {
@@ -32,6 +46,7 @@ class Client
         int Init(int epfd, int hote);
         int fd;
         int RPL_WELCOME;
+
         int RPL_INFO;
         int Password_Status;
         int Nickname_Status;
@@ -53,6 +68,7 @@ class Client
         socklen_t size_of_client;
         std::vector<int> client_list;
         std::string password;
+        std::string buffer;
         int bytes;       
 };
 
