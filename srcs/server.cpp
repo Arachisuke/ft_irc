@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/11 19:57:56 by macos            ###   ########.fr       */
+/*   Updated: 2025/08/14 12:46:17 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void Server::Finish()
 Server::~Server() {
     
     this->Finish();
-    std::cout << "Server shutdown" << std::endl;
+    std::cout <<  "Server shutdown" << std::endl;
 }
 
 void clearsinzero(struct sockaddr_in *addr)
