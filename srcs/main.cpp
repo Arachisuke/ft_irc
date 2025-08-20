@@ -81,6 +81,8 @@ int wait_client(Server Server, std::vector<Client *> client_list)
     }
     return 0;
 }
+
+
 int main(int argc, char **argv)
 {
     if (argc != 3)
@@ -88,6 +90,7 @@ int main(int argc, char **argv)
 
     signal(SIGINT, &handler); // implementation pas termine.
     std::vector<Client *> client_list;
+
     Server Server(client_list);
     Server.password = argv[2];
 
@@ -101,6 +104,7 @@ int main(int argc, char **argv)
     if (*end != '\0')
         std::cerr << "Invalid port number." << std::endl;
     int n = static_cast<int>(val);
+
     try
     {
         create_server(Server, n);
@@ -110,5 +114,6 @@ int main(int argc, char **argv)
     {
         std::cerr << e.what() << std::endl;
     }
+
     return 0;
 }
