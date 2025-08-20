@@ -134,7 +134,20 @@
 
 
         // commande partiel @@@@@
+        // signaux @@@@@
         // parse du msg et rediriger selon la cmd envoyer si la cmd c'est pass, bah du coup va dans registration sinon si c une autre cmd et que je suis aps co msg erreur
-
+        /*
+        etape du parsing, verifie la cmd avec un find + substr check la liste de cmd de std::Map -> if not exist -> msg d'erreur
+        if exist -> check le param -> if not exist -> msg d'erreur
+        type de msg -> de la commande chaque commande a des messages d'erreur et de reponses au cmd si elle sont bonne.
+        aussi -> il y a une policy restriction sur les cmd, les param etc.
+        exemple de cmd -> NICK <nickname> -> policy restriction -> nickname -> length (9) -> si le nickname est trop long -> msg d'erreur
+        // gerer la police des arguments tel que nick user et real name, voir combien a de param chaque cmd. stocker dans une struct ou une map ah je peux mettre une struct en valiuer d'une map ? comme ca j'y integre tout les param de la cmd et sa policy restriction. et sa msg d'erreur. et sa msg de reponse. et la fonction a appeler.
+        
+        
+*/
         // PARSE CMD. stdmap cmd = fonction.
         // fonction
+        // ignorer la cmd CAP. @@@@@
+        // define les msg d'erreur.
+        // reverifier le big_3, pour finalement dire le big_4, CAR C epolldelete close delete(close fd inside) et erase -> message client disconnected. et erreur 
