@@ -78,13 +78,15 @@ int wait_client(Server Server, std::vector<Client*> client_list)
     }
     return 0;
 }
+
+
 int main(int argc, char **argv)
 {
     if (argc != 3) 
         return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl, 1);
     
-    signal(SIGINT, &handler); // implementation pas termine.
-    std::vector<Client*> client_list; 
+    signal(SIGINT, &handler);
+    std::vector<Client*> client_list;
     Server Server(client_list);
     Server.password = argv[2];
 
@@ -101,7 +103,7 @@ int main(int argc, char **argv)
 
     if (create_server(Server, n))
         return(1);
-    
+    load_cmd(commands);
     if (wait_client(Server, client_list))
         return(1);
     return 0;

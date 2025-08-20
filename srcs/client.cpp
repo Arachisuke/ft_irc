@@ -44,45 +44,69 @@ void Client::ReadMsg(int nbrclient)
             return(std::cout << "EAGAIIIIIIN" << std::endl, (void)0) ;
         return(this->Big_3(this->client_to_client_list, nbrclient, "ERR_READ"));
     }
-    else if (this->bytes == 0) // controleD cmd controleD .. != ... cmd controle cmd. si jenvoie cm controle D et D de cmd ...
-    {
-        std::cout << "BYTES == 0" << std::endl;
+    else if (this->bytes == 0)
         return(this->Big_3(this->client_to_client_list, nbrclient, NULL));
-    }
     else if (this->bytes > 0)
     {
-        this->buffer.append(lecture, this->bytes); // je recup tout. 3 cas .. premier cas Pong / second cas pong/rn // troisiÃ¨me cas pong/rn/pong/rn
+        this->buffer.append(lecture, this->bytes);
         size_t pos = buffer.find("\r\n");
         while(pos != std::string::npos)
         {    
             this->entry = this->buffer.substr(0, pos);
             this->buffer.erase(0, pos + 2);
-            //this->parse_msg(nbrclient);
+            this->executeOrNot(nbrclient);
             pos = this->buffer.find("\r\n");
         }
-        std::cout << "entry final :" << this->entry << std::endl;
-        std::cout << "buffer :" << this->entry << std::endl;
     }
 }
 
-int Client::(int client_index) // verifier s'il est co, et c'est quoi le msg envoyer.
+int Client::executeOrNot(int client_index)
 {
-    if (this->entry.empty()) // ca ne devrais pas arrive.
+    if (this->entry.empty())
         return 0;
-    if (cmd exist et bien ecrite)
-    
-    if (cmd pas exist)
-    // verifier si elle est existante et bien ecrite avec les parametres // prendre son prototype dans ircdoc
-    if (this->isRegistered)
-        // lancer la cmd
-    else
-        // msg d'erreur associer a la cmd
-    return 0;
+    if (this->find_cmd(client_index)) // commande pas existante, ou prototype par respecter ou meme pas le bon contexte.
+        std::cout << "ERROR CMD" << std::endl; //  le msg que la cmd renvoie ERR_... c'est dans la doc.
+
 }
 
-void Client::PushMsg(std::string msg)
+void Client::find_cmd(int client_index)
 {
-    
+    std::string cmd = this->entry.substr(0, this->entry.find(" "));
+    this->entry = this->entry.substr(this->entry.find(" ") + 1); // ca fais bien le job? a tester.
+    for (std::map<std::string, CommandFunc>::iterator it = commands.begin(); it != commands.end(); ++it) 
+    {
+        if (cmd == it->first)
+            it->second();
+    }
+    std::cout << "Command not found" << std::endl;
+}
+
+void Client::load_cmd()
+{
+    commands["CAP"] = &Client::Cap; // a ignorer.
+    commands["PASS"] = &Client::Pass;
+    commands["NICK"] = &Client::Nick;
+    commands["USER"] = &Client::User;
+    commands["QUIT"] = &Client::Quit; // en plus du prototype ici il faut verifie que le client est bien connecte et dans le bon contexte.
+    commands["JOIN"] = &Client::Join;
+    commands["PART"] = &Client::Part;
+    commands["PRIVMSG"] = &Client::PrivMsg;
+    commands["NOTICE"] = &Client::Notice;
+    commands["MODE"] = &Client::Mode;
+    commands["TOPIC"] = &Client::Topic;
+    commands["INVITE"] = &Client::Invite;
+    commands["KICK"] = &Client::Kick;
+    commands["PING"] = &Client::Ping;
+}
+
+// chaque debut de fonction
+// verifier le nombre de params, et si le param correspond a la police par exemple ou a ce qui est attendu.
+// bien connecte.
+// bien dans le bon contexte.
+
+
+void Client::PushMsg(std::string msg)
+{ 
     if (this->RPL_WELCOME == 0 && this->Username_Status == 1)
         this->Send_Welcome();
     else
@@ -98,7 +122,6 @@ void Client::PushMsg(std::string msg)
 
 int Client::Init(int epfd, int hote)
 {
-    
     this->size_of_client = sizeof(this->client);
     this->epfd = epfd;
     this->hote = hote;
@@ -107,53 +130,22 @@ int Client::Init(int epfd, int hote)
     if (fd == -1)
         return(-1);
     fcntl(this->fd, F_SETFL, O_NONBLOCK);
-    this->event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP; // Surveiller lecture (ajoute le client à epoll)
+    this->event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP; // surveille lecture et tout probleme.
     this->event.data.fd = this->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->event);
+    this->load_cmd();
     return(0);
 }
 
-void Client::Send_Welcome()
+void Client::Send_Welcome() // rajouter le message 2 3 4.
 {
     std::string welcome_msg =
-    ": Hueco Mundo 001 " + this->nickname +
-    " : Welcome to the Hueco Mundo Network, " + this->nickname + "!~" + this->username + "@localhost\r\n";
+    ":Hueco Mundo 001 " + this->nickname +
+    " :Welcome to the Hueco Mundo Network, " + this->nickname + "!~" + this->username + "@localhost\r\n";
     send(this->fd, welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);
     this->RPL_WELCOME = 1;
 }
-void   Client:: Registration(int nbrclient)
-{
-    if (this->Username_Status)
-        return ;
-    if (this->Password_Status == 0)
-    {
-        this->ReadMsg(nbrclient);
-        this->Password_Status = 1;
-        if (this->entry != this->password)  // WRONG PASSWORD
-            return (Big_3(this->client_to_client_list, nbrclient, "Wrong Password"));
-        return ;
-    }
-    else if (this->Nickname_Status == 0)
-    {
-        if (!this->Password_Status)
-            // msg d'erreur
-        this->ReadMsg(nbrclient); // big 3
-        this->nickname = this->entry;
-        this->Nickname_Status = 1;
-        return ;
-    }
-    else if (this->Username_Status == 0)
-    {
-        if (!this->Username_Status && !this->Nickname_Status)
-        this->ReadMsg(nbrclient); // big 3
-        this->username = this->entry;
-        this->Username_Status = 1;
-        this->isRegistered = 1;
-    }
-    this->event.events = EPOLLOUT; // Surveiller lecture (ajoute le client à epoll)
-    this->event.data.fd = this->fd;
-    epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->event);  
-}
+
 void Client::Big_3(std::vector<Client*>& client_list, int nbrclient, std::string ERROR_MSG)
 {
     if (!ERROR_MSG.empty())
@@ -168,3 +160,13 @@ void Client::Big_3(std::vector<Client*>& client_list, int nbrclient, std::string
     delete this;
     return ;
 } 
+
+int Client::count_args() {
+    std::istringstream iss(this->entry);
+    std::string word;
+    int count = 0;
+    while (iss >> word) {
+        ++count;
+    }
+    return count;
+}
