@@ -62,7 +62,7 @@ void Client::ReadMsg(Server Server int nbrclient)
     }
 }
 
-int Client::executeOrNot(Server Server, int client_index) // inutile ?
+int Client::executeOrNot(Server Server, int client_index) // inutile 
 {
     if (this->entry.empty())
         return 0;
