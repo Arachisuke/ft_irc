@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/14 14:14:42 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/20 13:02:38 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ class Client
         struct sockaddr_in client;
         std::map <std::string, CommandFunc> commands;
         socklen_t size_of_client;
-        std::vector<int> client_list;
+        // std::vector<int> client_list;
         std::string password;
         std::string buffer;
         int bytes;       
