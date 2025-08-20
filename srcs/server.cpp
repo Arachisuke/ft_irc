@@ -12,17 +12,17 @@
 
 #include "../header/server.hpp"
 
-Server::Server(std::vector<Client*>& client_list) : server_to_client_list(client_list)
+Server::Server()
 {
     this->fd = -1;
 }
 
 void Server::Finish()
 {
-    for (size_t i = 0; i < this->server_to_client_list.size(); i++)
+    for (size_t i = 0; i < this->client_list.size(); i++)
     {
-        if (this->server_to_client_list[i] && this->server_to_client_list[i]->fd != -1)
-           delete this->server_to_client_list[i]; // delete le client qui appel le destructeur qui lui close le fd.
+        if (this->client_list[i] && this->client_list[i]->fd != -1)
+           delete this->client_list[i]; // delete le client qui appel le destructeur qui lui close le fd.
     }
     close(this->fd);
 }
@@ -67,4 +67,17 @@ int Server::Init(int epfd, int port)
     this->events[0].data.fd = this->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->events[0]);
     return(0);
+}
+
+Server::Close_client(int nbrclient, std::string ERROR_MSG)
+{
+    if (!ERROR_MSG.empty())
+        this->client_list[nbrclient]->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
+    if (this->client_list[nbrclient])
+    {
+        delete this->client_list[nbrclient]; // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
+        this->client_list.erase(this->client_list.begin() + nbrclient); // ERASE 
+    }
+    std::cout << "Client disconnected\r\n" << std::endl;
+    return ;
 }

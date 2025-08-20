@@ -1,5 +1,5 @@
 
-void   Client::Pass(int nbrclient)
+void   Client::Pass(Server Server, int nbrclient)
 {
     if (this->count_args() > 1)
             // ERRTOOMANYARGS
@@ -10,7 +10,7 @@ void   Client::Pass(int nbrclient)
         this->ReadMsg(nbrclient);
         this->Password_Status = 1;
         if (this->entry != this->password)
-            return (Big_3(this->client_to_client_list, nbrclient, "Password Incorrect"));
+            return(Server.Close_client(nbrclient, "Password incorrect"));
         return ;
     }
     // ERRALREADYREGISTRED
