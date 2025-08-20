@@ -60,6 +60,7 @@ void Client::ReadMsg(int nbrclient)
     }
 }
 
+
 int Client::executeOrNot(int client_index)
 {
     if (this->entry.empty())
