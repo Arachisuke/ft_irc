@@ -29,6 +29,13 @@
 #include <cerrno>
 #include <climits>
 #include <csignal>
+#include <map>
+#include <iostream>
+#include <sstream>
+
+typedef int (*CommandFunc)(); // tester sans param apres on verra quand je vais le code.
+
+
 
 class Client
 {
@@ -42,9 +49,27 @@ class Client
         void Registration(int nbrclient);
         void ReadMsg(int nbrclient); 
         void PushMsg(std::string msg);
-        int parse_msg(int client_index);
+        int executeOrNot(int client_index);
         int Init(int epfd, int hote);
+        int load_cmd();
+        void find_cmd(int client_index);
+        int Join();
+        int Privmsg();
+        int Notice();
+        int Mode();
+        int Topic();
+        int Invite();
+        int Kick();
+        int Ping();
+        int Quit();
+        int Part();
+        int Cap();
+        int User();
+        int Nick();
+        int Pass();
         int fd;
+        int count_args();
+
         int RPL_WELCOME;
 
         int RPL_INFO;
@@ -66,6 +91,7 @@ class Client
         int hote;
         struct epoll_event event;
         struct sockaddr_in client;
+        std::map <std::string, CommandFunc> commands;
         socklen_t size_of_client;
         std::vector<int> client_list;
         std::string password;
