@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:35:30 by macos             #+#    #+#             */
-/*   Updated: 2025/08/14 13:09:00 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/20 13:44:14 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ bool stop = false;
 
 void handler(int) { stop = true; }
 
+<<<<<<< HEAD
 int create_server(Server& Server, int port, char *password) // mettre le truc de reference.
 {
     int epfd;
@@ -28,29 +29,33 @@ int create_server(Server& Server, int port, char *password) // mettre le truc de
     return 0;
 }
 
-int find_client(std::vector<Client*> client_list, int fd)
+int find_client(std::vector<Client *> client_list, int fd)
 {
     if (client_list.empty())
         return (-1);
     for (size_t i = 0; i < client_list.size(); i++)
     {
-       if  (client_list[i]->fd == fd)
-            return(i);
+        if (client_list[i]->fd == fd)
+            return (i);
     }
-    return(-1);
+    return (-1);
 }
 
 int wait_client(Server Server)
+
 {
     int nfds;
     int nbrclient;
 
-    while(!stop)
+    while (!stop)
     {
+
         nfds = epoll_wait(Server.epfd, Server.events, MAX_EVENTS , -1); // -1 ?
         if (nfds == -1) // que faire ?
             Server.Finish();
-        for (int i = 0; i < nfds ; ++i)
+            throw(std::runtime_error("ERR_EPOLLWAIT"));
+        }
+        for (int i = 0; i < nfds; ++i)
         {
             if (nfds && Server.events[i].data.fd == Server.fd) // new client
             {
@@ -85,6 +90,7 @@ int wait_client(Server Server)
 
 int range_port(int port)
 {
+<<<<<<< HEAD
     const char *s = port;
     char *end;
     errno = 0;
@@ -115,6 +121,5 @@ int main(int argc, char **argv)
     {
         std::cerr << e.what() << std::endl;
     }
-
     return 0;
 }
