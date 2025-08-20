@@ -33,6 +33,9 @@
 #include <iostream>
 #include <sstream>
 
+#define MAX_EVENTS 10 
+
+
 typedef int (*CommandFunc)(); // tester sans param apres on verra quand je vais le code.
 
 
@@ -45,28 +48,14 @@ class Client
         ~Client();
         void Send_Welcome();
         std::vector<Client*>& client_to_client_list;
-        void Big_3(std::vector<Client*>& client_list, int nbrclient, std::string ERROR_MSG);
         void Registration(int nbrclient);
         void ReadMsg(int nbrclient); 
         void PushMsg(std::string msg);
         int executeOrNot(int client_index);
         int Init(int epfd, int hote);
         int load_cmd();
-        void find_cmd(int client_index);
-        int Join();
-        int Privmsg();
-        int Notice();
-        int Mode();
-        int Topic();
-        int Invite();
-        int Kick();
-        int Ping();
-        int Quit();
-        int Part();
-        int Cap();
-        int User();
-        int Nick();
-        int Pass();
+        void find_cmd(Server Server, int client_index);
+        int Pass(Server Server, int nbrclient);
         int fd;
         int count_args();
 
