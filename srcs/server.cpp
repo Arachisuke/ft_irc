@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/14 12:46:17 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/20 13:38:21 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,18 +49,26 @@ int Server::Init(int epfd, int port)
     clearsinzero(&hote);
     this->fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1)
-
-        return(std::cout << "ERR_FD" << std::endl, -1);
-
+    throw (std::runtime_error("ERR_FD"));
+        // return(std::cout << "ERR_FD" << std::endl, -1);
     if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1) 
-        return(close(this->fd), 50);
-
+    {
+        close (this->fd);
+        throw (std::runtime_error("ERR_SETSOCKOPT"));
+        // return(close(this->fd), 50);
+    }
     if (bind(this->fd, reinterpret_cast<struct sockaddr*>(&this->hote), sizeof(this->hote)) == -1)
-        return(close(this->fd),  std::cout << "ERR_BIND" << std::endl, -1);
-
+    {
+        close (this->fd);
+        throw (std::runtime_error("ERR_BIND"));
+        // return(close(this->fd),  std::cout << "ERR_BIND" << std::endl, -1);
+    }
     if(listen(this->fd, 10) == -1)
-        return(close(this->fd), std::cout << "ERR_LISTEN" << std::endl, -1);
-    
+    {
+        close (this->fd);
+        throw (std::runtime_error("ERR_LISTEN"));
+        // return(close(this->fd), std::cout << "ERR_LISTEN" << std::endl, -1);
+    }
     fcntl(fd, F_SETFL, O_NONBLOCK); 
     this->epfd = epfd;
     this->events[0].events = EPOLLIN;

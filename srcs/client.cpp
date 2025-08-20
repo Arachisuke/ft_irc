@@ -65,20 +65,20 @@ void Client::ReadMsg(int nbrclient)
     }
 }
 
-int Client::(int client_index) // verifier s'il est co, et c'est quoi le msg envoyer.
-{
-    if (this->entry.empty()) // ca ne devrais pas arrive.
-        return 0;
-    if (cmd exist et bien ecrite)
+// int Client::(int client_index) // verifier s'il est co, et c'est quoi le msg envoyer.
+// {
+//     if (this->entry.empty()) // ca ne devrais pas arrive.
+//         return 0;
+//     if (cmd exist et bien ecrite)
     
-    if (cmd pas exist)
-    // verifier si elle est existante et bien ecrite avec les parametres // prendre son prototype dans ircdoc
-    if (this->isRegistered)
-        // lancer la cmd
-    else
-        // msg d'erreur associer a la cmd
-    return 0;
-}
+//     if (cmd pas exist)
+//     // verifier si elle est existante et bien ecrite avec les parametres // prendre son prototype dans ircdoc
+//     if (this->isRegistered)
+//         // lancer la cmd
+//     else
+//         // msg d'erreur associer a la cmd
+//     return 0;
+// }
 
 void Client::PushMsg(std::string msg)
 {
