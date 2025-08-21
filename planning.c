@@ -146,8 +146,17 @@
         
         
 */
-        // PARSE CMD. stdmap cmd = fonction.
-        // fonction
+        // PARSE CMD. stdmap cmd = fonction. @@@
+        // fonction@@@
         // ignorer la cmd CAP. @@@@@
-        // define les msg d'erreur.
-        // reverifier le big_3, pour finalement dire le big_4, CAR C epolldelete close delete(close fd inside) et erase -> message client disconnected. et erreur 
+
+
+
+        // reverifier le big_3, pour finalement dire le big_4, CAR C epolldelete close delete(close fd inside) et erase -> message client disconnected. et erreur @@@@
+
+
+
+// define les msg d'erreur. @@@@@ 
+// certain message necessite la <cmd> avant le msg d'erreur. 
+// implementer les commandes.
+// verifier tout les commentaire de code.

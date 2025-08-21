@@ -2,7 +2,7 @@
 void   Client::Pass(Server Server, int nbrclient)
 {
     if (this->count_args() > 1)
-            // ERRTOOMANYARGS
+           return(std::cout << "ERRTOOMANYARGS" << std::endl, (void)0);
     if (this->Username_Status) // deja connecte.
         return ;
     if (this->Password_Status == 0)
@@ -13,7 +13,7 @@ void   Client::Pass(Server Server, int nbrclient)
             return(Server.Close_client(nbrclient, "Password incorrect"));
         return ;
     }
-    // ERRALREADYREGISTRED
+    return (std::cout << "462 :ERRALREADYREGISTRED" << std::endl, (void)0);
 
 }
 void   Client::Nick(int nbrclient)
