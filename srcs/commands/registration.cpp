@@ -1,7 +1,10 @@
 
-void   Client::Pass(Server Server, int nbrclient)
+#include "Client.hpp"
+#include "Server.hpp"
+
+void   Server::pass(int nbrclient)
 {
-    if (this->count_args() > 1)
+    if (this->cmd.size() - 1 > 1)
            return(std::cout << "ERRTOOMANYARGS" << std::endl, (void)0);
     if (this->Username_Status) // deja connecte.
         return ;
@@ -10,15 +13,15 @@ void   Client::Pass(Server Server, int nbrclient)
         this->ReadMsg(nbrclient);
         this->Password_Status = 1;
         if (this->entry != this->password)
-            return(Server.Close_client(nbrclient, "Password incorrect"));
+            return(this->closeClient(nbrclient, "Password incorrect"));
         return ;
     }
     return (std::cout << "462 :ERRALREADYREGISTRED" << std::endl, (void)0);
 
 }
-void   Client::Nick(int nbrclient)
+void   Server::nick()
 {
-    if (this->count_args() == 0)
+    if (this->cmd.size() - 1 == 0)
             // ERRNONICKNAMEGIVEN
     else if (this->count_args() > 1)
             // ERRTOOMANYARGS
@@ -37,11 +40,11 @@ void   Client::Nick(int nbrclient)
         return ;
     }
 }
-void   Client::User(int nbrclient)
+void   Server::user()
 {
-    if (this->count_args() > 4)
+    if (this->cmd.size() - 1 > 4)
             // ERRTOOMANYARGS
-        if (this->count_args() < 4)
+        if (this->cmd.size() - 1 < 4)
             // ERRNEEDMOREPARAMS
     
     else if (this->Username_Status == 0)
@@ -55,7 +58,11 @@ void   Client::User(int nbrclient)
     }
     else
         // ERRALREADYREGISTRED
-    this->event.events = EPOLLOUT | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
-    this->event.data.fd = this->fd;
-    epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->event); 
+    this->events.events = EPOLLOUT | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
+    this->events.data.fd = this->fd;
+    epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->events); 
 }
+
+
+
+// password meme s'il est faux j'arrete pas la registration
