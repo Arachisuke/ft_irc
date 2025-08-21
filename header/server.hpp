@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/08/14 12:04:46 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/21 13:16:07 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,20 +30,36 @@
 #include <csignal>
 #include "client.hpp"
 
-
-class Server {
+class Server
+{
 public:
   Server();
   ~Server();
   int Init(int epfd, int port);
   void Finish();
+  void closeClient(int nbrclient, std::string ERROR_MSG);
   struct sockaddr_in hote;
-  std::vector<Client*>Client_list;
+  std::vector<Client *> clientList;
   std::string password;
   int fd;
   int epfd;
   struct epoll_event events[5];
   int bytes;
+
+  int join();
+  int quit();
+  int part();
+  int pass();
+  int cap();
+  int ping();
+  int kick();
+  int invite();
+  int topic();
+  int mode();
+  int notice();
+  int privMsg();
+  int user();
+  int nick();
 };
 
 #endif
