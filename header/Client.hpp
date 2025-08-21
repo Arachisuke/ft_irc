@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.hpp                                         :+:      :+:    :+:   */
+/*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/21 13:16:27 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/21 16:39:21 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 #include <map>
 #include <iostream>
 #include <sstream>
+#include "Server.hpp"
 
 #define MAX_EVENTS 10
 #define ERR_NEEDMOREPARAMS ":Not Enough Parameters\r\n"
@@ -47,24 +48,18 @@
 #define ERR_TOOMANYCHANNELS ":Too many channels\r\n"
 #define ERR_WASNOSUCHNICK ":There was no such nickname\r\n"
 
-typedef int (*CommandFunc)(); // tester sans param apres on verra quand je vais le code.
+class Server;
 
 class Client
 {
 
 public:
-    Client(std::vector<Client *> &client_list, std::string password);
+    Client();
     ~Client();
     void Send_Welcome();
-    std::vector<Client *> &client_to_client_list;
-    void Registration(int nbrclient);
-    void ReadMsg(int nbrclient);
-    void PushMsg(std::string msg);
     int executeOrNot(int client_index);
     int Init(int epfd, int hote);
-    void load_cmd();
-    void find_cmd(Server Server, int client_index);
-    int Pass(Server Server, int nbrclient);
+
     int fd;
     int count_args();
     int RPL_WELCOME;
@@ -73,21 +68,20 @@ public:
     int Nickname_Status;
     int Username_Status;
     int isRegistered;
-    std::string entry;
 
     std::string nickname; // 9 length
     std::string username; // 9 length
     std::string mode;     // 3 length
+        std::string buffer;
+
 private:
     std::string translationclient_to_server(std::string message);
     int epfd;
     int hote;
     struct epoll_event event;
     struct sockaddr_in client;
-    std::map<std::string, CommandFunc> commands;
     socklen_t size_of_client;
     std::string password;
-    std::string buffer;
     int bytes;
 };
 

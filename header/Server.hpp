@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.hpp                                         :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/08/21 13:16:07 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/21 16:45:38 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,15 @@
 #include <cerrno>
 #include <climits>
 #include <csignal>
-#include "client.hpp"
+#include "Client.hpp"
+
+class Client;
 
 class Server
 {
 public:
+  typedef void (Server::*CommandFunc)(); // tester sans param apres on verra quand je vais le code.
+
   Server();
   ~Server();
   int Init(int epfd, int port);
@@ -41,25 +45,39 @@ public:
   struct sockaddr_in hote;
   std::vector<Client *> clientList;
   std::string password;
+  std::string entry;
+  std::string buffer;
+  std::vector<std::string> cmd;
+  void ReadMsg(int nbrclient, std::string bufferClient);
+  void PushMsg(int nbrclient, std::string msg);
+
+  void join();
+  void quit();
+  void part();
+  void pass();
+  void cap();
+  void ping();
+  void kick();
+  void invite();
+  void topic();
+  void mode();
+  void notice();
+  void privMsg();
+  void user();
+
+  void nick();
   int fd;
   int epfd;
   struct epoll_event events[5];
-  int bytes;
+  std::map<std::string, CommandFunc> commandList;
+  void load_cmd();
+  void find_cmd();
+  void executeOrNot();
+  int create_server(int port, char *password); // mettre le truc de reference.
+  int find_client(std::vector<Client *> client_list, int fd);
+  int wait_client();
 
-  int join();
-  int quit();
-  int part();
-  int pass();
-  int cap();
-  int ping();
-  int kick();
-  int invite();
-  int topic();
-  int mode();
-  int notice();
-  int privMsg();
-  int user();
-  int nick();
+  int bytes;
 };
 
 #endif

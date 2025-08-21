@@ -160,3 +160,6 @@
 // certain message necessite la <cmd> avant le msg d'erreur. 
 // implementer les commandes.
 // verifier tout les commentaire de code.
+// password, c'est que a la fin que je dis que c'est faux. apres USER.
+// verifier si dans cmd la chaine est bien decouper en cmd -> arg par node.
+// push et readmessage a changer . 
