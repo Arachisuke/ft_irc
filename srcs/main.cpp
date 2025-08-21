@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:35:30 by macos             #+#    #+#             */
-/*   Updated: 2025/08/20 13:44:14 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/08/21 13:16:29 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,14 @@ bool stop = false;
 
 void handler(int) { stop = true; }
 
-<<<<<<< HEAD
-int create_server(Server& Server, int port, char *password) // mettre le truc de reference.
+int create_server(Server &Server, int port, char *password) // mettre le truc de reference.
 {
     int epfd;
     epfd = epoll_create1(0);
     Server.password = password;
 
     if (Server.Init(epfd, port)) // gerer les erreurs.
-        return(-1);
+        return (-1);
     return 0;
 }
 
@@ -40,7 +39,6 @@ int find_client(std::vector<Client *> client_list, int fd)
     }
     return (-1);
 }
-
 int wait_client(Server Server)
 
 {
@@ -51,46 +49,45 @@ int wait_client(Server Server)
     {
 
         nfds = epoll_wait(Server.epfd, Server.events, MAX_EVENTS, -1); // -1 ?
-        if (nfds == -1) // que faire ?
+        if (nfds == -1)                                                // que faire ?
             Server.Finish();
-            throw(std::runtime_error("ERR_EPOLLWAIT"));
-        }
-        for (int i = 0; i < nfds; ++i)
+        throw(std::runtime_error("ERR_EPOLLWAIT"));
+    }
+    for (int i = 0; i < nfds; ++i)
+    {
+        if (nfds && Server.events[i].data.fd == Server.fd) // new client
         {
-            if (nfds && Server.events[i].data.fd == Server.fd) // new client
+            Client *Clients = new Client(Server.password);
+            if (Clients->Init(Server.epfd, Server.fd))
             {
-                Client* Clients = new Client(Server.password);
-                if (Clients->Init(Server.epfd, Server.fd))
-                {
-                    delete Clients;
-                    std::cerr << "Failed to accept new client" << std::endl;
-                    continue;
-                }
-                Server.client_list.push_back(Clients);
-                std::cout << "New client connected\r\n" << std::endl;
+                delete Clients;
+                std::cerr << "Failed to accept new client" << std::endl;
+                continue;
             }
-            else if (nfds && Server.events[i].data.fd != Server.fd)
-            {
-                nbrclient = find_client(Server.client_list, Server.events[i].data.fd);
-                if (Server.events[i].events == EPOLLIN)
-                    Server.client_list[nbrclient]->ReadMsg(nbrclient);
-                else if (Server.events[i].events == EPOLLOUT) 
-                    Server.client_list[nbrclient]->PushMsg("MON MSG");
-                else if (Server.events[i].events == EPOLLHUP)
-                    Server->Close_client(nbrclient, "HUP"); // change le big 3, par une fonction dans le serveur qui nettoie tout.
-                else if (Server.events[i].events == EPOLLRDHUP)
-                    Server->Close_client(nbrclient, "RDHUP");
-                else if (Server.events[i].events == EPOLLERR)
-                    Server->Close_client(nbrclient, "ERR"); // change le big 3, par une fonction dans le serveur qui nettoie tout.
-            }
+            Server.clientList.push_back(Clients);
+            std::cout << "New client connected\r\n"
+                      << std::endl;
+        }
+        else if (nfds && Server.events[i].data.fd != Server.fd)
+        {
+            nbrclient = find_client(Server.clientList, Server.events[i].data.fd);
+            if (Server.events[i].events == EPOLLIN)
+                Server.clientList[nbrclient]->ReadMsg(nbrclient);
+            else if (Server.events[i].events == EPOLLOUT)
+                Server.clientList[nbrclient]->PushMsg("MON MSG");
+            else if (Server.events[i].events == EPOLLHUP)
+                Server.closeClient(nbrclient, "HUP"); // change le big 3, par une fonction dans le serveur qui nettoie tout.
+            else if (Server.events[i].events == EPOLLRDHUP)
+                Server.closeClient(nbrclient, "RDHUP");
+            else if (Server.events[i].events == EPOLLERR)
+                Server.closeClient(nbrclient, "ERR"); // change le big 3, par une fonction dans le serveur qui nettoie tout.
         }
     }
     return 0;
 }
 
-int range_port(int port)
+int range_port(char *port)
 {
-<<<<<<< HEAD
     const char *s = port;
     char *end;
     errno = 0;
@@ -100,6 +97,7 @@ int range_port(int port)
     if (*end != '\0')
         std::cerr << "Invalid port number." << std::endl;
     int n = static_cast<int>(val);
+    return (n);
 }
 
 int main(int argc, char **argv)
@@ -110,8 +108,8 @@ int main(int argc, char **argv)
     signal(SIGINT, &handler);
     Server Server();
 
-    range_port(argv[1]); // a mettre dans le try and catch .
-    
+    int n = range_port(argv[1]); // a mettre dans le try and catch .
+
     try
     {
         create_server(Server, n, argv[2]);
