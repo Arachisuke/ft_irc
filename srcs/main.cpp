@@ -50,7 +50,7 @@ int wait_client(Server Server)
     while (!stop)
     {
 
-        nfds = epoll_wait(Server.epfd, Server.events, MAX_EVENTS , -1); // -1 ?
+        nfds = epoll_wait(Server.epfd, Server.events, MAX_EVENTS, -1); // -1 ?
         if (nfds == -1) // que faire ?
             Server.Finish();
             throw(std::runtime_error("ERR_EPOLLWAIT"));

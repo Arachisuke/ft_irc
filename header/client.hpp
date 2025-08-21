@@ -33,7 +33,23 @@
 #include <iostream>
 #include <sstream>
 
-#define MAX_EVENTS 10 
+#define MAX_EVENTS 10
+#define ERR_NEEDMOREPARAMS ":Not Enough Parameters\r\n"
+#define ERR_ALREADYREGISTRED ":You may not reregister\r\n"
+#define ERR_PASSWDMISMATCH ":Password Incorrect\r\n"
+#define ERR_ERRONEUSNICKNAME ":Erroneus Nickname\r\n"
+#define ERR_NICKNAMEINUSE ":Nickname is already in use\r\n"
+#define ERR_NONICKNAMEGIVEN ":No nickname given\r\n"
+#define ERR_TOOMANYARGS ":Too many arguments\r\n"
+#define ERR_UNKNOWNCOMMAND ":Unknown command\r\n"
+#define ERR_NOSUCHNICK ":No such nick/channel\r\n"
+#define ERR_NOSUCHCHANNEL ":No such channel\r\n"
+#define ERR_CANNOTSENDTOCHAN ":Cannot send to channel\r\n"
+#define ERR_TOOMANYCHANNELS ":Too many channels\r\n"
+#define ERR_WASNOSUCHNICK ":There was no such nickname\r\n"
+
+
+
 
 
 typedef int (*CommandFunc)(); // tester sans param apres on verra quand je vais le code.
