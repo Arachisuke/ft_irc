@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/08/21 16:45:38 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/25 16:25:40 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <vector>
+#include <map>
 #include <cstdlib>
 #include <cerrno>
 #include <climits>
@@ -32,7 +33,6 @@
 
 class Client;
 class Channel;
-
 
 class Server
 {
@@ -43,16 +43,16 @@ public:
   int Init();
   void Finish();
   struct sockaddr_in hote;
-  std::vector<Client *> clientList;  
-  std::vector<Channel *> channeList;
+  std::vector<Client *> clientList;
+  std::map<std::string, Channel *> channelList;
 
+  Channel *findChannel(std::string &channelName);
   std::string password;
   std::string entry;
   std::string buffer;
   std::vector<std::string> cmd;
   void ReadMsg(std::string bufferClient);
   void PushMsg(std::string msg);
-
 
   void range_port(char *port);
   int isprint(char c);
@@ -74,7 +74,6 @@ public:
   void closeClient(std::string ERROR_MSG);
   int nickpolicy();
 
-
   void nick();
   int fd;
   int nbrclient;
@@ -87,6 +86,7 @@ public:
   void executeOrNot();
   void create_server(char *password); // mettre le truc de reference.
   int find_client(int fd);
+  int find_client(std::string &nameClient);
   int wait_client();
 
   int bytes;

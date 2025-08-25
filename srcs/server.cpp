@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/21 16:01:22 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/25 16:12:52 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,20 +88,21 @@ void Server::closeClient(std::string ERROR_MSG)
               << std::endl;
     return;
 }
-Server Server();
+// Server Server();
 
 void Server::load_cmd() // sans pass
 {
     // commandList["CAP"] = &Server::cap(this->cmd); // a ignorer.
+    commandList["PASS"] = &Server::pass;
     commandList["NICK"] = &Server::nick;
     commandList["USER"] = &Server::user;
     commandList["QUIT"] = &Server::quit; // en plus du prototype ici il faut verifie que le Server est bien connecte et dans le bon contexte.
-    commandList["JOIN"] = &Server::join;
+    // commandList["JOIN"] = &Server::join;
     commandList["PART"] = &Server::part;
     commandList["PRIVMSG"] = &Server::privMsg;
     commandList["NOTICE"] = &Server::notice;
     commandList["MODE"] = &Server::mode;
-    commandList["TOPIC"] = &Server::topic;
+    // commandList["TOPIC"] = &Server::topic;
     commandList["INVITE"] = &Server::invite;
     commandList["KICK"] = &Server::kick;
     commandList["PING"] = &Server::ping;
@@ -114,6 +115,18 @@ void Server::create_server(char *password)
     this->Init();
 }
 
+int Server::find_client(std::string &nameClient)
+{
+    if (this->clientList.empty())
+        return (-1);
+    for (size_t i = 0; i < this->clientList.size(); i++)
+    {
+        if (this->clientList[i]->nickname == nameClient)
+            return (i);
+    }
+    return (-1);
+}
+
 int Server::find_client(int fd)
 {
     if (this->clientList.empty())
@@ -121,7 +134,7 @@ int Server::find_client(int fd)
     for (size_t i = 0; i < this->clientList.size(); i++)
     {
         if (this->clientList[i]->fd == fd)
-            this->nbrclient = i;
+            return (i);
     }
     return (-1);
 }
@@ -130,7 +143,7 @@ int Server::wait_client()
     int nfds;
 
     nfds = epoll_wait(this->epfd, this->events, MAX_EVENTS, -1);
-    if (nfds == -1)              
+    if (nfds == -1)
         throw(std::runtime_error("ERR_EPOLLWAIT"));
     for (int i = 0; i < nfds; ++i)
     {
@@ -144,11 +157,12 @@ int Server::wait_client()
                 continue;
             }
             this->clientList.push_back(Clients);
-            std::cout << "New client connected\r\n" << std::endl;
+            std::cout << "New client connected\r\n"
+                      << std::endl;
         }
         else if (this->events[i].data.fd != this->fd)
         {
-            this->nbrclient = find_client(this->events[i].data.fd);
+            nbrclient = find_client(this->events[i].data.fd); // correction erreur assignation nbrclient
             if (this->events[i].events == EPOLLIN)
                 this->ReadMsg(this->clientList[this->nbrclient]->buffer);
             else if (this->events[i].events == EPOLLOUT)
@@ -163,16 +177,15 @@ int Server::wait_client()
     }
     return 0;
 }
-void Server::find_cmd() 
+void Server::find_cmd()
 {
 
     std::string word;
-    int i = 0;
+
     std::istringstream iss(this->entry);
-    while (iss >> word) 
+    while (iss >> word)
     {
-        this->cmd[i] = word;
-        i++;
+        this->cmd.push_back(word);
     }
     for (std::map<std::string, CommandFunc>::iterator it = commandList.begin(); it != commandList.end(); ++it)
     {
@@ -193,8 +206,8 @@ void Server::ReadMsg(std::string bufferClient)
     this->bytes = recv(this->clientList[this->nbrclient]->fd, &lecture, sizeof(lecture), MSG_DONTWAIT);
     if (this->bytes == -1)
     {
-        if (errno == EAGAIN || errno == EWOULDBLOCK) 
-            return ;
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            return;
         return (this->closeClient("ERR_READ"));
     }
     else if (this->bytes == 0)
@@ -228,7 +241,6 @@ void Server::PushMsg(std::string msg) // a gerer apres
     epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->events[nbrclient]);
 }
 
-
 void Server::range_port(char *port)
 {
     const char *s = port;
@@ -238,7 +250,6 @@ void Server::range_port(char *port)
     if (errno == ERANGE || val > 65535 || val <= 0)
         return (std::cerr << "Port number out of range." << std::endl, (void)0);
     if (*end != '\0')
-        return(std::cerr << "Invalid port number." << std::endl, (void)0);
+        return (std::cerr << "Invalid port number." << std::endl, (void)0);
     this->port = static_cast<int>(val);
- 
 }
