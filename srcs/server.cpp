@@ -15,6 +15,7 @@
 Server::Server()
 {
     this->fd = -1;
+    this->load_cmd();
 }
 
 void Server::Finish()
@@ -40,38 +41,33 @@ void clearsinzero(struct sockaddr_in *addr)
         addr->sin_zero[i] = 0;
 }
 
-int Server::Init(int epfd, int port)
+int Server::Init()
 {
 
     int yes = 1;
     this->hote.sin_family = AF_INET;
-    this->hote.sin_port = htons(port);
+    this->hote.sin_port = htons(this->port);
     this->hote.sin_addr.s_addr = htonl(INADDR_ANY);
     clearsinzero(&hote);
     this->fd = socket(AF_INET, SOCK_STREAM, 0);
     if (fd == -1)
         throw(std::runtime_error("ERR_FD"));
-    // return(std::cout << "ERR_FD" << std::endl, -1);
     if (setsockopt(this->fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
     {
         close(this->fd);
         throw(std::runtime_error("ERR_SETSOCKOPT"));
-        // return(close(this->fd), 50);
     }
     if (bind(this->fd, reinterpret_cast<struct sockaddr *>(&this->hote), sizeof(this->hote)) == -1)
     {
         close(this->fd);
         throw(std::runtime_error("ERR_BIND"));
-        // return(close(this->fd),  std::cout << "ERR_BIND" << std::endl, -1);
     }
     if (listen(this->fd, 10) == -1)
     {
         close(this->fd);
         throw(std::runtime_error("ERR_LISTEN"));
-        // return(close(this->fd), std::cout << "ERR_LISTEN" << std::endl, -1);
     }
     fcntl(fd, F_SETFL, O_NONBLOCK);
-    this->epfd = epfd;
     this->events[0].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
     this->events[0].data.fd = this->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->events[0]);
@@ -110,25 +106,21 @@ void Server::load_cmd() // sans pass
     commandList["PING"] = &Server::ping;
 }
 
-int Server::create_server(int port, char *password) // mettre le truc de reference.
+void Server::create_server(char *password)
 {
-    int epfd;
-    epfd = epoll_create1(0);
+    this->epfd = epoll_create1(0);
     this->password = password;
-
-    if (this->Init(epfd, port)) // gerer les erreurs.
-        return (-1);
-    return 0;
+    this->Init();
 }
 
-int Server::find_client(std::vector<Client *> client_list, int fd)
+int Server::find_client(int fd)
 {
-    if (client_list.empty())
+    if (server.clientList.empty())
         return (-1);
-    for (size_t i = 0; i < client_list.size(); i++)
+    for (size_t i = 0; i < server.clientList.size(); i++)
     {
-        if (client_list[i]->fd == fd)
-            return (i);
+        if (server.clientList[i]->fd == fd)
+            server.nbrclient = i;
     }
     return (-1);
 }
@@ -137,14 +129,12 @@ int Server::wait_client()
     int nfds;
     int nbrclient;
 
-    nfds = epoll_wait(this->epfd, this->events, MAX_EVENTS, -1); // -1 ?
-    if (nfds == -1)                                              // que faire ?
-        this->Finish();
-    throw(std::runtime_error("ERR_EPOLLWAIT"));
-
+    nfds = epoll_wait(this->epfd, this->events, MAX_EVENTS, -1);
+    if (nfds == -1)              
+        throw(std::runtime_error("ERR_EPOLLWAIT"));
     for (int i = 0; i < nfds; ++i)
     {
-        if (nfds && this->events[i].data.fd == this->fd) // new client
+        if (this->events[i].data.fd == this->fd) // new client
         {
             Client *Clients = new Client();
             if (Clients->Init(this->epfd, this->fd))
@@ -154,33 +144,32 @@ int Server::wait_client()
                 continue;
             }
             this->clientList.push_back(Clients);
-            std::cout << "New client connected\r\n"
-                      << std::endl;
+            std::cout << "New client connected\r\n" << std::endl;
         }
-        else if (nfds && this->events[i].data.fd != this->fd)
+        else if (this->events[i].data.fd != this->fd)
         {
-            nbrclient = find_client(this->clientList, this->events[i].data.fd);
+            this->nbrclient = find_client(this->events[i].data.fd);
             if (this->events[i].events == EPOLLIN)
-                this->ReadMsg(nbrclient, clientList[nbrclient]->buffer); // changer read en lui donnant le bon client via clientList et findclient
+                this->ReadMsg(this->clientList[this->nbrclient]->buffer);
             else if (this->events[i].events == EPOLLOUT)
-                this->PushMsg(nbrclient, "MON MSG");
+                this->PushMsg("MON MSG");
             else if (this->events[i].events == EPOLLHUP)
-                this->closeClient(nbrclient, "HUP"); // change le big 3, par une fonction dans le serveur qui nettoie tout.
+                this->closeClient("HUP");
             else if (this->events[i].events == EPOLLRDHUP)
-                this->closeClient(nbrclient, "RDHUP");
+                this->closeClient("RDHUP");
             else if (this->events[i].events == EPOLLERR)
-                this->closeClient(nbrclient, "ERR"); // change le big 3, par une fonction dans le serveur qui nettoie tout.
+                this->closeClient("ERR");
         }
         return 0;
     }
 }
-void Server::find_cmd() // le client c qui
+void Server::find_cmd() 
 {
 
     std::string word;
     int i = 0;
     std::istringstream iss(this->entry);
-    while (iss >> word) // a verifier
+    while (iss >> word) 
     {
         this->cmd[i] = word;
         i++;
@@ -196,20 +185,20 @@ void Server::find_cmd() // le client c qui
     std::cout << "Command not found" << std::endl;
 }
 
-void Server::ReadMsg(int nbrclient, std::string bufferClient)
+void Server::ReadMsg(std::string bufferClient)
 {
 
     char lecture[512];
 
-    this->bytes = recv(this->fd, &lecture, sizeof(lecture), MSG_DONTWAIT);
+    this->bytes = recv(this->clientList[this->nbrclient].fd, &lecture, sizeof(lecture), MSG_DONTWAIT);
     if (this->bytes == -1)
     {
-        if (errno == EAGAIN || errno == EWOULDBLOCK) // pas de message a lire
-            return (std::cout << "EAGAIIIIIIN" << std::endl, (void)0);
-        return (this->closeClient(nbrclient, "ERR_READ"));
+        if (errno == EAGAIN || errno == EWOULDBLOCK) 
+            return ;
+        return (this->closeClient(this->nbrclient, "ERR_READ"));
     }
     else if (this->bytes == 0)
-        return (this->closeClient(nbrclient, "ERR_READ"));
+        return (this->closeClient(this->nbrclient, "ERR_READ"));
     else if (this->bytes > 0)
     {
         bufferClient.append(lecture, this->bytes);
@@ -218,7 +207,7 @@ void Server::ReadMsg(int nbrclient, std::string bufferClient)
         {
             this->entry = bufferClient.substr(0, pos);
             bufferClient.erase(0, pos + 2);
-            this->executeOrNot();
+            this->find_cmd();
             pos = bufferClient.find("\r\n");
         }
     }
@@ -229,7 +218,7 @@ void Server::ReadMsg(int nbrclient, std::string bufferClient)
 // bien connecte.
 // bien dans le bon contexte.
 
-void Server::PushMsg(int nbrclient, std::string msg) // a gerer apres
+void Server::PushMsg(std::string msg) // a gerer apres
 {
     msg.push_back('\r');
     msg.push_back('\n'); // a verifie si c'est vraiment la norme.
@@ -237,4 +226,19 @@ void Server::PushMsg(int nbrclient, std::string msg) // a gerer apres
     this->events[nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
     this->events[nbrclient].data.fd = this->clientList[nbrclient]->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->events[nbrclient]);
+}
+
+
+int Server::range_port(char *port)
+{
+    const char *s = port;
+    char *end;
+    errno = 0;
+    long val = strtol(s, &end, 10);
+    if (errno == ERANGE || val > 65535 || val <= 0)
+        return (std::cerr << "Port number out of range." << std::endl, 0);
+    if (*end != '\0')
+        return(std::cerr << "Invalid port number." << std::endl, 0);
+    this->port = static_cast<int>(val);
+    return (n);
 }

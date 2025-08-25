@@ -57,10 +57,10 @@ public:
     Client();
     ~Client();
     void Send_Welcome();
-    int executeOrNot(int client_index);
     int Init(int epfd, int hote);
 
     int fd;
+    std::vector<std::string> listofchannel;
     int count_args();
     int RPL_WELCOME;
     int RPL_INFO;
@@ -72,7 +72,7 @@ public:
     std::string nickname; // 9 length
     std::string username; // 9 length
     std::string mode;     // 3 length
-        std::string buffer;
+    std::string buffer;
 
 private:
     std::string translationclient_to_server(std::string message);
@@ -82,7 +82,6 @@ private:
     struct sockaddr_in client;
     socklen_t size_of_client;
     std::string password;
-    int bytes;
 };
 
 #endif

@@ -3,7 +3,6 @@
 
 Client::Client()
 {
-    // password.
     this->RPL_WELCOME = 0;
     this->Password_Status = 0;
     this->Nickname_Status = 0;
@@ -22,21 +21,6 @@ Client::~Client()
               << std::endl;
 }
 
-std::string Client::translationclient_to_server(std::string s)
-{
-
-    if (!s.empty() && s[s.size() - 1] == '\n')
-        s.erase(s.size() - 1, 1);
-    else
-
-        if (!s.empty() && s[s.size() - 1] == '\r')
-        s.erase(s.size() - 1, 1);
-
-    return (s);
-}
-
-
-
 int Client::Init(int epfd, int hote)
 {
     this->size_of_client = sizeof(this->client);
@@ -45,8 +29,8 @@ int Client::Init(int epfd, int hote)
 
     this->fd = accept(this->hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client);
     if (fd == -1)
-        return (-1);
-    fcntl(this->fd, F_SETFL, O_NONBLOCK);
+        return (1);
+    //fcntl(this->fd, F_SETFL, O_NONBLOCK);
     this->event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP; // surveille lecture et tout probleme.
     this->event.data.fd = this->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->event);

@@ -35,22 +35,25 @@ class Client;
 class Server
 {
 public:
-  typedef void (Server::*CommandFunc)(); // tester sans param apres on verra quand je vais le code.
-
+  typedef void (Server::*CommandFunc)();
   Server();
   ~Server();
-  int Init(int epfd, int port);
+  int Init();
   void Finish();
-  void closeClient(int nbrclient, std::string ERROR_MSG);
+  void closeClient(std::string ERROR_MSG);
   struct sockaddr_in hote;
-  std::vector<Client *> clientList;
+  std::vector<Client *> clientList;  
+  std::vector<Channel *> channeList;
+
   std::string password;
   std::string entry;
   std::string buffer;
   std::vector<std::string> cmd;
-  void ReadMsg(int nbrclient, std::string bufferClient);
-  void PushMsg(int nbrclient, std::string msg);
+  void ReadMsg(std::string bufferClient);
+  void PushMsg(std::string msg);
 
+
+  int range_port(char *port);
   void join();
   void quit();
   void part();
@@ -64,17 +67,21 @@ public:
   void notice();
   void privMsg();
   void user();
+  int findNick()
+
 
   void nick();
   int fd;
+  int nbrclient;
   int epfd;
+  int port;
   struct epoll_event events[5];
   std::map<std::string, CommandFunc> commandList;
   void load_cmd();
   void find_cmd();
   void executeOrNot();
-  int create_server(int port, char *password); // mettre le truc de reference.
-  int find_client(std::vector<Client *> client_list, int fd);
+  int create_server(char *password); // mettre le truc de reference.
+  int find_client(int fd);
   int wait_client();
 
   int bytes;
