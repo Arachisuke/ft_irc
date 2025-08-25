@@ -18,20 +18,6 @@ bool stop = false;
 
 void handler(int) { stop = true; }
 
-int range_port(char *port)
-{
-    const char *s = port;
-    char *end;
-    errno = 0;
-    long val = strtol(s, &end, 10);
-    if (errno == ERANGE || val > 65535 || val <= 0)
-        std::cerr << "Port number out of range." << std::endl;
-    if (*end != '\0')
-        std::cerr << "Invalid port number." << std::endl;
-    int n = static_cast<int>(val);
-    return (n);
-}
-
 int main(int argc, char **argv)
 {
     if (argc != 3)
@@ -40,17 +26,19 @@ int main(int argc, char **argv)
     signal(SIGINT, &handler);
     Server server;
 
-    int n = range_port(argv[1]); // a mettre dans le try and catch .
-
+    server.range_port(argv[1]);
+    if (!server.port)
+        return(1);
     try
     {
-        server.create_server(n, argv[2]);
+        server.create_server(argv[2]);
         while (!stop)
             server.wait_client();
     }
     catch (std::exception &e)
     {
         std::cerr << e.what() << std::endl;
+        return (1);
     }
     return 0;
 }
