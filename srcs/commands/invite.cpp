@@ -28,12 +28,12 @@ void Server::invite()
     }
     if (channel)
     {
-        if (!channel->getIsMember(*clientList[nbrclient]))
+        if (!channel->isMember(clientList[nbrclient]))
         // error client qui invite n est pas dans le channel
-        if (channel->getOnInviteOnly() && channel->getIsOperator(*clientList[nbrclient]))
+        if (channel->getOnInviteOnly() && channel->isOperator(clientList[nbrclient]))
         // error invite only et non operator
-        if (channel->getIsMember(*clientList[clientIndex]))
+        if (channel->isMember(clientList[clientIndex]))
         // error guest deja sur la channel
-        channel->inviteMember(clientList[clientIndex]);
+        channel->inviteClient(clientList[clientIndex]);
     }
 }

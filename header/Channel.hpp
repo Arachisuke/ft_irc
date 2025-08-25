@@ -14,11 +14,23 @@ class Channel
 public:
     Channel();
     ~Channel();
-    bool getIsMember(const Client &client) const;
-    bool getIsOperator(const Client &client) const;
+
+    // Clients Status
+    bool isMember(Client *client) const;
+    bool isOperator(Client *client) const;
+    bool isInvited(Client *client) const;      // check set _invited si deja dans la liste
+    bool isBannedClient(Client *client) const; // check set _banned si deja dans la liste
+
+    // Channel status
     bool getOnInviteOnly() const;
-    bool alreadyInvited(Client *client) const; // check set _invited si deja dans la liste
-    void inviteMember(Client *client);               // ajoute client a set _invited
+
+    // Clients Management
+    void inviteClient(Client *client);   // ajoute client a set _invited
+    void banClient(Client *client);      // ajoute client a set _banned
+    void addClient(Client *newClient);   // ajoute client a set _users
+    void addOperator(Client *newClient); // ajoute client a set _operator
+    void removeClient(Client *clientToRemove); // remove from every set <>
+    void removeOperator(Client *operatorToRemove); //remove from operator only
 
 private:
     std::string _name;
@@ -28,12 +40,12 @@ private:
     int _maxUsers;         // mode +l
 
     bool _onInviteOnly;
-    bool _isMember;
-    bool _isOperator;
-    std::set<Client*> _users;     // user classique
-    std::set<Client*> _operators; // user operator
-    std::set<Client*> _invited;   // user invited
-    std::set<Client*> _banned;    // user banned
+
+    std::set<Client *> _users;     // client classique
+    std::set<Client *> _operators; // client operator
+    std::set<Client *> _invited;   // client invited
+    std::set<Client *> _banned;    // client banned
+    std::set<char> _modes;         // modes actifs
 };
 
 #endif
