@@ -149,8 +149,8 @@ Tu peux avoir plusieurs serveurs différents sur une même machine,
 
 // invite (client, param[guest, channel]) 
 	// client qui invite is registered? continue: send error to client
-	// nbr param < 2? error not enough param? continue
-	// findclient(guest) if client not in client list || == client qui invite? error: continue
+	// nbr param < 2? error not enough param : continue
+	// findclient(guest) if client not in client list || == client qui invite? error : continue
 	// check channel
 	// {
 		// client qui invite sur le channel? continue : error
