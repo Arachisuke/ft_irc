@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     Server server;
 
     server.range_port(argv[1]);
-    if (!server.port)
+    if (!server.port) // est ce bon ?
         return(1);
     try
     {
