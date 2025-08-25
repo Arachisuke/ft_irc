@@ -6,11 +6,11 @@ void   Server::pass()
 {
     if (this->cmd.size() - 1 == 0)
             return(std::cout << "ERRNEEDMOREPARAMS" << std::endl, (void)0);
-    if (this->clientList[this->nbrclient]->isregistred == 1) 
+    if (this->clientList[this->nbrclient]->isRegistered == 1) 
         return (std::cout << "462 :ERRALREADYREGISTRED" << std::endl, (void)0);
-    this->clientList[this->nbrclient]->Password_Status == 1
+    this->clientList[this->nbrclient]->Password_Status = 1;
     if (this->cmd[1] != this->password)
-    this->clientList[this->nbrclient]->Password_Status == -1;
+        this->clientList[this->nbrclient]->Password_Status = -1;
 }
 
 int   Server::findNick()
@@ -25,28 +25,25 @@ int   Server::findNick()
 
 int   Server::nickpolicy()
 {
-    if (this->entry[0] == ':' || this->entry[0] == '#' || this->entry[0] == '&' || this->entry[0] == '!' || this->entry[0] == '@')
+    if (this->cmd[1][0] == ':' || this->cmd[1][0] == '#' || this->cmd[1][0] == '&' || this->cmd[1][0] == '!' || this->cmd[1][0] == '@')
         return (1);
-    for (size_t i = 0; i < this->entry.size(); i++)
+    for (size_t i = 0; i < this->cmd[1].size(); i++)
         {
-            if (!isprint(this->entry[i]))
+            if (!isprint(this->cmd[1][i]))
                 return (1);
-            if (this->entry[i] == ':')
+            if (this->cmd[1][i] == ':')
                 return (1);
         }
-    if (this->entry.size() > 9)
+    if (this->cmd[1].size() > 9)
         return (1);
     return (0);
 }
 
-int   Server::isprint(std::string entry)
+int   Server::isprint(char c)
 {
-    for (size_t i = 0; i < entry.size(); i++)
-        {
-            if (entry[i] < 33 || entry[i] > 126)
-                return (1);
-        }
-        return (0);
+    if (c < 33 || c > 126)
+        return (1);
+    return (0);
 }
     
 void   Server::nick() // toomanyarg ??
@@ -58,9 +55,9 @@ void   Server::nick() // toomanyarg ??
         if (!this->clientList[this->nbrclient]->Password_Status)
             std::cout << "ERR_NEEDPASSWORDBEFORE" << std::endl; // A changer ? 
         
-        if (nickpolicy(this->cmd[1]))
+        if (nickpolicy())
             std::cout << ERR_ERRONEUSNICKNAME << std::endl;
-        if (findNick(this->cmd[1]))
+        if (findNick())
             return (std::cout << ERR_NICKNAMEINUSE << std::endl, (void)0);
         this->clientList[this->nbrclient]->nickname = this->cmd[1];
         this->clientList[this->nbrclient]->Nickname_Status = 1;
@@ -83,11 +80,11 @@ void   Server::user()
         if (this->cmd[4].size() > 9 || this->cmd[4].size() < 1)
             return (std::cout << ERR_ERRONEUSNICKNAME << std::endl, (void)0);
         
-        this->clientList[this->nbrclient]->Username = this->cmd[1];
+        this->clientList[this->nbrclient]->username = this->cmd[1];
         this->clientList[this->nbrclient]->Username_Status = 1;
-        this->clientList[this->nbrclient]->Registred_Status = 1;
-        if (this->password_status == -1) // wrong password
-            return this->closeClient(this->nbrclient, "ERR_PASSWDMISMATCH");
+        this->clientList[this->nbrclient]->isRegistered = 1;
+        if (this->clientList[this->nbrclient]->Password_Status == -1) // wrong password
+            return this->closeClient("ERR_PASSWDMISMATCH");
     }
     else
         std::cout << ERR_ALREADYREGISTRED << std::endl;

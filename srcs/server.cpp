@@ -16,6 +16,7 @@ Server::Server()
 {
     this->fd = -1;
     this->load_cmd();
+    this->port = 0;
 }
 
 void Server::Finish()
@@ -74,14 +75,14 @@ int Server::Init()
     return (0);
 }
 
-void Server::closeClient(int nbrclient, std::string ERROR_MSG)
+void Server::closeClient(std::string ERROR_MSG)
 {
     if (!ERROR_MSG.empty())
-        this->PushMsg(nbrclient, ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
-    if (this->clientList[nbrclient])
+        this->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
+    if (this->clientList[this->nbrclient])
     {
-        delete this->clientList[nbrclient];                           // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
-        this->clientList.erase(this->clientList.begin() + nbrclient); // ERASE
+        delete this->clientList[this->nbrclient];                           // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
+        this->clientList.erase(this->clientList.begin() + this->nbrclient); // ERASE
     }
     std::cout << "Client disconnected\r\n"
               << std::endl;
@@ -115,19 +116,18 @@ void Server::create_server(char *password)
 
 int Server::find_client(int fd)
 {
-    if (server.clientList.empty())
+    if (this->clientList.empty())
         return (-1);
-    for (size_t i = 0; i < server.clientList.size(); i++)
+    for (size_t i = 0; i < this->clientList.size(); i++)
     {
-        if (server.clientList[i]->fd == fd)
-            server.nbrclient = i;
+        if (this->clientList[i]->fd == fd)
+            this->nbrclient = i;
     }
     return (-1);
 }
 int Server::wait_client()
 {
     int nfds;
-    int nbrclient;
 
     nfds = epoll_wait(this->epfd, this->events, MAX_EVENTS, -1);
     if (nfds == -1)              
@@ -160,8 +160,8 @@ int Server::wait_client()
             else if (this->events[i].events == EPOLLERR)
                 this->closeClient("ERR");
         }
-        return 0;
     }
+    return 0;
 }
 void Server::find_cmd() 
 {
@@ -190,15 +190,15 @@ void Server::ReadMsg(std::string bufferClient)
 
     char lecture[512];
 
-    this->bytes = recv(this->clientList[this->nbrclient].fd, &lecture, sizeof(lecture), MSG_DONTWAIT);
+    this->bytes = recv(this->clientList[this->nbrclient]->fd, &lecture, sizeof(lecture), MSG_DONTWAIT);
     if (this->bytes == -1)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK) 
             return ;
-        return (this->closeClient(this->nbrclient, "ERR_READ"));
+        return (this->closeClient("ERR_READ"));
     }
     else if (this->bytes == 0)
-        return (this->closeClient(this->nbrclient, "ERR_READ"));
+        return (this->closeClient("ERR_READ"));
     else if (this->bytes > 0)
     {
         bufferClient.append(lecture, this->bytes);
@@ -229,16 +229,16 @@ void Server::PushMsg(std::string msg) // a gerer apres
 }
 
 
-int Server::range_port(char *port)
+void Server::range_port(char *port)
 {
     const char *s = port;
     char *end;
     errno = 0;
     long val = strtol(s, &end, 10);
     if (errno == ERANGE || val > 65535 || val <= 0)
-        return (std::cerr << "Port number out of range." << std::endl, 0);
+        return (std::cerr << "Port number out of range." << std::endl, (void)0);
     if (*end != '\0')
-        return(std::cerr << "Invalid port number." << std::endl, 0);
+        return(std::cerr << "Invalid port number." << std::endl, (void)0);
     this->port = static_cast<int>(val);
-    return (n);
+ 
 }

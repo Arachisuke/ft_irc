@@ -31,6 +31,8 @@
 #include "Client.hpp"
 
 class Client;
+class Channel;
+
 
 class Server
 {
@@ -40,7 +42,6 @@ public:
   ~Server();
   int Init();
   void Finish();
-  void closeClient(std::string ERROR_MSG);
   struct sockaddr_in hote;
   std::vector<Client *> clientList;  
   std::vector<Channel *> channeList;
@@ -53,7 +54,9 @@ public:
   void PushMsg(std::string msg);
 
 
-  int range_port(char *port);
+  void range_port(char *port);
+  int isprint(char c);
+
   void join();
   void quit();
   void part();
@@ -67,7 +70,9 @@ public:
   void notice();
   void privMsg();
   void user();
-  int findNick()
+  int findNick();
+  void closeClient(std::string ERROR_MSG);
+  int nickpolicy();
 
 
   void nick();
@@ -80,7 +85,7 @@ public:
   void load_cmd();
   void find_cmd();
   void executeOrNot();
-  int create_server(char *password); // mettre le truc de reference.
+  void create_server(char *password); // mettre le truc de reference.
   int find_client(int fd);
   int wait_client();
 
