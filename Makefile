@@ -13,7 +13,7 @@ HEADERS := header
 FILES := main.cpp client.cpp server.cpp \
 	commands/invite.cpp  commands/kick.cpp commands/mode.cpp \
 	commands/notice.cpp commands/part.cpp commands/ping.cpp commands/privmsg.cpp \
-	commands/quit.cpp commands/registration.cpp
+	commands/quit.cpp commands/registration.cpp commands/join.cpp commands/topic.cpp
 
 SRCS := $(addprefix $(SRCS_DIR)/, $(FILES))
 OBJS := $(addprefix $(OBJS_DIR)/, $(FILES:.cpp=.o))
@@ -31,13 +31,13 @@ $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(OBJ_SUBDIRS)
 
 # Créer les répertoires d'objets
 $(OBJS_DIR) $(OBJ_SUBDIRS):
-	@mkdir -p $@
+	mkdir -p $@
 
 clean:
-	@rm -rf $(OBJS_DIR)
+	rm -rf $(OBJS_DIR)
 
 fclean: clean
-	@rm -rf $(NAME)
+	rm -rf $(NAME)
 
 re: fclean all
 

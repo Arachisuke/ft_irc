@@ -143,3 +143,18 @@ Tu peux avoir plusieurs serveurs différents sur une même machine,
 
 // recv verifier le 512 bytes. // et aussi le no signal.
 // faire les signaux , ctrl C eT D.
+
+
+// kick invite topic
+
+// invite (client, param[guest, channel]) 
+	// client qui invite is registered? continue: send error to client
+	// nbr param < 2? error not enough param? continue
+	// findclient(guest) if client not in client list || == client qui invite? error: continue
+	// check channel
+	// {
+		// client qui invite sur le channel? continue : error
+		// channel invite only et client aui invite operator? continue : error
+		// guest deja sur la channel? error : continue
+		// invite guest to channel
+	// } 
