@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/08/25 16:25:40 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/08/26 13:11:52 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,23 +40,8 @@ public:
   typedef void (Server::*CommandFunc)();
   Server();
   ~Server();
-  int Init();
-  void Finish();
-  struct sockaddr_in hote;
-  std::vector<Client *> clientList;
-  std::map<std::string, Channel *> channelList;
 
-  Channel *findChannel(std::string &channelName);
-  std::string password;
-  std::string entry;
-  std::string buffer;
-  std::vector<std::string> cmd;
-  void ReadMsg(std::string bufferClient);
-  void PushMsg(std::string msg);
-
-  void range_port(char *port);
-  int isprint(char c);
-
+  // Commands
   void join();
   void quit();
   void part();
@@ -70,26 +55,46 @@ public:
   void notice();
   void privMsg();
   void user();
-  int findNick();
-  void closeClient(std::string ERROR_MSG);
-  int nickpolicy();
-
   void nick();
-  int fd;
-  int nbrclient;
-  int epfd;
-  int port;
-  struct epoll_event events[5];
-  std::map<std::string, CommandFunc> commandList;
-  void load_cmd();
-  void find_cmd();
-  void executeOrNot();
+
+  int Init();
+  void range_port(char *port);
   void create_server(char *password); // mettre le truc de reference.
+  void closeClient(std::string ERROR_MSG);
+  void Finish();
   int find_client(int fd);
   int find_client(std::string &nameClient);
   int wait_client();
 
+  Channel *findChannel(std::string &channelName);
+  int findNick();
+  int nickpolicy();
+  void errorMsg(int codeError, const std::string firstParam, const std::string secondParam, Client &client) const;
+
+  void ReadMsg(std::string bufferClient);
+  void PushMsg(std::string msg);
+
+  int isprint(char c);
+
+  void load_cmd();
+  void find_cmd();
+  void executeOrNot();
+
+private:
+  std::vector<Client *> clientList;
+  std::map<std::string, Channel *> channelList;
+  std::vector<std::string> cmd;
+  std::map<std::string, CommandFunc> commandList;
+  struct sockaddr_in hote;
+  struct epoll_event events[5];
+  std::string password;
+  std::string entry;
+  std::string buffer;
+  int fd;
   int bytes;
+  int nbrclient;
+  int epfd;
+  int port;
 };
 
 #endif
