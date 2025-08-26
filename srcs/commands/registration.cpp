@@ -17,9 +17,9 @@
 void   Server::pass()
 {
     if (this->cmd.size() - 1 == 0)
-            return(std::cout << "ERRNEEDMOREPARAMS" << std::endl, (void)0);
+            return(std::cout << ERR_NEEDMOREPARAMS << std::endl, (void)0);
     if (this->clientList[this->nbrclient]->isRegistered == 1) 
-        return (std::cout << "462 :ERRALREADYREGISTRED" << std::endl, (void)0);
+        return (std::cout << "462:" << ERR_ALREADYREGISTRED << std::endl, (void)0);
     this->clientList[this->nbrclient]->Password_Status = 1;
     if (this->cmd[1] != this->password)
         this->clientList[this->nbrclient]->Password_Status = -1;
