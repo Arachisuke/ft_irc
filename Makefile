@@ -13,7 +13,7 @@ HEADERS := header
 FILES := main.cpp client.cpp server.cpp \
 	commands/invite.cpp  commands/kick.cpp commands/mode.cpp \
 	commands/notice.cpp commands/part.cpp commands/ping.cpp commands/privmsg.cpp \
-	commands/quit.cpp commands/registration.cpp
+	commands/quit.cpp commands/registration.cpp commands/topic.cpp commands/join.cpp
 
 SRCS := $(addprefix $(SRCS_DIR)/, $(FILES))
 OBJS := $(addprefix $(OBJS_DIR)/, $(FILES:.cpp=.o))

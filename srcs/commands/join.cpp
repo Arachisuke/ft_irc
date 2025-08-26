@@ -1,54 +1,59 @@
 #include "Client.hpp"
 #include "Server.hpp"
+#include "Channel.hpp"
 
-// int find_channel(std::string channel)
-// {
-//     for (size_t i = 0; i < this->channelList.size(); i++)
-//     {
-//         if (this->channelList[i]->name == channel)
-//             return (i);
-//     }
-//     return (-1);
-// }
+int Server::findChannel(std::string channel)
+{
+    for (size_t i = 0; i < this->channeList.size(); i++)
+    {
+        if (this->channeList[i]->name == channel)
+            return (i);
+    }
+    return (-1);
+}
 
-// int imInOrNot(std::string channel)
-// {
-//     for (size_t i = 0; i < this->channelList[i]->listofmembre.size(); i++)
-//       {
-//         if (this->channelList[i]->listofmembre[i] == this->clientList[this->nbrclient]->nickname)
-//             return (1);
-//       }
-//     return (0);
-// }
+int Server::imInOrNot(std::string channel)
+{
+    int channelIndex = findChannel(channel);
+    if (channelIndex == -1)
+        return (0);
+    for (size_t i = 0; i < this->channeList[channelIndex]->users.size(); i++)
+    {
+        if (this->channeList[channelIndex]->users[i] == this->clientList[this->nbrclient]->nickname)
+            return (1);
+    }
+    return (0);
+}
 
 
-// void   Server::join()
-// {
-//     if (this->cmd.size() - 1 == 0)
-//             return(std::cout << "ERR_NEEDMOREPARAMS" << std::endl, (void)0);
-//     if (this->clientList[this->nbrclient]->isregistred == 0)
-//         return (std::cout << "ERR_NOTREGISTRED" << std::endl, (void)0);
-//     if (this->cmd[1][0] != '#')
-//         return (std::cout << "ERR_NOSUCHCHANNEL" << std::endl, (void)0);
+void   Server::join()
+{
+    if (this->cmd.size() - 1 == 0)
+            return(std::cout << "ERR_NEEDMOREPARAMS" << std::endl, (void)0);
+    if (this->clientList[this->nbrclient]->isRegistered == 0)
+        return (std::cout << "ERR_NOTREGISTRED" << std::endl, (void)0);
+    if (this->cmd[1][0] != '#')
+        return (std::cout << "ERR_NOSUCHCHANNEL" << std::endl, (void)0);
 
-//     if (find_channel(this->cmd[1]) == 1) // channel exist
-//       int i = find_channel(this->cmd[1]);
-//       if (this->channelList[i]->mode == "i") // invite only
-//         return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
-//         if (this->channelList[i]->mode == "k") // key only
-//         return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
-//             if (this->channelList[i]->mode == "l") // limit only
-//         return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
-//                 if (this->channelList[i]->mode == "o")  // a changer
-//                     return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
-//                 if (this->channelList[i]->mode == "t") // a changer 
-//                     return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
-//                   return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
-//         if (imInOrNot(this->cmd[1])) 
-//             return (std::cout << "ERR_USERONCHANNEL" << std::endl, (void)0);
-//             this->channelList[i]->users.push_back(this->clientList[this->nbrclient]->nickname);
-//             this->clientList[this->nbrclient]->listofchannel.push_back(this->cmd[1]);
-          
+    if (findChannel(this->cmd[1]) != -1) // channel exist
+    {
+        int i = findChannel(this->cmd[1]);
+        if (this->channeList[i]->mode == "i") // invite only
+            return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
+        if (this->channeList[i]->mode == "k") // key only
+            return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
+        if (this->channeList[i]->mode == "l") // limit only
+            return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
+        if (this->channeList[i]->mode == "o")  // a changer
+            return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
+        if (this->channeList[i]->mode == "t") // a changer 
+            return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
+        if (imInOrNot(this->cmd[1])) 
+            return (std::cout << "ERR_USERONCHANNEL" << std::endl, (void)0);
+        this->channeList[i]->users.push_back(this->clientList[this->nbrclient]->nickname);
+        // this->clientList[this->nbrclient]->listofchannel.push_back(this->cmd[1]);
+    }
+}
                                   
       /*
         
@@ -64,7 +69,7 @@
     // {
     //     Channel *newChannel = new Channel();
     //     newChannel->name = this->cmd[1];
-    //     this->channelList.push_back(newChannel);
+    //     this->channeList.push_back(newChannel);
         // etape 1; integrer a la class client lui dire qu'il est bien dans le channel via un int ou un bool.
         // etape 2; integrer a la class channel lui dire qu'il y a un nouveau membre dans sa listofmembre.
         // etape 3; envoyer a tout les membres du channel le message de join.

@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/21 16:01:22 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/26 14:56:17 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ void Server::load_cmd() // sans pass
     commandList["INVITE"] = &Server::invite;
     commandList["KICK"] = &Server::kick;
     commandList["PING"] = &Server::ping;
+    commandList["PASS"] = &Server::pass;
 }
 
 void Server::create_server(char *password)
@@ -121,7 +122,7 @@ int Server::find_client(int fd)
     for (size_t i = 0; i < this->clientList.size(); i++)
     {
         if (this->clientList[i]->fd == fd)
-            this->nbrclient = i;
+            return(i);
     }
     return (-1);
 }
@@ -144,7 +145,7 @@ int Server::wait_client()
                 continue;
             }
             this->clientList.push_back(Clients);
-            std::cout << "New client connected\r\n" << std::endl;
+            std::cout << "New client connected" << std::endl;
         }
         else if (this->events[i].data.fd != this->fd)
         {
@@ -167,13 +168,9 @@ void Server::find_cmd()
 {
 
     std::string word;
-    int i = 0;
     std::istringstream iss(this->entry);
-    while (iss >> word) 
-    {
-        this->cmd[i] = word;
-        i++;
-    }
+    while (iss >> word)
+        this->cmd.push_back(word);
     for (std::map<std::string, CommandFunc>::iterator it = commandList.begin(); it != commandList.end(); ++it)
     {
         if (cmd[0] == it->first)
@@ -240,5 +237,6 @@ void Server::range_port(char *port)
     if (*end != '\0')
         return(std::cerr << "Invalid port number." << std::endl, (void)0);
     this->port = static_cast<int>(val);
+    // std::cout << this->port << std::endl;
  
 }

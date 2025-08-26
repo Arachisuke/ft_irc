@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/08/21 16:45:38 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/26 14:41:05 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,8 @@ public:
   int findNick();
   void closeClient(std::string ERROR_MSG);
   int nickpolicy();
+  int findChannel(std::string channel);
+  int imInOrNot(std::string channel);
 
 
   void nick();
