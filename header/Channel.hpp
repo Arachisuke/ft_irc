@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Channel.hpp                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
+/*   Updated: 2025/08/26 12:46:57 by ankammer         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
@@ -23,6 +35,9 @@ public:
 
     // Channel status
     bool getOnInviteOnly() const;
+
+    //Channel Management
+    void setModes(char modes);
 
     // Clients Management
     void inviteClient(Client *client);   // ajoute client a set _invited

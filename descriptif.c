@@ -148,13 +148,15 @@ Tu peux avoir plusieurs serveurs différents sur une même machine,
 // kick invite topic
 
 // invite (client, param[guest, channel]) 
-	// client qui invite is registered? continue: send error to client
-	// nbr param < 2? error not enough param : continue
-	// findclient(guest) if client not in client list || == client qui invite? error : continue
-	// check channel
+	// client qui invite is registered? continue: send error to client (451)
+	// nbr param < 2? error not enough param : continue (461)
+	// findclient(guest) if client not in client list || == client qui invite? error : continue (401)
+	// check channel (403)
 	// {
-		// client qui invite sur le channel? continue : error
-		// channel invite only et client aui invite operator? continue : error
-		// guest deja sur la channel? error : continue
+		// client qui invite sur le channel? continue : error (442)
+		// channel invite only et client aui invite operator? continue : error (482)
+		// guest deja sur la channel? error : continue (443)
 		// invite guest to channel
 	// } 
+	// send msg de confirmation a l'hote (341)
+	// send msg d'invitation au guest 
