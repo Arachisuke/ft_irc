@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/26 15:43:08 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/26 16:14:19 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ public:
     void removeClient(Client *clientToRemove); // remove from every set <>
     void removeOperator(Client *operatorToRemove); //remove from operator only
 
-private:
+// private:
     std::string _name;
     std::string _topic;
     std::string _mode;

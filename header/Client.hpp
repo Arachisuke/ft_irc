@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/26 15:21:22 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/26 16:44:47 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,19 @@
 #include "Server.hpp"
 
 #define MAX_EVENTS 10
-#define ERR_NEEDMOREPARAMS ":Not Enough Parameters\r\n"
-#define ERR_ALREADYREGISTRED ":You may not reregister\r\n"
-#define ERR_PASSWDMISMATCH ":Password Incorrect\r\n"
-#define ERR_ERRONEUSNICKNAME ":Erroneus Nickname\r\n"
-#define ERR_NICKNAMEINUSE ":Nickname is already in use\r\n"
-#define ERR_NONICKNAMEGIVEN ":No nickname given\r\n"
-#define ERR_TOOMANYARGS ":Too many arguments\r\n"
-#define ERR_UNKNOWNCOMMAND ":Unknown command\r\n"
-#define ERR_NOSUCHNICK ":No such nick/channel\r\n"
-#define ERR_NOSUCHCHANNEL ":No such channel\r\n"
-#define ERR_CANNOTSENDTOCHAN ":Cannot send to channel\r\n"
-#define ERR_TOOMANYCHANNELS ":Too many channels\r\n"
-#define ERR_WASNOSUCHNICK ":There was no such nickname\r\n"
+#define ERR_NEEDMOREPARAMS "Not Enough Parameters"
+#define ERR_ALREADYREGISTRED "You may not reregister"
+#define ERR_PASSWDMISMATCH "Password Incorrect"
+#define ERR_ERRONEUSNICKNAME "Erroneus Nickname"
+#define ERR_NICKNAMEINUSE "Nickname is already in use"
+#define ERR_NONICKNAMEGIVEN "No nickname given"
+#define ERR_TOOMANYARGS "Too many arguments"
+#define ERR_UNKNOWNCOMMAND "Unknown command"
+#define ERR_NOSUCHNICK "No such nick/channel"
+#define ERR_NOSUCHCHANNEL "No such channel"
+#define ERR_CANNOTSENDTOCHAN "Cannot send to channel"
+#define ERR_TOOMANYCHANNELS "Too many channels"
+#define ERR_WASNOSUCHNICK "There was no such nickname"
 
 class Server;
 
@@ -61,7 +61,6 @@ public:
 
     int fd;
     std::vector<std::string> listofchannel;
-    int count_args();
     int RPL_WELCOME;
     int RPL_INFO;
     int Password_Status;
@@ -75,14 +74,9 @@ public:
     std::string buffer;
 
 private:
-    std::string translationclient_to_server(std::string message);
-    int epfd;
     int hote;
     struct epoll_event event;
     struct sockaddr_in client;
     socklen_t size_of_client;
-    std::string password;
-    bool _isMember;
-    bool _isOperator;
 };
 #endif

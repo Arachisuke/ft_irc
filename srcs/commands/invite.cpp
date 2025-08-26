@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:06 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/26 15:45:40 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/26 16:28:56 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,10 @@
 //     return (NULL);
 // }
 
-void Server::errorMsg(int codeEror, const std::string firstParam, const std::string secondParam, Client &client) const
+void Server::errorMsg(int codeError, const std::string command, const std::string message, Client &client) const
 {
     std::ostringstream ost;
-    ost << ":" << "server" << " " << codeEror << " " << firstParam << " " << client.nickname << " " << secondParam << std::endl;
+    ost << ":" << this->_serverName << " " << codeError << " " << client.nickname << " " << command << " :" << message << "\r\n";
     send(client.fd, ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
 }
 

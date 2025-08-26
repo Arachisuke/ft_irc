@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/08/26 15:31:22 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/26 16:37:48 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,17 +63,16 @@ public:
   int imInOrNot(std::string channel);
 
   int Init();
-  void range_port(char *port);
-  void create_server(char *password);
+  void create_server(int port, char *password);
   void Finish();
   int find_client(int fd);
   int find_client(std::string &nameClient);
   int wait_client();
 
   Channel *findChannelPtr(std::string &channelName);
-  void errorMsg(int codeError, const std::string firstParam, const std::string secondParam, Client &client) const;
+  void errorMsg(int codeError, const std::string command, const std::string message, Client &client) const;
 
-  void ReadMsg(std::string bufferClient);
+      void ReadMsg(std::string bufferClient);
   void PushMsg(std::string msg);
 
   int isprint(char c);
@@ -82,9 +81,9 @@ public:
   void find_cmd();
   void executeOrNot();
 
-private:
+  // private:
   std::vector<Client *> clientList;
-  std::vector<Channel *> channeList;  // Pour compatibilité avec join.cpp
+  std::vector<Channel *> channeList;
   std::vector<std::string> cmd;
   std::map<std::string, CommandFunc> commandList;
   struct sockaddr_in hote;
@@ -93,6 +92,7 @@ private:
   std::string entry;
   std::string buffer;
   int fd;
+  std::string _serverName;
   int bytes;
   int nbrclient;
   int epfd;

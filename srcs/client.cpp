@@ -12,11 +12,7 @@ Client::Client()
 }
 Client::~Client()
 {
-    if (fd > 0)
-    {
-        close(this->fd);
-        epoll_ctl(this->epfd, EPOLL_CTL_DEL, this->fd, NULL); // CTLDEL
-    }
+    
     std::cout << "Client disconnected\r\n"
               << std::endl;
 }
@@ -24,7 +20,6 @@ Client::~Client()
 int Client::Init(int epfd, int hote)
 {
     this->size_of_client = sizeof(this->client);
-    this->epfd = epfd;
     this->hote = hote;
 
     this->fd = accept(this->hote, reinterpret_cast<sockaddr *>(&this->client), &size_of_client);
@@ -33,7 +28,7 @@ int Client::Init(int epfd, int hote)
     //fcntl(this->fd, F_SETFL, O_NONBLOCK);
     this->event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP; // surveille lecture et tout probleme.
     this->event.data.fd = this->fd;
-    epoll_ctl(this->epfd, EPOLL_CTL_ADD, this->fd, &this->event);
+    epoll_ctl(epfd, EPOLL_CTL_ADD, this->fd, &this->event);
     return (0);
 }
 
