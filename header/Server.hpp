@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/08/26 15:28:12 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/26 15:31:22 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ public:
   int find_client(std::string &nameClient);
   int wait_client();
 
-  Channel *findChannel(std::string &channelName);
+  Channel *findChannelPtr(std::string &channelName);
   void errorMsg(int codeError, const std::string firstParam, const std::string secondParam, Client &client) const;
 
   void ReadMsg(std::string bufferClient);
@@ -84,7 +84,7 @@ public:
 
 private:
   std::vector<Client *> clientList;
-  std::map<std::string, Channel *> channelList;
+  std::vector<Channel *> channeList;  // Pour compatibilité avec join.cpp
   std::vector<std::string> cmd;
   std::map<std::string, CommandFunc> commandList;
   struct sockaddr_in hote;
