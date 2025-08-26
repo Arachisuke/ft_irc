@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   join.cpp                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/08/26 12:44:27 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/26 15:28:12 by wzeraig          ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "Client.hpp"
 #include "Server.hpp"
 #include "Channel.hpp"
@@ -18,7 +6,7 @@ int Server::findChannel(std::string channel)
 {
     for (size_t i = 0; i < this->channeList.size(); i++)
     {
-        if (this->channeList[i]->name == channel)
+        if (this->channeList[i]->_name == channel)
             return (i);
     }
     return (-1);
@@ -29,9 +17,12 @@ int Server::imInOrNot(std::string channel)
     int channelIndex = findChannel(channel);
     if (channelIndex == -1)
         return (0);
-    for (size_t i = 0; i < this->channeList[channelIndex]->users.size(); i++)
+    
+    // Recherche dans le set
+    for (std::set<Client *>::iterator it = this->channeList[channelIndex]->_users.begin(); 
+         it != this->channeList[channelIndex]->_users.end(); ++it)
     {
-        if (this->channeList[channelIndex]->users[i] == this->clientList[this->nbrclient]->nickname)
+        if ((*it)->nickname == this->clientList[this->nbrclient]->nickname)
             return (1);
     }
     return (0);
@@ -50,19 +41,19 @@ void   Server::join()
     if (findChannel(this->cmd[1]) != -1) // channel exist
     {
         int i = findChannel(this->cmd[1]);
-        if (this->channeList[i]->mode == "i") // invite only
+        if (this->channeList[i]->_mode == "i") // invite only
             return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
-        if (this->channeList[i]->mode == "k") // key only
+        if (this->channeList[i]->_mode == "k") // key only
             return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
-        if (this->channeList[i]->mode == "l") // limit only
+        if (this->channeList[i]->_mode == "l") // limit only
             return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
-        if (this->channeList[i]->mode == "o")  // a changer
+        if (this->channeList[i]->_mode == "o")  // a changer
             return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
-        if (this->channeList[i]->mode == "t") // a changer 
+        if (this->channeList[i]->_mode == "t") // a changer 
             return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
         if (imInOrNot(this->cmd[1])) 
             return (std::cout << "ERR_USERONCHANNEL" << std::endl, (void)0);
-        this->channeList[i]->users.push_back(this->clientList[this->nbrclient]->nickname);
+        this->channeList[i]->_users.insert(this->clientList[this->nbrclient]);
         // this->clientList[this->nbrclient]->listofchannel.push_back(this->cmd[1]);
     }
 }

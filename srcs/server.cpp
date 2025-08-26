@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/26 15:22:24 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/26 17:23:10 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 Server::Server()
 {
+    this->_serverName = "HuecoMundo";
     this->fd = -1;
     this->load_cmd();
     this->port = 0;
@@ -81,19 +82,24 @@ void Server::closeClient(std::string ERROR_MSG)
         this->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
     if (this->clientList[this->nbrclient])
     {
+        if (this->clientList[this->nbrclient]->fd > 0)
+        {
+            {
+                close(this->clientList[this->nbrclient]->fd);
+                epoll_ctl(this->epfd, EPOLL_CTL_DEL, this->clientList[this->nbrclient]->fd, NULL); // CTLDEL
+            }
+        }
         delete this->clientList[this->nbrclient];                           // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
         this->clientList.erase(this->clientList.begin() + this->nbrclient); // ERASE
     }
-    std::cout << "Client disconnected\r\n"
-              << std::endl;
     return;
 }
 // Server Server();
 
 void Server::load_cmd() // sans pass
 {
+    
     // commandList["CAP"] = &Server::cap(this->cmd); // a ignorer.
-    commandList["PASS"] = &Server::pass;
     commandList["NICK"] = &Server::nick;
     commandList["USER"] = &Server::user;
     commandList["QUIT"] = &Server::quit; // en plus du prototype ici il faut verifie que le Server est bien connecte et dans le bon contexte.
@@ -109,8 +115,9 @@ void Server::load_cmd() // sans pass
     commandList["PASS"] = &Server::pass;
 }
 
-void Server::create_server(char *password)
+void Server::create_server(int port, char *password)
 {
+    this->port = port;
     this->epfd = epoll_create1(0);
     this->password = password;
     this->Init();
@@ -181,17 +188,21 @@ void Server::find_cmd()
 {
 
     std::string word;
-    std::istringstream iss(this->entry);
+    std::istringstream iss(this->entry); // gerer le parse ":" // alias relire la doc du parse
     while (iss >> word)
         this->cmd.push_back(word);
+
     for (std::map<std::string, CommandFunc>::iterator it = commandList.begin(); it != commandList.end(); ++it)
     {
-        if (cmd[0] == it->first)
+        // std::cout << "1" << "1" << it->first <<  std::endl;
+        if (this->cmd[0] == it->first)
         {
+
             (this->*(it->second))();
             return;
         }
     }
+
     std::cout << "Command not found" << std::endl;
 }
 
@@ -216,6 +227,7 @@ void Server::ReadMsg(std::string bufferClient)
         while (pos != std::string::npos)
         {
             this->entry = bufferClient.substr(0, pos);
+            std::cout << this->entry << " je suis dans la boucle "<< std::endl;
             bufferClient.erase(0, pos + 2);
             this->find_cmd();
             pos = bufferClient.find("\r\n");
@@ -236,17 +248,4 @@ void Server::PushMsg(std::string msg) // a gerer apres
     this->events[nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
     this->events[nbrclient].data.fd = this->clientList[nbrclient]->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->events[nbrclient]);
-}
-
-void Server::range_port(char *port)
-{
-    const char *s = port;
-    char *end;
-    errno = 0;
-    long val = strtol(s, &end, 10);
-    if (errno == ERANGE || val > 65535 || val <= 0)
-        return (std::cerr << "Port number out of range." << std::endl, (void)0);
-    if (*end != '\0')
-        return (std::cerr << "Invalid port number." << std::endl, (void)0);
-    this->port = static_cast<int>(val);
 }
