@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/26 12:49:58 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/08/26 15:22:24 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,6 +106,7 @@ void Server::load_cmd() // sans pass
     commandList["INVITE"] = &Server::invite;
     commandList["KICK"] = &Server::kick;
     commandList["PING"] = &Server::ping;
+    commandList["PASS"] = &Server::pass;
 }
 
 void Server::create_server(char *password)
@@ -157,8 +158,7 @@ int Server::wait_client()
                 continue;
             }
             this->clientList.push_back(Clients);
-            std::cout << "New client connected\r\n"
-                      << std::endl;
+            std::cout << "New client connected" << std::endl;
         }
         else if (this->events[i].data.fd != this->fd)
         {
@@ -181,12 +181,9 @@ void Server::find_cmd()
 {
 
     std::string word;
-
     std::istringstream iss(this->entry);
     while (iss >> word)
-    {
         this->cmd.push_back(word);
-    }
     for (std::map<std::string, CommandFunc>::iterator it = commandList.begin(); it != commandList.end(); ++it)
     {
         if (cmd[0] == it->first)
