@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/26 16:14:19 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/28 12:07:26 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ public:
     bool isOperator(Client *client) const;
     bool isInvited(Client *client) const;      // check set _invited si deja dans la liste
     bool isBannedClient(Client *client) const; // check set _banned si deja dans la liste
+    bool channelIsFull();
 
     // Channel status
     bool getOnInviteOnly() const;
@@ -56,7 +57,7 @@ public:
 
     bool _onInviteOnly;
 
-    std::set<Client *> _users;     // client classique
+    std::set<Client *> _users;     // all clients
     std::set<Client *> _operators; // client operator
     std::set<Client *> _invited;   // client invited
     std::set<Client *> _banned;    // client banned
