@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/28 14:24:47 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:53:31 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,10 @@ public:
     void setName(const std::string &name);
     void setTopic(const std::string &newTopic);
     void setTopicSetter(const std::string &newTopicSetter);
+    void setUsers(Client *client);
 
     // Clients Management
-    const std::set<Client *> & getUsers() const;
+    const std::set<Client *> &getUsers() const;
     void inviteClient(Client *client);             // ajoute client a set _invited
     void banClient(Client *client);                // ajoute client a set _banned
     void addClient(Client *newClient);             // ajoute client a set _users
@@ -56,7 +57,7 @@ public:
     void removeClient(Client *clientToRemove);     // remove from every set <>
     void removeOperator(Client *operatorToRemove); // remove from operator only
 
-    private:
+private:
     std::string _name;
     std::string _topic;
     std::string _topicSetter;

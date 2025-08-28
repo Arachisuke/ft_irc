@@ -6,7 +6,7 @@ int Server::findChannel(std::string channel)
 {
     for (size_t i = 0; i < this->channeList.size(); i++)
     {
-        if (this->channeList[i]->_name == channel)
+        if (this->channeList[i]->getName() == channel)
             return (i);
     }
     return (-1);
@@ -19,8 +19,8 @@ int Server::imInOrNot(std::string channel)
         return (0);
     
     // Recherche dans le set
-    for (std::set<Client *>::iterator it = this->channeList[channelIndex]->_users.begin(); 
-         it != this->channeList[channelIndex]->_users.end(); ++it)
+    for (std::set<Client *>::iterator it = this->channeList[channelIndex]->getUsers().begin(); 
+         it != this->channeList[channelIndex]->getUsers().end(); ++it)
     {
         if ((*it)->nickname == this->clientList[this->nbrclient]->nickname)
             return (1);
@@ -41,19 +41,19 @@ void   Server::join()
     if (findChannel(this->cmd[1]) != -1) // channel exist
     {
         int i = findChannel(this->cmd[1]);
-        if (this->channeList[i]->_mode == "i") // invite only
+        if (this->channeList[i]->getModes('i')) // invite only
             return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
-        if (this->channeList[i]->_mode == "k") // key only
+        if (this->channeList[i]->getModes('k')) // key only
             return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
-        if (this->channeList[i]->_mode == "l") // limit only
+        if (this->channeList[i]->getModes('l')) // limit only
             return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
-        if (this->channeList[i]->_mode == "o")  // a changer
+        if (this->channeList[i]->getModes('o'))  // a changer
             return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
-        if (this->channeList[i]->_mode == "t") // a changer 
+        if (this->channeList[i]->getModes('t')) // a changer 
             return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
         if (imInOrNot(this->cmd[1])) 
             return (std::cout << "ERR_USERONCHANNEL" << std::endl, (void)0);
-        this->channeList[i]->_users.insert(this->clientList[this->nbrclient]);
+        this->channeList[i]->setUsers(this->clientList[this->nbrclient]);
         // this->clientList[this->nbrclient]->listofchannel.push_back(this->cmd[1]);
     }
 }
