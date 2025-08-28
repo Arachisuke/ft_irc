@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/28 14:25:17 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:52:15 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,6 +113,10 @@ const std::set<Client *> &Channel::getUsers() const
     return (_users);
 }
 
+void Channel::setUsers(Client *client)
+{
+    _users.insert(client);
+}
 const std::string &Channel::getName() const
 {
     return (_name);
