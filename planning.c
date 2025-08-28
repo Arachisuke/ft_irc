@@ -176,3 +176,5 @@
 // je dois aussi <client> gerer ca
 // je dois aussi gerer le msg special de NICK.
 // verifier tout les commentaire de code.
+
+
