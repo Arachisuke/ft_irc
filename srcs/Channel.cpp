@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/28 12:31:28 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:25:17 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,14 +64,56 @@ void Channel::removeOperator(Client *operatorToRemove)
 {
     _operators.erase(operatorToRemove);
 }
-bool Channel::getOnInviteOnly() const
-{
-    return (_onInviteOnly);
-}
 
 bool Channel::channelIsFull()
 {
     if (_maxUsers < 0)
-        return(0);
-    return(_users.size() >= static_cast<unsigned long>(_maxUsers));
+        return (0);
+    return (_users.size() >= static_cast<unsigned long>(_maxUsers));
+}
+bool Channel::getModes(char modes) const
+{
+    for (std::set<char>::const_iterator it = _modes.begin(); it != _modes.end(); it++)
+    {
+        if (*it == modes)
+            return (1);
+    }
+    return (0);
+}
+const std::string &Channel::getTopic() const
+{
+    return (_topic);
+}
+const std::string &Channel::getTopicSetter() const
+{
+    return (_topicSetter);
+}
+void Channel::setModes(char modes)
+{
+    _modes.insert(modes);
+}
+void Channel::setMaxUsers(int maxUsers)
+{
+    _maxUsers = maxUsers;
+}
+void Channel::setName(const std::string &name)
+{
+    _name = name;
+}
+void Channel::setTopic(const std::string &newTopic)
+{
+    _topic = newTopic;
+}
+void Channel::setTopicSetter(const std::string &newTopicSetter)
+{
+    _topicSetter = newTopicSetter;
+}
+const std::set<Client *> &Channel::getUsers() const
+{
+    return (_users);
+}
+
+const std::string &Channel::getName() const
+{
+    return (_name);
 }

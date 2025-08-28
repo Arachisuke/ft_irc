@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/28 12:07:26 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:24:47 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,27 +35,34 @@ public:
     bool channelIsFull();
 
     // Channel status
-    bool getOnInviteOnly() const;
+    bool getModes(char modes) const;
+    const std::string &getName() const;
+    const std::string &getTopic() const;
+    const std::string &getTopicSetter() const;
 
-    //Channel Management
+    // Channel Management
     void setModes(char modes);
+    void setMaxUsers(int maxUsers);
+    void setName(const std::string &name);
+    void setTopic(const std::string &newTopic);
+    void setTopicSetter(const std::string &newTopicSetter);
 
     // Clients Management
-    void inviteClient(Client *client);   // ajoute client a set _invited
-    void banClient(Client *client);      // ajoute client a set _banned
-    void addClient(Client *newClient);   // ajoute client a set _users
-    void addOperator(Client *newClient); // ajoute client a set _operator
-    void removeClient(Client *clientToRemove); // remove from every set <>
-    void removeOperator(Client *operatorToRemove); //remove from operator only
+    const std::set<Client *> & getUsers() const;
+    void inviteClient(Client *client);             // ajoute client a set _invited
+    void banClient(Client *client);                // ajoute client a set _banned
+    void addClient(Client *newClient);             // ajoute client a set _users
+    void addOperator(Client *newClient);           // ajoute client a set _operator
+    void removeClient(Client *clientToRemove);     // remove from every set <>
+    void removeOperator(Client *operatorToRemove); // remove from operator only
 
-// private:
+    private:
     std::string _name;
     std::string _topic;
+    std::string _topicSetter;
     std::string _mode;
     std::string _password; // mode +k
     int _maxUsers;         // mode +l
-
-    bool _onInviteOnly;
 
     std::set<Client *> _users;     // all clients
     std::set<Client *> _operators; // client operator

@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:06 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/28 12:33:27 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/08/28 14:24:01 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Channel *Server::findChannelPtr(std::string &channelName)
 {
     for (size_t i = 0; i < this->channeList.size(); i++)
     {
-        if (this->channeList[i]->_name == channelName)
+        if (this->channeList[i]->getName() == channelName)
             return (this->channeList[i]);
     }
     return (NULL);
@@ -35,18 +35,18 @@ void Server::errorMsg(int codeError, const std::string command, const std::strin
 void Server::invite()
 {
     if (!clientList[nbrclient]->isRegistered) // error not registered
-        return (errorMsg(451, "INVITE", "You have not registered", *clientList[nbrclient]), (void)0);
+        return (errorMsg(451, cmd[0], "You have not registered", *clientList[nbrclient]), (void)0);
     if (cmd.size() < 3) // error not enough params
-        return (errorMsg(461, "INVITE", "Not enough parameters", *clientList[nbrclient]), (void)0);
+        return (errorMsg(461, cmd[0], "Not enough parameters", *clientList[nbrclient]), (void)0);
     int clientIndex = this->find_client(cmd[1]);
     Channel *channel = this->findChannelPtr(cmd[2]);
     if (clientList[nbrclient]->nickname == clientList[clientIndex]->nickname || clientIndex == -1) // error client introuvable ou host lui meme
-        return (errorMsg(401, "INVITE", "No such nick", *clientList[nbrclient]), (void)0);
+        return (errorMsg(401, cmd[0], "No such nick", *clientList[nbrclient]), (void)0);
     if (!channel) // error channel n existe pas
         return (errorMsg(403, cmd[2], "No such channel", *clientList[nbrclient]), (void)0);
     if (!channel->isMember(clientList[nbrclient])) // error client qui invite n est pas dans le channel
         return (errorMsg(442, cmd[2], "You're not on that channel", *clientList[nbrclient]), (void)0);
-    if (channel->getOnInviteOnly() && !channel->isOperator(clientList[nbrclient])) // error invite only et non operator
+    if (channel->getModes('i') && !channel->isOperator(clientList[nbrclient])) // error invite only et non operator
         return (errorMsg(482, cmd[2], "You're not channel operator", *clientList[nbrclient]), (void)0);
     if (channel->isMember(clientList[clientIndex])) // error guest deja sur la channel
         return (errorMsg(443, cmd[1], "is already on channel", *clientList[nbrclient]), (void)0);
