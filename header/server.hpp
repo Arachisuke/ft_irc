@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.hpp                                         :+:      :+:    :+:   */
+/*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/08/14 12:04:46 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/08/28 13:36:22 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,26 +24,81 @@
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <vector>
+#include <map>
 #include <cstdlib>
 #include <cerrno>
 #include <climits>
 #include <csignal>
-#include "client.hpp"
+#include "Client.hpp"
 
+class Client;
+class Channel;
 
-class Server {
+class Server
+{
 public:
-  Server(std::vector<Client*>& client_list);
+  typedef void (Server::*CommandFunc)();
+  Server();
   ~Server();
-  int Init(int epfd, int port);
+
+  // Commands
+  void join();
+  void quit();
+  void part();
+  void pass();
+  void cap();
+  void ping();
+  void kick();
+  void invite();
+  void topic();
+  void mode();
+  void notice();
+  void privMsg();
+  void user();
+  void nick();
+  int findNick();
+  void closeClient(std::string ERROR_MSG);
+  int nickpolicy();
+  int findChannel(std::string channel);
+  int imInOrNot(std::string channel);
+  void successfullJoin(int i);
+
+  int Init();
+  void create_server(int port, char *password);
   void Finish();
+  int find_client(int fd);
+  int find_client(std::string &nameClient);
+  int wait_client();
+
+  Channel *findChannelPtr(std::string &channelName);
+  void errorMsg(int codeError, const std::string command, const std::string message, Client &client) const;
+
+  void ReadMsg(std::string bufferClient);
+  void PushMsg(std::string msg);
+
+  int isprint(char c);
+
+  void reply(int codeError, const std::string command, const std::string message, Client &client) const;
+  void load_cmd();
+  void find_cmd();
+  void executeOrNot();
+
+  // private:
+  std::vector<Client *> clientList;
+  std::vector<Channel *> channeList;
+  std::vector<std::string> cmd;
+  std::map<std::string, CommandFunc> commandList;
   struct sockaddr_in hote;
-  std::vector<Client*>& server_to_client_list;
-  std::string password;
-  int fd;
-  int epfd;
   struct epoll_event events[5];
+  std::string password;
+  std::string entry;
+  std::string buffer;
+  int fd;
+  std::string _serverName;
   int bytes;
+  int nbrclient;
+  int epfd;
+  int port;
 };
 
 #endif

@@ -1,38 +1,43 @@
 ######################################################
 ## ARGUMENTS
-NAME:= ircserv
-CC:= c++
-FLAGS:= -Wall -Wextra -Werror -std=c++98 -g3
-
+NAME := ircserv
+CXX := c++
+CXXFLAGS := -Wall -Wextra -Werror -std=c++98 -g3
 
 ######################################################
 ## FILES
-SRCS_DIR:= ./srcs
-OBJS_DIR:= ./objs
+SRCS_DIR := ./srcs
+OBJS_DIR := ./objs
+HEADERS := header
 
-FILES:= main.cpp client.cpp server.cpp
+FILES := main.cpp client.cpp server.cpp Channel.cpp \
+	commands/invite.cpp  commands/kick.cpp commands/mode.cpp \
+	commands/notice.cpp commands/part.cpp commands/ping.cpp commands/privmsg.cpp \
+	commands/quit.cpp commands/registration.cpp commands/join.cpp commands/topic.cpp
 
-SRCS:= $(addprefix $(SRCS_DIR)/, $(FILES))
-OBJS:= $(addprefix $(OBJS_DIR)/, $(FILES:.cpp=.o))
+SRCS := $(addprefix $(SRCS_DIR)/, $(FILES))
+OBJS := $(addprefix $(OBJS_DIR)/, $(FILES:.cpp=.o))
+OBJ_SUBDIRS := $(sort $(dir $(OBJS)))
 
 ######################################################
 ## RULES
-
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $(FLAGS) $^ -o $@
+	$(CXX)  -I$(HEADERS) $(OBJS) -o $@
 
-$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp
-	mkdir -p $(OBJS_DIR)
-	$(CC) $(FLAGS) -c $^ -o $@
+$(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(OBJ_SUBDIRS)
+	$(CXX) $(CXXFLAGS) -I$(HEADERS) -c $< -o $@
 
+# Créer les répertoires d'objets
+$(OBJS_DIR) $(OBJ_SUBDIRS):
+	mkdir -p $@
 
 clean:
-	rm -rf $(NAME)
+	rm -rf $(OBJS_DIR)
 
 fclean: clean
-	rm -rf $(OBJS_DIR)
+	rm -rf $(NAME)
 
 re: fclean all
 
