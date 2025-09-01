@@ -1,7 +1,6 @@
-#include "Client.hpp"
-#include "Server.hpp"
-#include "Channel.hpp"
-
+#include "../../header/Client.hpp"
+#include "../../header/Server.hpp"
+#include "../../header/Channel.hpp"
 int Server::findChannel(std::string channel)
 {
     for (size_t i = 0; i < this->channeList.size(); i++)
@@ -28,6 +27,30 @@ int Server::imInOrNot(std::string channel)
     return (0);
 }
 
+void   Server::successfullJoin(int i)
+{
+    std::set<Client *> users = this->channeList[i]->getUsers();
+    for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
+    {
+       std::string msg = ":" +this->clientList[this->nbrclient]->nickname + "!" + this->clientList[this->nbrclient]->username + "@localhost" + " JOIN " + this->channeList[i]->getName() + "\r\n";
+        send((*it)->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+    }
+    if (this->channeList[i]->getTopic() != "")
+        std::string topic = ":" + this->_serverName + "332" + this->clientList[this->nbrclient]->nickname + this->channeList[i]->getName() + " :" + this->channeList[i]->getTopic();
+    std::string msg = ":" + this->_serverName + "353" + this->clientList[this->nbrclient]->nickname + " = " + this->channeList[i]->getName() + " : " ;
+    for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
+        {
+            msg += (*it)->nickname + " ";
+        }
+        msg += "\r\n";
+        send(this->clientList[this->nbrclient]->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+        std::string msg2 = ":" + this->_serverName + "366" + this->clientList[this->nbrclient]->nickname + this->channeList[i]->getName() + " :End of /NAME list";
+        send(this->clientList[this->nbrclient]->fd, msg2.c_str(), msg2.size(), MSG_DONTWAIT);
+    
+    
+        
+    
+}
 
 void   Server::join()
 {
@@ -54,12 +77,31 @@ void   Server::join()
         if (imInOrNot(this->cmd[1])) 
             return (std::cout << "ERR_USERONCHANNEL" << std::endl, (void)0);
         this->channeList[i]->setUsers(this->clientList[this->nbrclient]);
-        // this->clientList[this->nbrclient]->listofchannel.push_back(this->cmd[1]);
+        this->successfullJoin(i);
     }
+    else // donne les droits.
+    {
+        Channel *newChannel = new Channel();
+        newChannel->setName(this->cmd[1]);
+        this->channeList.push_back(newChannel);
+        this->successfullJoin(this->channeList.size() - 1);
+        this->channeList[this->channeList.size() - 1]->setUsers(this->clientList[this->nbrclient]);
+        this->channeList[this->channeList.size() - 1]->addOperator(this->clientList[this->nbrclient]);
+        this->channeList[this->channeList.size() - 1]->setTopicSetter(this->clientList[this->nbrclient]->nickname);
+        this->channeList[this->channeList.size() - 1]->setTopic("");  
+    }
+    if (this->cmd[2] == "0")
+        // PART supprime le client de tout les channels.
 }
-                                  
+
+
+
+
+
+
+
       /*
-        
+
         etape 0; verifie si je peux accede au channel selon son mode et si je suis pas deja dedans.
         etape 1; integrer a la class client lui dire qu'il est bien dans le channel via un int ou un bool.
         etape 2; integrer a la class channel lui dire qu'il y a un nouveau membre dans sa listofmembre.
@@ -68,11 +110,7 @@ void   Server::join()
         etape 5; envoyer au client qui join la listofmembre du channel.
         etape 6; envoyer au client qui join le mode du channel.
       */
-    // else
-    // {
-    //     Channel *newChannel = new Channel();
-    //     newChannel->name = this->cmd[1];
-    //     this->channeList.push_back(newChannel);
+   
         // etape 1; integrer a la class client lui dire qu'il est bien dans le channel via un int ou un bool.
         // etape 2; integrer a la class channel lui dire qu'il y a un nouveau membre dans sa listofmembre.
         // etape 3; envoyer a tout les membres du channel le message de join.
@@ -85,8 +123,8 @@ void   Server::join()
         // etape 10; envoyer au client qui join le ban du channel.
         // etape 11; envoyer au client qui join le exception du channel.
       // le rendre operateur du channel.
-    
-        
+
+
   // they receive all relevant information about that channel including the JOIN, PART, KICK, and MODE messages affecting the channel
   // if successfull, <client> nameofchannel 
   // RPLTOPIC MSG.
@@ -95,7 +133,7 @@ void   Server::join()
   // RPL_ENDOFNAMES
   // modeofchannel a implementer ici.
   // limitofchannel ?
-  
+
 
 
 

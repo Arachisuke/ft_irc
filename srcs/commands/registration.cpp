@@ -16,7 +16,7 @@
 void Server::pass()
 {
     if (this->cmd.size() - 1 == 0)
-        this->errorMsg(461, this->cmd[0], ERR_NEEDMOREPARAMS, *this->clientList[this->nbrclient]);
+        return (this->errorMsg(461, this->cmd[0], ERR_NEEDMOREPARAMS, *this->clientList[this->nbrclient]), (void)0);
     if (this->clientList[this->nbrclient]->isRegistered == 1)
         return (std::cout << "462:" << ERR_ALREADYREGISTRED << std::endl, (void)0);
     this->clientList[this->nbrclient]->Password_Status = 1;
@@ -40,7 +40,7 @@ int Server::nickpolicy()
         return (1);
     for (size_t i = 0; i < this->cmd[1].size(); i++)
     {
-        if (!isprint(this->cmd[1][i]))
+        if (isprint(this->cmd[1][i]))
             return (1);
         if (this->cmd[1][i] == ':')
             return (1);
@@ -57,32 +57,37 @@ int Server::isprint(char c)
     return (0);
 }
 
+void Server::successfullNick()
+{
+    std::string msg = ":" + this->clientList[this->nbrclient]->nickname + "!" + this->clientList[this->nbrclient]->username + "@localhost NICK " + this->cmd[1] + "\r\n";
+    for (size_t i = 0; i < this->clientList.size(); i++)
+        {
+            if (this->clientList[i]->fd != this->clientList[this->nbrclient]->fd)
+                send(this->clientList[i]->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+        }
+}
+
 void Server::nick() // toomanyarg ??
 {
     if (this->cmd.size() - 1 == 0)
-        std::cout << ERR_NONICKNAMEGIVEN << std::endl;
-    else if (this->clientList[this->nbrclient]->Nickname_Status == -1)
-    {
-        if (!this->clientList[this->nbrclient]->Password_Status)
-            std::cout << "ERR_NEEDPASSWORDBEFORE" << std::endl; // A changer ?
+        return (std::cout << ERR_NONICKNAMEGIVEN << std::endl, (void)0);
+    if (!this->clientList[this->nbrclient]->Password_Status)
+        return(std::cout << "ERR_NEEDPASSWORDBEFORE" << std::endl, (void)0);  // ?
+    if (nickpolicy())
+        std::cout << ERR_ERRONEUSNICKNAME << std::endl;
+    if (findNick())
+        return (std::cout << ERR_NICKNAMEINUSE << std::endl, (void)0);
+    this->successfullNick();
+    this->clientList[this->nbrclient]->nickname = this->cmd[1];
+    this->clientList[this->nbrclient]->Nickname_Status = 1;
+    return;
 
-        if (nickpolicy())
-            std::cout << ERR_ERRONEUSNICKNAME << std::endl;
-        if (findNick())
-            return (std::cout << ERR_NICKNAMEINUSE << std::endl, (void)0);
-        this->clientList[this->nbrclient]->nickname = this->cmd[1];
-        this->clientList[this->nbrclient]->Nickname_Status = 1;
-        /* The NICK message may be sent from the server to clients to acknowledge their NICK command was successful, and to inform other clients about the change of nickname. In these cases, the <source> of the message will be the old nickname [ [ "!" user ] "@" host ] of the user who is changing their nickname.*/
-        std::cout << "je suis dans nick et : " << this->clientList[this->nbrclient]->nickname << std::endl;
-
-        return;
-    }
 }
 void Server::user()
 {
     if (this->cmd.size() - 1 < 4)
-        std::cout << ERR_NEEDMOREPARAMS << std::endl;
-    if (this->clientList[this->nbrclient]->Nickname_Status == 0) // doit etre change qu'une fois.
+        return (std::cout << ERR_NEEDMOREPARAMS << std::endl, (void)0);
+    if (this->clientList[this->nbrclient]->Username_Status == 0) 
     {
         if (!this->clientList[this->nbrclient]->Password_Status || !this->clientList[this->nbrclient]->Nickname_Status)
             return (std::cout << "ERR_NEEDPASSWORDBEFORE" << std::endl, (void)0); // A changer ?
@@ -93,16 +98,20 @@ void Server::user()
         if (this->cmd[4].size() > 9 || this->cmd[4].size() < 1)
             return (std::cout << ERR_ERRONEUSNICKNAME << std::endl, (void)0);
 
+       
+        if (this->clientList[this->nbrclient]->Password_Status == -1)
+            return this->closeClient("ERR_PASSWDMISMATCH");
         this->clientList[this->nbrclient]->username = this->cmd[1];
         this->clientList[this->nbrclient]->Username_Status = 1;
         this->clientList[this->nbrclient]->isRegistered = 1;
-        std::cout << this->clientList[this->nbrclient]->Password_Status << std::endl;
-        if (this->clientList[this->nbrclient]->Password_Status == -1) // wrong password
-            return this->closeClient("ERR_PASSWDMISMATCH");
+        std::string welcome_msg =
+            ":Hueco Mundo 001 " + this->clientList[this->nbrclient]->nickname +
+            " :Welcome to the Hueco Mundo Network, " + this->clientList[this->nbrclient]->nickname + "!~" + this->clientList[this->nbrclient]->username + "@localhost\r\n";
+        send(this->clientList[this->nbrclient]->fd, welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);
+       
+        
     }
     else
         std::cout << ERR_ALREADYREGISTRED << std::endl;
-    std::cout << "je suis dans user et : " << this->clientList[this->nbrclient]->username << std::endl;
-
     // join j'ai enlever le epollout. etc etc
 }
