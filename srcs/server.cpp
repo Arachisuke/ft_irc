@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/26 17:23:10 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/01 14:54:59 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,4 +245,12 @@ void Server::PushMsg(std::string msg) // a gerer apres
     this->events[nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
     this->events[nbrclient].data.fd = this->clientList[nbrclient]->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->events[nbrclient]);
+}
+
+
+void Server::reply(int codeError, const std::string command, const std::string message, Client &client) const
+{
+    std::ostringstream ost;
+    ost << ":" << this->_serverName << " " << codeError << " " << client.nickname << " " << command << " :" << message << "\r\n";
+    send(client.fd, ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
 }
