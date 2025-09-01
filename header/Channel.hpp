@@ -27,6 +27,7 @@ public:
     Channel();
     ~Channel();
 
+    int key;
     // Clients Status
     bool isMember(Client *client) const;
     bool isOperator(Client *client) const;

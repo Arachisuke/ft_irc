@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/08/28 14:10:26 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/01 14:54:59 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,20 +99,19 @@ void Server::closeClient(std::string ERROR_MSG)
 void Server::load_cmd() // sans pass
 {
     
-    // commandList["CAP"] = &Server::cap(this->cmd); // a ignorer.
-    commandList["NICK"] = &Server::nick;
-    commandList["USER"] = &Server::user;
-    commandList["QUIT"] = &Server::quit; // en plus du prototype ici il faut verifie que le Server est bien connecte et dans le bon contexte.
-    // commandList["JOIN"] = &Server::join;
+    commandList["NICK"] = &Server::nick; // valide
+    commandList["USER"] = &Server::user; // valide
+    commandList["QUIT"] = &Server::quit;
+    commandList["JOIN"] = &Server::join; // moi
     commandList["PART"] = &Server::part;
-    commandList["PRIVMSG"] = &Server::privMsg;
-    commandList["NOTICE"] = &Server::notice;
-    commandList["MODE"] = &Server::mode;
-    // commandList["TOPIC"] = &Server::topic;
-    commandList["INVITE"] = &Server::invite;
-    commandList["KICK"] = &Server::kick;
-    commandList["PING"] = &Server::ping;
-    commandList["PASS"] = &Server::pass;
+    commandList["PRIVMSG"] = &Server::privMsg; // moi
+    commandList["NOTICE"] = &Server::notice; // moi 
+    commandList["MODE"] = &Server::mode; //duo
+    commandList["TOPIC"] = &Server::topic; //andy
+    commandList["INVITE"] = &Server::invite; //andy
+    commandList["KICK"] = &Server::kick; //andy
+    commandList["PING"] = &Server::ping; // valide 
+    commandList["PASS"] = &Server::pass; // valide 
 }
 
 void Server::create_server(int port, char *password)
@@ -184,29 +183,9 @@ int Server::wait_client()
     }
     return 0;
 }
-void Server::find_cmd()
-{
 
-    std::string word;
-    std::istringstream iss(this->entry); // gerer le parse ":" // alias relire la doc du parse
-    while (iss >> word)
-        this->cmd.push_back(word);
 
-    for (std::map<std::string, CommandFunc>::iterator it = commandList.begin(); it != commandList.end(); ++it)
-    {
-        // std::cout << "1" << "1" << it->first <<  std::endl;
-        if (this->cmd[0] == it->first)
-        {
-
-            (this->*(it->second))();
-            return;
-        }
-    }
-
-    std::cout << "Command not found" << std::endl;
-}
-
-void Server::ReadMsg(std::string bufferClient)
+void Server::ReadMsg(std::string& bufferClient)
 {
 
     char lecture[512];
@@ -222,12 +201,11 @@ void Server::ReadMsg(std::string bufferClient)
         return (this->closeClient("ERR_READ"));
     else if (this->bytes > 0)
     {
-        bufferClient.append(lecture, this->bytes);
+        bufferClient.append(lecture, this->bytes); // marche aps.
         size_t pos = bufferClient.find("\r\n");
         while (pos != std::string::npos)
         {
             this->entry = bufferClient.substr(0, pos);
-            std::cout << this->entry << " je suis dans la boucle "<< std::endl;
             bufferClient.erase(0, pos + 2);
             this->find_cmd();
             pos = bufferClient.find("\r\n");
@@ -235,16 +213,35 @@ void Server::ReadMsg(std::string bufferClient)
     }
 }
 
-// chaque debut de fonction
-// verifier le nombre de params, et si le param correspond a la police par exemple ou a ce qui est attendu.
-// bien connecte.
-// bien dans le bon contexte.
+void Server::find_cmd()
+{
+
+    std::string word;
+    std::istringstream iss(this->entry); // gerer le parse ":" // alias relire la doc du parse
+    while (iss >> word)
+        this->cmd.push_back(word);
+    
+    for (std::map<std::string, CommandFunc>::iterator it = commandList.begin(); it != commandList.end(); ++it)
+    {
+
+        if (this->cmd[0] == it->first)
+        {
+            (this->*(it->second))();
+            this->cmd.clear();
+            return;
+        }
+    }
+    if (this->cmd[0] == "CAP")
+        return ;
+    this->cmd.clear();
+    std::cout << "Command not found" << std::endl;
+}
 
 void Server::PushMsg(std::string msg) // a gerer apres
 {
     msg.push_back('\r');
     msg.push_back('\n'); // a verifie si c'est vraiment la norme.
-    send(this->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+    send(this->clientList[this->nbrclient]->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
     this->events[nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
     this->events[nbrclient].data.fd = this->clientList[nbrclient]->fd;
     epoll_ctl(this->epfd, EPOLL_CTL_MOD, this->fd, &this->events[nbrclient]);

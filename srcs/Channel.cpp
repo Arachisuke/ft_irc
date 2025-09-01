@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Channel.hpp"
+#include "../header/Channel.hpp"
 
 Channel::Channel() : _name(""), _topic(""), _mode(""), _password(""), _maxUsers(-1)
 {
