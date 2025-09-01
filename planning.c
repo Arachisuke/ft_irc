@@ -146,8 +146,35 @@
         
         
 */
-        // PARSE CMD. stdmap cmd = fonction.
-        // fonction
+        // PARSE CMD. stdmap cmd = fonction. @@@
+        // fonction@@@
         // ignorer la cmd CAP. @@@@@
-        // define les msg d'erreur.
-        // reverifier le big_3, pour finalement dire le big_4, CAR C epolldelete close delete(close fd inside) et erase -> message client disconnected. et erreur 
+
+
+
+        // reverifier le big_3, pour finalement dire le big_4, CAR C epolldelete close delete(close fd inside) et erase -> message client disconnected. et erreur @@@@
+
+
+
+// define les msg d'erreur. @@@@@
+// certain message necessite la <cmd> avant le msg d'erreur. 
+
+// password, c'est que a la fin que je dis que c'est faux. apres USER. @@@@@
+
+// push et readmessage a changer . @@@@@
+
+
+
+// decoupe la cmd, find la cmd -> envoie a la fonction execution, ensuite dedans parsing des params, ensuite verifie si je suis connecte, si je suis dans le bon contexte excontext: on me dis exit ou quit alors je suis pas dedans ou je rentre dans un channel alors que je ne peux pas.
+
+
+
+// implementer les commandes.
+// verifier si dans cmd la chaine est bien decouper en cmd -> arg par node.
+// mes message d'erreur je les envoies au server et non pas au client je dois change ca.
+// je dois aussi define tout mes message d'erreur
+// je dois aussi <client> gerer ca
+// je dois aussi gerer le msg special de NICK.
+// verifier tout les commentaire de code.
+
+
