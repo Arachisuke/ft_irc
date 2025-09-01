@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/08/28 13:36:22 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/01 15:02:49 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,9 @@ public:
   Channel *findChannelPtr(std::string &channelName);
   void errorMsg(int codeError, const std::string command, const std::string message, Client &client) const;
 
-  void ReadMsg(std::string bufferClient);
+void  successfullJoin(int i);
+void successfullNick();
+  void ReadMsg(std::string &bufferClient);
   void PushMsg(std::string msg);
 
   int isprint(char c);
