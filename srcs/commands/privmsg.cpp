@@ -10,8 +10,62 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "Client.hpp"
-#include "Server.hpp"
+#include "../../header/Client.hpp"
+#include "../../header/Server.hpp"
+#include "../../header/Channel.hpp"
+
+std::vector<std::string> Server::ft_split(const std::string& str, char delimiter) 
+{
+    std::vector<std::string> result;
+    std::string token;
+    for (size_t i = 0; i < str.size(); ++i) {
+        if (str[i] == delimiter) 
+        {
+            result.push_back(token);
+            token.clear();
+        } 
+        else 
+            token += str[i];
+    }
+    result.push_back(token);
+    return result;
+}
 
 void   Server::privMsg()
-{}
+{
+  std::vector<std::string> list;
+    if (this->cmd.size() - 1 == 0)
+      return(reply(461, "PRIVMSG", "Not Enough Parameters", *this->clientList[this->nbrclient]), (void)0);
+    if (this->clientList[this->nbrclient]->isRegistered == 0)
+  return(reply(451, "PRIVMSG", "You have not registered", *this->clientList[this->nbrclient]), (void)0);
+    list = ft_split(this->cmd[1], ',');
+    for (size_t i = 0; i < list.size(); i++)
+    {
+        if (list[i][0] == '#')
+        {
+            if (findChannel(list[i]) == -1)
+              return(reply(403, "PRIVMSG", ERR_NOSUCHCHANNEL, *this->clientList[this->nbrclient]), (void)0);
+            int n = findChannel(list[i]);
+           std::string msg = ":" + this-> clientList[this->nbrclient]->nickname + "!" + this->clientList[this->nbrclient]->username + "@localhost" + " PRIVMSG " + this->channeList[n]->getName() + " : ";
+            
+            for (size_t i = 2; i < this->cmd.size(); i++)
+                msg += this->cmd[i] + " ";
+            msg += "\r\n";
+            
+            std::set<Client *> users = this->channeList[n]->getUsers();
+            for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
+                send((*it)->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+        }
+        else // client
+        {
+            if (find_client(list[i]) == -1)
+              return(reply(401, "PRIVMSG", ERR_NOSUCHNICK, *this->clientList[this->nbrclient]), (void)0);
+            int n = find_client(list[i]);
+            std::string msg = ":" + this-> clientList[this->nbrclient]->nickname + "!" + this->clientList[this->nbrclient]->username + "@localhost" + " PRIVMSG " + this->clientList[n]->nickname + " : ";
+            for (size_t i = 2; i < this->cmd.size(); i++)
+                    msg += this->cmd[i] + " ";
+                msg += "\r\n";
+            send(this->clientList[n]->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+        }
+    }
+}

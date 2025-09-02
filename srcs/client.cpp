@@ -32,12 +32,3 @@ int Client::Init(int epfd, int hote)
     return (0);
 }
 
-void Client::Send_Welcome() // rajouter le message 2 3 4.
-{
-    std::string welcome_msg =
-        ":Hueco Mundo 001 " + this->nickname +
-        " :Welcome to the Hueco Mundo Network, " + this->nickname + "!~" + this->username + "@localhost\r\n";
-    send(this->fd, welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);
-    this->RPL_WELCOME = 1;
-}
-

@@ -49,6 +49,8 @@
 #define ERR_WASNOSUCHNICK "There was no such nickname"
 
 class Server;
+class Channel;
+
 
 class Client
 {
@@ -60,7 +62,7 @@ public:
     int Init(int epfd, int hote);
 
     int fd;
-    std::vector<std::string> listofchannel;
+    std::vector<Channel *> listofchannel;
     int RPL_WELCOME;
     int RPL_INFO;
     int Password_Status;
