@@ -234,7 +234,7 @@ void Server::find_cmd()
     if (this->cmd[0] == "CAP")
         return ;
     this->cmd.clear();
-    std::cout << "Command not found" << std::endl;
+    send(this->clientList[this->nbrclient]->fd,"Command not found\r\n", 20, MSG_DONTWAIT);
 }
 
 void Server::PushMsg(std::string msg) // a gerer apres

@@ -27,7 +27,7 @@ $(NAME): $(OBJS)
 	$(CXX)  -I$(HEADERS) $(OBJS) -o $@
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(OBJ_SUBDIRS)
-	$(CXX) $(CXXFLAGS) -I$(HEADERS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -I $(HEADERS) -c $< -o $@
 
 # Créer les répertoires d'objets
 $(OBJS_DIR) $(OBJ_SUBDIRS):

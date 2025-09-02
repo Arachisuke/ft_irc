@@ -29,6 +29,9 @@
 #include <cerrno>
 #include <climits>
 #include <csignal>
+#include <vector>
+#include <string>
+#include <iostream>
 #include "Client.hpp"
 
 class Client;
@@ -83,10 +86,14 @@ void successfullNick();
   void load_cmd();
   void find_cmd();
   void executeOrNot();
+  std::vector<std::string> ft_split(const std::string& str, char delimiter);
+
 
   // private:
   std::vector<Client *> clientList;
   std::vector<Channel *> channeList;
+  int whereIsChannel(std::string channel);
+
   std::vector<std::string> cmd;
   std::map<std::string, CommandFunc> commandList;
   struct sockaddr_in hote;
