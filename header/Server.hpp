@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/01 15:02:49 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/02 16:52:20 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@
 #include <climits>
 #include <csignal>
 #include "Client.hpp"
+#include "Channel.hpp"
 
 class Client;
 class Channel;
@@ -72,11 +73,12 @@ public:
   Channel *findChannelPtr(std::string &channelName);
   void errorMsg(int codeError, const std::string command, const std::string message, Client &client) const;
 
-void  successfullJoin(int i);
-void successfullNick();
-  void ReadMsg(std::string &bufferClient);
+  void successfullJoin(int i);
+  void successfullNick();
+  void ReadMsg(Client &client);
   void PushMsg(std::string msg);
 
+  void kickAllClient(std::string &clientToKick, std::string kicker, Channel *channel, std::string reason);
   int isprint(char c);
 
   void reply(int codeError, const std::string command, const std::string message, Client &client) const;
@@ -84,22 +86,22 @@ void successfullNick();
   void find_cmd();
   void executeOrNot();
 
-  // private:
-  std::vector<Client *> clientList;
-  std::vector<Channel *> channeList;
-  std::vector<std::string> cmd;
-  std::map<std::string, CommandFunc> commandList;
-  struct sockaddr_in hote;
-  struct epoll_event events[5];
-  std::string password;
-  std::string entry;
-  std::string buffer;
-  int fd;
+private:
+  std::vector<Client *> _clientList;
+  std::vector<Channel *> _channeList;
+  std::vector<std::string> _cmd;
+  std::map<std::string, CommandFunc> _commandList;
+  struct sockaddr_in _hote;
+  struct epoll_event _events[5];
+  std::string _password;
+  std::string _entry;
+  std::string _buffer;
+  int _fd;
   std::string _serverName;
-  int bytes;
-  int nbrclient;
-  int epfd;
-  int port;
+  int _bytes;
+  int _nbrclient;
+  int _epfd;
+  int _port;
 };
 
 #endif

@@ -3,9 +3,9 @@
 #include "../../header/Channel.hpp"
 int Server::findChannel(std::string channel)
 {
-    for (size_t i = 0; i < this->channeList.size(); i++)
+    for (size_t i = 0; i < this->_channeList.size(); i++)
     {
-        if (this->channeList[i]->getName() == channel)
+        if (this->_channeList[i]->getName() == channel)
             return (i);
     }
     return (-1);
@@ -18,10 +18,10 @@ int Server::imInOrNot(std::string channel)
         return (0);
 
     // Recherche dans le set
-    for (std::set<Client *>::iterator it = this->channeList[channelIndex]->getUsers().begin();
-         it != this->channeList[channelIndex]->getUsers().end(); ++it)
+    for (std::set<Client *>::iterator it = this->_channeList[channelIndex]->getUsers().begin();
+         it != this->_channeList[channelIndex]->getUsers().end(); ++it)
     {
-        if ((*it)->nickname == this->clientList[this->nbrclient]->nickname)
+        if ((*it)->getNickname() == this->_clientList[this->_nbrclient]->getNickname())
             return (1);
     }
     return (0);
@@ -29,64 +29,64 @@ int Server::imInOrNot(std::string channel)
 
 void Server::successfullJoin(int i)
 {
-    std::set<Client *> users = this->channeList[i]->getUsers();
+    std::set<Client *> users = this->_channeList[i]->getUsers();
     for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
     {
-        std::string msg = ":" + this->clientList[this->nbrclient]->nickname + "!" + this->clientList[this->nbrclient]->username + "@localhost" + " JOIN " + this->channeList[i]->getName() + "\r\n";
-        send((*it)->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+        std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " JOIN " + this->_channeList[i]->getName() + "\r\n";
+        send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
     }
-    if (this->channeList[i]->getTopic() != "")
-        std::string topic = ":" + this->_serverName + "332" + this->clientList[this->nbrclient]->nickname + this->channeList[i]->getName() + " :" + this->channeList[i]->getTopic();
-    std::string msg = ":" + this->_serverName + "353" + this->clientList[this->nbrclient]->nickname + " = " + this->channeList[i]->getName() + " : ";
+    if (this->_channeList[i]->getTopic() != "")
+        std::string topic = ":" + this->_serverName + "332" + this->_clientList[this->_nbrclient]->getNickname() + this->_channeList[i]->getName() + " :" + this->_channeList[i]->getTopic();
+    std::string msg = ":" + this->_serverName + "353" + this->_clientList[this->_nbrclient]->getNickname() + " = " + this->_channeList[i]->getName() + " : ";
     for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
     {
-        msg += (*it)->nickname + " ";
+        msg += (*it)->getNickname() + " ";
     }
     msg += "\r\n";
-    send(this->clientList[this->nbrclient]->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
-    std::string msg2 = ":" + this->_serverName + "366" + this->clientList[this->nbrclient]->nickname + this->channeList[i]->getName() + " :End of /NAME list";
-    send(this->clientList[this->nbrclient]->fd, msg2.c_str(), msg2.size(), MSG_DONTWAIT);
+    send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+    std::string msg2 = ":" + this->_serverName + "366" + this->_clientList[this->_nbrclient]->getNickname() + this->_channeList[i]->getName() + " :End of /NAME list";
+    send(this->_clientList[this->_nbrclient]->getFd(), msg2.c_str(), msg2.size(), MSG_DONTWAIT);
 }
 
 void Server::join()
 {
-    if (this->cmd.size() - 1 == 0)
+    if (this->_cmd.size() - 1 == 0)
         return (std::cout << "ERR_NEEDMOREPARAMS" << std::endl, (void)0);
-    if (this->clientList[this->nbrclient]->isRegistered == 0)
+    if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
         return (std::cout << "ERR_NOTREGISTRED" << std::endl, (void)0);
-    if (this->cmd[1][0] != '#')
+    if (this->_cmd[1][0] != '#')
         return (std::cout << "ERR_NOSUCHCHANNEL" << std::endl, (void)0);
 
-    if (findChannel(this->cmd[1]) != -1) // channel exist
+    if (findChannel(this->_cmd[1]) != -1) // channel exist
     {
-        int i = findChannel(this->cmd[1]);
-        if (this->channeList[i]->getModes('i')) // invite only
+        int i = findChannel(this->_cmd[1]);
+        if (this->_channeList[i]->getModes('i')) // invite only
             return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
-        if (this->channeList[i]->getModes('k')) // key only
+        if (this->_channeList[i]->getModes('k')) // key only
             return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
-        if (this->channeList[i]->getModes('l')) // limit only
+        if (this->_channeList[i]->getModes('l')) // limit only
             return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
-        if (this->channeList[i]->getModes('o')) // a changer
+        if (this->_channeList[i]->getModes('o')) // a changer
             return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
-        if (this->channeList[i]->getModes('t')) // a changer
+        if (this->_channeList[i]->getModes('t')) // a changer
             return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
-        if (imInOrNot(this->cmd[1]))
+        if (imInOrNot(this->_cmd[1]))
             return (std::cout << "ERR_USERONCHANNEL" << std::endl, (void)0);
-        this->channeList[i]->setUsers(this->clientList[this->nbrclient]);
+        this->_channeList[i]->setUsers(this->_clientList[this->_nbrclient]);
         this->successfullJoin(i);
     }
     else // donne les droits.
     {
         Channel *newChannel = new Channel();
-        newChannel->setName(this->cmd[1]);
-        this->channeList.push_back(newChannel);
-        this->successfullJoin(this->channeList.size() - 1);
-        this->channeList[this->channeList.size() - 1]->setUsers(this->clientList[this->nbrclient]);
-        this->channeList[this->channeList.size() - 1]->addOperator(this->clientList[this->nbrclient]);
-        this->channeList[this->channeList.size() - 1]->setTopicSetter(this->clientList[this->nbrclient]->nickname);
-        this->channeList[this->channeList.size() - 1]->setTopic("");
+        newChannel->setName(this->_cmd[1]);
+        this->_channeList.push_back(newChannel);
+        this->successfullJoin(this->_channeList.size() - 1);
+        this->_channeList[this->_channeList.size() - 1]->setUsers(this->_clientList[this->_nbrclient]);
+        this->_channeList[this->_channeList.size() - 1]->addOperator(this->_clientList[this->_nbrclient]);
+        this->_channeList[this->_channeList.size() - 1]->setTopicSetter(this->_clientList[this->_nbrclient]->getNickname());
+        this->_channeList[this->_channeList.size() - 1]->setTopic("");
     }
-    if (this->cmd[2] == "0")
+    if (this->_cmd[2] == "0")
         ;
     // PART supprime le client de tout les channels.
 }
