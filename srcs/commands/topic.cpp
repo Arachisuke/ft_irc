@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:02 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/28 14:10:41 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/02 17:11:22 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,38 +16,40 @@
 
 void Server::topic()
 {
-	if (!clientList[nbrclient]->isRegistered)
-		return (errorMsg(451, cmd[0], "You have not registered", *clientList[nbrclient]), (void)0);
-	if (cmd.size() < 3)
-		return (errorMsg(461, cmd[0], "Not enough parameters", *clientList[nbrclient]), (void)0);
-	Channel *channel = findChannelPtr(cmd[1]);
+	if (!_clientList[_nbrclient]->getisRegistered())
+		return (errorMsg(451, _cmd[0], "You have not registered", *_clientList[_nbrclient]), (void)0);
+	if (_cmd.size() < 3)
+		return (errorMsg(461, _cmd[0], "Not enough parameters", *_clientList[_nbrclient]), (void)0);
+	Channel *channel = findChannelPtr(_cmd[1]);
 	if (!channel)
-		return (errorMsg(403, cmd[2], "No such channel", *clientList[nbrclient]), (void)0);
-	if (cmd.size() == 3)
+		return (errorMsg(403, _cmd[2], "No such channel", *_clientList[_nbrclient]), (void)0);
+	if (!channel->checkChannelNorm(_cmd[1]))
+		return (errorMsg(476, "TOPIC", "Bad Channel Mask", *_clientList[_nbrclient]));
+	if (_cmd.size() == 3)
 	{
 		if (channel->getTopic().empty())
-			reply(331, cmd[1], ":No topic is set", *clientList[nbrclient]);
+			reply(331, _cmd[1], ":No topic is set", *_clientList[_nbrclient]);
 		else
 		{
-			reply(332, cmd[1], channel->getTopic(), *clientList[nbrclient]);
-			reply(332, cmd[1], channel->getTopicSetter(), *clientList[nbrclient]);
+			reply(332, _cmd[1], channel->getTopic(), *_clientList[_nbrclient]);
+			reply(332, _cmd[1], channel->getTopicSetter(), *_clientList[_nbrclient]);
 		}
 		return;
 	}
-	if (!channel->isMember(clientList[nbrclient]))
-		return (errorMsg(442, cmd[2], "You're not on that channel", *clientList[nbrclient]), (void)0);
-	if (channel->getModes('t') && !channel->isOperator(clientList[nbrclient]))
-		return (errorMsg(482, cmd[2], "You're not channel operator", *clientList[nbrclient]), (void)0);
+	if (!channel->isMember(_clientList[_nbrclient]))
+		return (errorMsg(442, _cmd[2], "You're not on that channel", *_clientList[_nbrclient]), (void)0);
+	if (channel->getModes('t') && !channel->isOperator(_clientList[_nbrclient]))
+		return (errorMsg(482, _cmd[2], "You're not channel operator", *_clientList[_nbrclient]), (void)0);
 	std::string newTopic;
-	if (cmd[3][0] == ':')
-		newTopic = cmd[3].substr(1);
+	if (_cmd[3][0] == ':')
+		newTopic = _cmd[3].substr(1);
 	else
-		newTopic = cmd[3];
+		newTopic = _cmd[3];
 	channel->setTopic(newTopic);
-	channel->setTopicSetter(clientList[nbrclient]->nickname);
+	channel->setTopicSetter(_clientList[_nbrclient]->getNickname());
 	std::ostringstream topicAdvert;
-	topicAdvert << ":" << clientList[nbrclient]->nickname << " TOPIC " << cmd[1] << " :" << newTopic << "\r\n";
+	topicAdvert << ":" << _clientList[_nbrclient]->getNickname() << " TOPIC " << _cmd[1] << " :" << newTopic << "\r\n";
 	const std::set<Client *> &users = channel->getUsers();
 	for (std::set<Client *>::const_iterator it = users.begin(); it != users.end(); it++)
-		send((*it)->fd, topicAdvert.str().c_str(), topicAdvert.str().size(), MSG_DONTWAIT);
+		send((*it)->getFd(), topicAdvert.str().c_str(), topicAdvert.str().size(), MSG_DONTWAIT);
 }

@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/28 14:53:31 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/02 16:54:22 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,15 @@ public:
     bool isBannedClient(Client *client) const; // check set _banned si deja dans la liste
     bool channelIsFull();
 
-    // Channel status
+    // Getters
     bool getModes(char modes) const;
     const std::string &getName() const;
     const std::string &getTopic() const;
     const std::string &getTopicSetter() const;
+    int checkChannelNorm(const std::string &channelName) const;
+    const std::set<Client *> &getUsers() const;
 
-    // Channel Management
+    // Setters
     void setModes(char modes);
     void setMaxUsers(int maxUsers);
     void setName(const std::string &name);
@@ -50,10 +52,8 @@ public:
     void setUsers(Client *client);
 
     // Clients Management
-    const std::set<Client *> &getUsers() const;
     void inviteClient(Client *client);             // ajoute client a set _invited
     void banClient(Client *client);                // ajoute client a set _banned
-    void addClient(Client *newClient);             // ajoute client a set _users
     void addOperator(Client *newClient);           // ajoute client a set _operator
     void removeClient(Client *clientToRemove);     // remove from every set <>
     void removeOperator(Client *operatorToRemove); // remove from operator only

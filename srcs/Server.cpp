@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   server.cpp                                         :+:      :+:    :+:   */
+/*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/02 17:04:00 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/02 16:10:41 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -248,9 +248,3 @@ void Server::PushMsg(std::string msg) // a gerer apres
     epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_fd, &this->_events[_nbrclient]);
 }
 
-void Server::reply(int codeError, const std::string command, const std::string message, Client &client) const
-{
-    std::ostringstream ost;
-    ost << ":" << this->_serverName << " " << codeError << " " << client.getNickname() << " " << command << " :" << message << "\r\n";
-    send(client.getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
-}
