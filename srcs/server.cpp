@@ -79,18 +79,19 @@ int Server::Init()
 void Server::closeClient(std::string ERROR_MSG)
 {
     if (!ERROR_MSG.empty())
-        this->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
+        this->PushMsg(ERROR_MSG);
     if (this->clientList[this->nbrclient])
     {
         if (this->clientList[this->nbrclient]->fd > 0)
         {
             {
                 close(this->clientList[this->nbrclient]->fd);
-                epoll_ctl(this->epfd, EPOLL_CTL_DEL, this->clientList[this->nbrclient]->fd, NULL); // CTLDEL
+                epoll_ctl(this->epfd, EPOLL_CTL_DEL, this->clientList[this->nbrclient]->fd, NULL); 
             }
         }
-        delete this->clientList[this->nbrclient];                           // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
-        this->clientList.erase(this->clientList.begin() + this->nbrclient); // ERASE
+        
+        delete this->clientList[this->nbrclient];                          
+        this->clientList.erase(this->clientList.begin() + this->nbrclient); 
     }
     return;
 }
@@ -101,9 +102,9 @@ void Server::load_cmd() // sans pass
     
     commandList["NICK"] = &Server::nick; // valide
     commandList["USER"] = &Server::user; // valide
-    commandList["QUIT"] = &Server::quit;
+    commandList["QUIT"] = &Server::quit; // moi
     commandList["JOIN"] = &Server::join; // moi
-    commandList["PART"] = &Server::part;
+    commandList["PART"] = &Server::part; // moi 
     commandList["PRIVMSG"] = &Server::privMsg; // moi
     commandList["NOTICE"] = &Server::notice; // moi 
     commandList["MODE"] = &Server::mode; //duo
@@ -168,7 +169,7 @@ int Server::wait_client()
         }
         else if (this->events[i].data.fd != this->fd)
         {
-            nbrclient = find_client(this->events[i].data.fd); // correction erreur assignation nbrclient
+            nbrclient = find_client(this->events[i].data.fd); 
             if (this->events[i].events == EPOLLIN)
                 this->ReadMsg(this->clientList[this->nbrclient]->buffer);
             else if (this->events[i].events == EPOLLOUT)
@@ -208,23 +209,24 @@ void Server::ReadMsg(std::string& bufferClient)
             this->entry = bufferClient.substr(0, pos);
             bufferClient.erase(0, pos + 2);
             this->find_cmd();
+            this->entry.clear();
             pos = bufferClient.find("\r\n");
         }
     }
 }
 
-void Server::find_cmd()
+void Server::find_cmd() // # : etc
 {
-
+    this->cmd.clear();
     std::string word;
-    std::istringstream iss(this->entry); // gerer le parse ":" // alias relire la doc du parse
+    std::istringstream iss(this->entry);
     while (iss >> word)
-        this->cmd.push_back(word);
+            this->cmd.push_back(word);
     
     for (std::map<std::string, CommandFunc>::iterator it = commandList.begin(); it != commandList.end(); ++it)
     {
 
-        if (this->cmd[0] == it->first)
+        if (!this->cmd[0].empty() && this->cmd[0] == it->first)
         {
             (this->*(it->second))();
             this->cmd.clear();
@@ -234,13 +236,13 @@ void Server::find_cmd()
     if (this->cmd[0] == "CAP")
         return ;
     this->cmd.clear();
-    std::cout << "Command not found" << std::endl;
+    send(this->clientList[this->nbrclient]->fd,"Command not found\r\n", 20, MSG_DONTWAIT);
 }
 
-void Server::PushMsg(std::string msg) // a gerer apres
+void Server::PushMsg(std::string msg) 
 {
     msg.push_back('\r');
-    msg.push_back('\n'); // a verifie si c'est vraiment la norme.
+    msg.push_back('\n');
     send(this->clientList[this->nbrclient]->fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
     this->events[nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
     this->events[nbrclient].data.fd = this->clientList[nbrclient]->fd;
