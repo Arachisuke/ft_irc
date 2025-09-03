@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/08/28 14:52:15 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/02 18:40:36 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,7 @@ void Channel::banClient(Client *client)
 {
     _banned.insert(client);
 }
-void Channel::addClient(Client *newClient)
-{
-    _users.insert(newClient);
-}
+
 void Channel::addOperator(Client *client)
 {
     _operators.insert(client);
@@ -121,3 +118,19 @@ const std::string &Channel::getName() const
 {
     return (_name);
 }
+
+int Channel::checkChannelNorm(const std::string &channelName) const
+{
+    if (channelName[0] != '#' && channelName[0] != '&' && channelName[0] != '+' && channelName[0] != '!')
+        return (0);
+    if (channelName.length() > 50 || channelName.length() == 1)
+        return (0);
+    for (size_t i = 0; i < channelName.length(); i++)
+    {
+        if (channelName[i] == ' ' || channelName[i] == ',' || channelName[i] == '\r' || channelName[i] == '\n' || channelName[i] == '\0')
+            return (0);
+    }
+    return (1);
+}
+
+
