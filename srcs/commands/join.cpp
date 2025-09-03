@@ -54,8 +54,6 @@ void Server::join()
             std::vector<Channel *> list = this->_clientList[this->_nbrclient]->getlistofchannel();
             for (size_t i = 0; i < list.size(); i++)
                 {
-                    std::cout << "JOIN : 0 nameofchannel " << list[i]->getName() << std::endl;
-                    std::cout << list.size() << std::endl;
                    if (!list[i]->isMember(this->_clientList[this->_nbrclient]))
                        return(reply(442, "JOIN", "You're not on that channel", *this->_clientList[this->_nbrclient]), (void)0);
                    std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " JOIN " + list[i]->getName();
