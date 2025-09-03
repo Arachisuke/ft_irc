@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/02 17:09:33 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/02 18:40:36 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,4 +132,5 @@ int Channel::checkChannelNorm(const std::string &channelName) const
     }
     return (1);
 }
+
 

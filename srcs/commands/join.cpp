@@ -11,20 +11,14 @@ int Server::findChannel(std::string channel)
     return (-1);
 }
 
-int Server::imInOrNot(std::string channel)
+int Server::whereIsChannel(std::string channel)
 {
-    int channelIndex = findChannel(channel);
-    if (channelIndex == -1)
-        return (0);
-
-    // Recherche dans le set
-    for (std::set<Client *>::iterator it = this->_channeList[channelIndex]->getUsers().begin();
-         it != this->_channeList[channelIndex]->getUsers().end(); ++it)
+    for (size_t i = 0; i < this->_clientList[this->_nbrclient]->getlistofchannel().size(); i++)
     {
-        if ((*it)->getNickname() == this->_clientList[this->_nbrclient]->getNickname())
-            return (1);
+        if (this->_clientList[this->_nbrclient]->getlistofchannel()[i]->getName() == channel)
+            return (i);
     }
-    return (0);
+    return (-1);
 }
 
 void Server::successfullJoin(int i)
@@ -36,92 +30,86 @@ void Server::successfullJoin(int i)
         send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
     }
     if (this->_channeList[i]->getTopic() != "")
-        std::string topic = ":" + this->_serverName + "332" + this->_clientList[this->_nbrclient]->getNickname() + this->_channeList[i]->getName() + " :" + this->_channeList[i]->getTopic();
-    std::string msg = ":" + this->_serverName + "353" + this->_clientList[this->_nbrclient]->getNickname() + " = " + this->_channeList[i]->getName() + " : ";
-    for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
-    {
+        std::string topic = ":" + this->_serverName + " 332 " + this->_clientList[this->_nbrclient]->getNickname() + this->_channeList[i]->getName() + " :" + this->_channeList[i]->getTopic();
+    std::string msg = ":" + this->_serverName + " 353 " + this->_clientList[this->_nbrclient]->getNickname() + " = " + this->_channeList[i]->getName() + " : ";
+    for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++) // afficher les membres
         msg += (*it)->getNickname() + " ";
-    }
     msg += "\r\n";
     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
-    std::string msg2 = ":" + this->_serverName + "366" + this->_clientList[this->_nbrclient]->getNickname() + this->_channeList[i]->getName() + " :End of /NAME list";
+    std::string msg2 = ":" + this->_serverName + " 366 " + this->_clientList[this->_nbrclient]->getNickname() + " " + this->_channeList[i]->getName() + " :End of /NAME list" + "\r\n";
     send(this->_clientList[this->_nbrclient]->getFd(), msg2.c_str(), msg2.size(), MSG_DONTWAIT);
 }
 
 void Server::join()
 {
+    std::vector<std::string> list;
     if (this->_cmd.size() - 1 == 0)
-        return (std::cout << "ERR_NEEDMOREPARAMS" << std::endl, (void)0);
+        return (reply(461, "JOIN", "Not Enough Parameters", *this->_clientList[this->_nbrclient]), (void)0);
     if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-        return (std::cout << "ERR_NOTREGISTRED" << std::endl, (void)0);
-    if (this->_cmd[1][0] != '#')
-        return (std::cout << "ERR_NOSUCHCHANNEL" << std::endl, (void)0);
+        return (reply(451, "JOIN", "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
 
-    if (findChannel(this->_cmd[1]) != -1) // channel exist
+    list = ft_split(this->_cmd[1], ',');
+    for (size_t j = 0; j < list.size(); j++)
     {
-        int i = findChannel(this->_cmd[1]);
-        if (this->_channeList[i]->getModes('i')) // invite only
-            return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
-        if (this->_channeList[i]->getModes('k')) // key only
-            return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
-        if (this->_channeList[i]->getModes('l')) // limit only
-            return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
-        if (this->_channeList[i]->getModes('o')) // a changer
-            return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
-        if (this->_channeList[i]->getModes('t')) // a changer
-            return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
-        if (imInOrNot(this->_cmd[1]))
-            return (std::cout << "ERR_USERONCHANNEL" << std::endl, (void)0);
-        this->_channeList[i]->setUsers(this->_clientList[this->_nbrclient]);
-        this->successfullJoin(i);
+        if (list[j][0] != '#')
+            return (reply(403, "JOIN", ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]), (void)0);
+
+        if (findChannel(list[j]) != -1) // channel exist
+        {
+            int i = findChannel(list[j]);
+            if (this->_channeList[i]->getModes('i')) // invite only
+                return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
+            if (this->_channeList[i]->getModes('k')) // key only
+                return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
+            if (this->_channeList[i]->getModes('l')) // limit only
+                return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
+            if (this->_channeList[i]->getModes('o')) // a changer
+                return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
+            if (this->_channeList[i]->getModes('t')) // a changer
+                return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
+            if (this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
+            {
+                std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " JOIN " + this->_channeList[i]->getName() + " is already on channel" + "\r\n";
+                send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT); // a verifie car c'est que pour NICK ce msg.
+            }
+            this->_channeList[i]->setUsers(this->_clientList[this->_nbrclient]);
+            this->_clientList[this->_nbrclient]->setListOfchannel().push_back(this->_channeList[i]);
+            this->successfullJoin(i);
+        }
+        else // donne les droits.
+        {
+            Channel *newChannel = new Channel();
+            newChannel->setName(list[j]);
+            this->_channeList.push_back(newChannel);
+            this->_channeList[this->_channeList.size() - 1]->setUsers(this->_clientList[this->_nbrclient]);
+            this->_clientList[this->_nbrclient]->setListOfchannel().push_back(newChannel);
+            this->_channeList[this->_channeList.size() - 1]->addOperator(this->_clientList[this->_nbrclient]);
+            this->_channeList[this->_channeList.size() - 1]->setTopicSetter(this->_clientList[this->_nbrclient]->getNickname());
+            this->_channeList[this->_channeList.size() - 1]->setTopic("");
+            this->successfullJoin(this->_channeList.size() - 1);
+        }
     }
-    else // donne les droits.
+
+    if (this->_cmd[1] == "0")
     {
-        Channel *newChannel = new Channel();
-        newChannel->setName(this->_cmd[1]);
-        this->_channeList.push_back(newChannel);
-        this->successfullJoin(this->_channeList.size() - 1);
-        this->_channeList[this->_channeList.size() - 1]->setUsers(this->_clientList[this->_nbrclient]);
-        this->_channeList[this->_channeList.size() - 1]->addOperator(this->_clientList[this->_nbrclient]);
-        this->_channeList[this->_channeList.size() - 1]->setTopicSetter(this->_clientList[this->_nbrclient]->getNickname());
-        this->_channeList[this->_channeList.size() - 1]->setTopic("");
+        const std::vector<Channel *> &list = this->_clientList[this->_nbrclient]->getlistofchannel();
+        for (size_t i = 0; i < list.size(); i++)
+        {
+            if (!list[i]->isMember(this->_clientList[this->_nbrclient]))
+                return (reply(442, "PART", "You're not on that channel", *this->_clientList[this->_nbrclient]), (void)0);
+            std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PART " + list[i]->getName();
+            if (this->_cmd[2] != "")
+                msg += " :" + this->_cmd[2];
+            msg += "\r\n";
+            std::set<Client *> users = list[i]->getUsers();
+            for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
+                send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+            list[i]->removeClient(this->_clientList[this->_nbrclient]);
+            if (list[i]->getUsers().empty())
+                delete this->_channeList[i];
+            this->_channeList.erase(this->_channeList.begin() + i);
+            int b = whereIsChannel(list[i]->getName());
+            this->_clientList[this->_nbrclient]->setListOfchannel().erase(this->_clientList[this->_nbrclient]->setListOfchannel().begin() + b);
+        }
     }
-    if (this->_cmd[2] == "0")
-        ;
-    // PART supprime le client de tout les channels.
 }
-
-/*
-
-  etape 0; verifie si je peux accede au channel selon son mode et si je suis pas deja dedans.
-  etape 1; integrer a la class client lui dire qu'il est bien dans le channel via un int ou un bool.
-  etape 2; integrer a la class channel lui dire qu'il y a un nouveau membre dans sa listofmembre.
-  etape 3; envoyer a tout les membres du channel le message de join.
-  etape 4; envoyer au client qui join le topic du channel.
-  etape 5; envoyer au client qui join la listofmembre du channel.
-  etape 6; envoyer au client qui join le mode du channel.
-*/
-
-// etape 1; integrer a la class client lui dire qu'il est bien dans le channel via un int ou un bool.
-// etape 2; integrer a la class channel lui dire qu'il y a un nouveau membre dans sa listofmembre.
-// etape 3; envoyer a tout les membres du channel le message de join.
-// etape 4; envoyer au client qui join le topic du channel.
-// etape 5; envoyer au client qui join la listofmembre du channel.
-// etape 6; envoyer au client qui join le mode du channel.
-// etape 7; envoyer au client qui join le limit du channel.
-// etape 8; envoyer au client qui join le key du channel.
-// etape 9; envoyer au client qui join le invite du channel.
-// etape 10; envoyer au client qui join le ban du channel.
-// etape 11; envoyer au client qui join le exception du channel.
-// le rendre operateur du channel.
-
-// they receive all relevant information about that channel including the JOIN, PART, KICK, and MODE messages affecting the channel
-// if successfull, <client> nameofchannel
-// RPLTOPIC MSG.
-// all client membre of the channel en comptant le client qui viens de join.
-// RPLNAMREPLY
-// RPL_ENDOFNAMES
-// modeofchannel a implementer ici.
-// limitofchannel ?
-
-// channel1 channel2   key1 key2

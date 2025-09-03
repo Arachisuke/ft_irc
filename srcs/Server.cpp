@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/02 16:10:41 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/03 13:11:47 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void Server::closeClient(std::string ERROR_MSG)
                 epoll_ctl(this->_epfd, EPOLL_CTL_DEL, this->_clientList[this->_nbrclient]->getFd(), NULL); // CTLDEL
             }
         }
-        delete this->_clientList[this->_nbrclient];                           // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
+        delete this->_clientList[this->_nbrclient];                            // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
         this->_clientList.erase(this->_clientList.begin() + this->_nbrclient); // ERASE
     }
     return;
@@ -184,7 +184,7 @@ int Server::wait_client()
     return 0;
 }
 
-void Server::ReadMsg(Client & client)
+void Server::ReadMsg(Client &client)
 {
 
     char lecture[512];
@@ -220,7 +220,7 @@ void Server::find_cmd()
     while (iss >> word)
         this->_cmd.push_back(word);
     if (this->_cmd.empty())
-        return ;
+        return;
     std::map<std::string, CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
 
     if (it != _commandList.end())
@@ -234,6 +234,8 @@ void Server::find_cmd()
         this->_cmd.clear();
         return;
     }
+    if (this->_cmd[0] == "CAP")
+        return;
     this->_cmd.clear();
     std::cout << "Command not found" << std::endl;
 }
@@ -248,3 +250,10 @@ void Server::PushMsg(std::string msg) // a gerer apres
     epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_fd, &this->_events[_nbrclient]);
 }
 
+
+void Server::reply(int codeError, const std::string command, const std::string message, Client &client) const
+{
+    std::ostringstream ost;
+    ost << ":" << this->_serverName << " " << codeError << " " << client.getNickname() << " " << command << " :" << message << "\r\n";
+    send(client.getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+}

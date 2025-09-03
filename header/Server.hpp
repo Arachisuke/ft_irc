@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/02 16:52:20 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/03 12:57:42 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@
 #include <cerrno>
 #include <climits>
 #include <csignal>
+#include <vector>
+#include <string>
+#include <iostream>
 #include "Client.hpp"
 #include "Channel.hpp"
 
@@ -63,6 +66,11 @@ public:
   int findChannel(std::string channel);
   int imInOrNot(std::string channel);
 
+  const std::vector<Client *> & getClientList() const;
+  const std::vector<Channel *> & getChannelList() const;
+  int getNbrClient() const;
+  const std::vector<std::string> getCmd() const;
+
   int Init();
   void create_server(int port, char *password);
   void Finish();
@@ -85,10 +93,13 @@ public:
   void load_cmd();
   void find_cmd();
   void executeOrNot();
+  std::vector<std::string> ft_split(const std::string &str, char delimiter);
 
 private:
   std::vector<Client *> _clientList;
   std::vector<Channel *> _channeList;
+  int whereIsChannel(std::string channel);
+
   std::vector<std::string> _cmd;
   std::map<std::string, CommandFunc> _commandList;
   struct sockaddr_in _hote;

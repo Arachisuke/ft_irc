@@ -10,7 +10,7 @@ SRCS_DIR := ./srcs
 OBJS_DIR := ./objs
 HEADERS := header
 
-FILES := main.cpp client.cpp server.cpp Channel.cpp \
+FILES := main.cpp Client.cpp Server.cpp Channel.cpp \
 	commands/invite.cpp  commands/kick.cpp commands/mode.cpp \
 	commands/notice.cpp commands/part.cpp commands/ping.cpp commands/privmsg.cpp \
 	commands/quit.cpp commands/registration.cpp commands/join.cpp commands/topic.cpp
@@ -27,7 +27,7 @@ $(NAME): $(OBJS)
 	$(CXX)  -I$(HEADERS) $(OBJS) -o $@
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp | $(OBJ_SUBDIRS)
-	$(CXX) $(CXXFLAGS) -I$(HEADERS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -I $(HEADERS) -c $< -o $@
 
 # Créer les répertoires d'objets
 $(OBJS_DIR) $(OBJ_SUBDIRS):
