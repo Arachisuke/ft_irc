@@ -1,0 +1,45 @@
+tester les users affiche en entrant en second dans un channel ca n'affiche pas le membre qui vient actuellement d'entrer ca affiche que le premier membre @@@
+
+privmsg -> j'envoie que un mot et pas tout le msg. @@@@@
+privmsg -> channel et clients @@@@@
+privmsg -> double USER, et channel. @@@@
+
+JOIN -> PART @@
+JOIN -> multiple @@@@
+JOIN -> MODE.
+
+
+PART -> a tester @@@
+
+le parsing a gerer quand ya : lire la doc etc.
+
+
+
+PART -> quitter, le erase de la liste des users et de sa propre liste des channels, et s'il est le dernier delete le channel. @@@
+
+
+
+list des channels via server  @@@@
+list des users du channel via servers@@@@ 
+list des channels via user. @@@@
+
+
+
+// mauvais mot de passe ca me deco, je me reco ca segfault. ..
+
+
+
+je me suis tormpe dans le mdp il a pas change c normal ? peut etre oui vu que javais pas fini la norme du coup ca a fait un mauvais mdp @@@@
+
+
+jai ressaye ca a coupe le fd, normal du coup je me reconnecte ca marche aps et je fais segfault le server ..
+aussi c'est que les autres ont ete alerte par mon nick, mais du coup j'ai pas reussi a me co, doit-je les informer meme quand je rate ou je dois attendre d'avoir fini la registration de maniere safe.
+
+
+// segfault quand je fais part ? @@@@
+// a reason "k" ? alors que j'ai rien envoyer ??? @@@
+
+??????????????? probleme en cours celui juste au dessus.
+tester une condition differente ? @@@
+
+// relire join t'as deconne sur le code relis bien c'est channel liste etc et tu supprimais liste qui etait une ref.
