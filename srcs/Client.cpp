@@ -84,7 +84,7 @@ int Client::getFd() const
 {
     return (_fd);
 }
-const std::vector<std::string> &Client::getlistofchannel() const
+const std::vector<Channel *> &Client::getlistofchannel() const
 {
     return (_listofchannel);
 }
@@ -105,10 +105,10 @@ int Client::getisRegistered() const
     return (_isRegistered);
 }
 
-void Client::setListOfChannel(std::string channelName)
-{
-    _listofchannel.push_back(channelName);
-}
+// void Client::setListOfChannel(std::string channelName)
+// {
+//     _listofchannel.push_back(channelName);
+// }
 void Client::setFd(int fd)
 {
     _fd = fd;
@@ -128,4 +128,9 @@ void Client::setUsernameStatus(int userNameStatus)
 void Client::setIsRegistered(int isRegistered)
 {
     _isRegistered = isRegistered;
+}
+
+std::vector<Channel *> Client::setListOfchannel()
+{
+    return (_listofchannel);
 }

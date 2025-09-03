@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/02 16:54:07 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/03 12:54:33 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@
 #define ERR_WASNOSUCHNICK "There was no such nickname"
 
 class Server;
+class Channel;
+
 
 class Client
 {
@@ -65,19 +67,20 @@ public:
     void setUsername(std::string userName);
     void setMode(std::string mode);
     std::string setBuffer();
-    void setListOfChannel(std::string channelName);
+    // void setListOfChannel(std::string channelName);
     void setFd(int fd);
     void setPasswordStatus(int passwordStatus);
     void setNicknameStatus(int nickNameStatus);
     void setUsernameStatus(int userNameStatus);
     void setIsRegistered(int isRegistered);
+    std::vector<Channel *> setListOfchannel();
 
     const std::string getPrefiks() const;
     const std::string getNickname() const;
     const std::string getUsername() const;
     const std::string getMode() const;
     const std::string getBuffer() const;
-    const std::vector<std::string> &getlistofchannel() const;
+    const std::vector<Channel *> &getlistofchannel() const;
     int getFd() const;
     int getPassword_Status() const;
     int getNickname_Status() const;
@@ -86,7 +89,7 @@ public:
 
 private:
     int _fd;
-    std::vector<std::string> _listofchannel;
+    std::vector<Channel *> _listofchannel;
     int _Password_Status;
     int _Nickname_Status;
     int _Username_Status;

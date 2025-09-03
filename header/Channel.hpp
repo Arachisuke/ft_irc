@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/02 16:54:22 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/02 18:43:07 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,21 @@
 #include <vector>
 #include <set>
 #include "Client.hpp"
+
+#define MAX_EVENTS 10
+#define ERR_NEEDMOREPARAMS "Not Enough Parameters"
+#define ERR_ALREADYREGISTRED "You may not reregister"
+#define ERR_PASSWDMISMATCH "Password Incorrect"
+#define ERR_ERRONEUSNICKNAME "Erroneus Nickname"
+#define ERR_NICKNAMEINUSE "Nickname is already in use"
+#define ERR_NONICKNAMEGIVEN "No nickname given"
+#define ERR_TOOMANYARGS "Too many arguments"
+#define ERR_UNKNOWNCOMMAND "Unknown command"
+#define ERR_NOSUCHNICK "No such nick/channel"
+#define ERR_NOSUCHCHANNEL "No such channel"
+#define ERR_CANNOTSENDTOCHAN "Cannot send to channel"
+#define ERR_TOOMANYCHANNELS "Too many channels"
+#define ERR_WASNOSUCHNICK "There was no such nickname"
 
 class Client;
 
@@ -50,7 +65,7 @@ public:
     void setTopic(const std::string &newTopic);
     void setTopicSetter(const std::string &newTopicSetter);
     void setUsers(Client *client);
-
+    
     // Clients Management
     void inviteClient(Client *client);             // ajoute client a set _invited
     void banClient(Client *client);                // ajoute client a set _banned
