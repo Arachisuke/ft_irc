@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/03 12:54:33 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/03 16:50:10 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ public:
     void setNickname(std::string nickName);
     void setUsername(std::string userName);
     void setMode(std::string mode);
-    std::string setBuffer();
+    std::string & setBuffer();
     // void setListOfChannel(std::string channelName);
     void setFd(int fd);
     void setPasswordStatus(int passwordStatus);

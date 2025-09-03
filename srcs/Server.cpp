@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/03 13:11:47 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/03 16:56:39 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,7 +170,7 @@ int Server::wait_client()
         {
             _nbrclient = find_client(this->_events[i].data.fd); // correction erreur assignation nbrclient
             if (this->_events[i].events == EPOLLIN)
-                this->ReadMsg(*this->_clientList[this->_nbrclient]);
+                this->ReadMsg(this->_clientList[this->_nbrclient]->setBuffer());
             else if (this->_events[i].events == EPOLLOUT)
                 this->PushMsg("MON MSG");
             else if (this->_events[i].events == EPOLLHUP)
@@ -184,7 +184,7 @@ int Server::wait_client()
     return 0;
 }
 
-void Server::ReadMsg(Client &client)
+void Server::ReadMsg(std::string& bufferClient)
 {
 
     char lecture[512];
@@ -200,44 +200,37 @@ void Server::ReadMsg(Client &client)
         return (this->closeClient("ERR_READ"));
     else if (this->_bytes > 0)
     {
-        client.setBuffer().append(lecture, this->_bytes); // marche aps.
-        size_t pos = client.getBuffer().find("\r\n");
+        bufferClient.append(lecture, this->_bytes); // marche aps.
+        size_t pos = bufferClient.find("\r\n");
         while (pos != std::string::npos)
         {
-            this->_entry = client.getBuffer().substr(0, pos);
-            client.setBuffer().erase(0, pos + 2);
+            this->_entry = bufferClient.substr(0, pos);
+            bufferClient.erase(0, pos + 2);
             this->find_cmd();
-            pos = client.getBuffer().find("\r\n");
+            this->_entry.clear();
+            pos = bufferClient.find("\r\n");
         }
     }
 }
 
 void Server::find_cmd()
 {
-
     std::string word;
     std::istringstream iss(this->_entry); // gerer le parse ":" // alias relire la doc du parse
+    this->_cmd.clear();
     while (iss >> word)
         this->_cmd.push_back(word);
     if (this->_cmd.empty())
         return;
     std::map<std::string, CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
-
     if (it != _commandList.end())
     {
         (this->*(it->second))();
-        this->_cmd.clear();
-        return;
-    }
-    if (this->_cmd[0] == "CAP")
-    {
-        this->_cmd.clear();
         return;
     }
     if (this->_cmd[0] == "CAP")
         return;
-    this->_cmd.clear();
-    std::cout << "Command not found" << std::endl;
+    send(this->_clientList[this->_nbrclient]->getFd(),"Command not found\r\n", 20, MSG_DONTWAIT);
 }
 
 void Server::PushMsg(std::string msg) // a gerer apres
