@@ -25,7 +25,6 @@ list des channels via user. @@@@
 
 
 
-// mauvais mot de passe ca me deco, je me reco ca segfault. ..
 
 
 
@@ -42,4 +41,10 @@ aussi c'est que les autres ont ete alerte par mon nick, mais du coup j'ai pas re
 ??????????????? probleme en cours celui juste au dessus.
 tester une condition differente ? @@@
 
+
+
+
+
 // relire join t'as deconne sur le code relis bien c'est channel liste etc et tu supprimais liste qui etait une ref.
+// mauvais mot de passe ca me deco, je me reco ca segfault. ..
+// test le NICK faut que les gens du meme channel que lui et lui meme recoit, sil est dans aucun lui seul recois 

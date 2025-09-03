@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   registration.cpp                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:57 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/03 16:41:56 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/03 18:09:16 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,15 +63,22 @@ int Server::isprint(char c)
 
 void Server::successfullNick()
 {
-    std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost NICK :" + this->_cmd[1] + "\r\n";
-    for (size_t i = 0; i < this->_clientList.size(); i++)
+    std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost NICK : " + this->_cmd[1] + "\r\n";
+    for (size_t i = 0; i < this->_clientList[this->_nbrclient]->getlistofchannel().size(); i++)
+    {
+        const std::set<Client*>& users = this->_clientList[this->_nbrclient]->getlistofchannel()[i]->getUsers();
+        for (std::set<Client*>::const_iterator it = users.begin(); it != users.end(); ++it)
         {
-            if (this->_clientList[i]->getFd() != this->_clientList[this->_nbrclient]->getFd())
-                send(this->_clientList[i]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+            if ((*it)->getFd() != this->_clientList[this->_nbrclient]->getFd())
+                send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
         }
+    }
+    if (this->_clientList[this->_nbrclient]->getlistofchannel().size() < 1)
+        send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+        
 }
 
-void Server::nick() // toomanyarg ??
+void Server::nick()
 {
     if (this->_cmd.size() - 1 == 0)
     return(reply(461, "NICK", "Not enough parameters", *this->_clientList[this->_nbrclient]), (void)0);
@@ -87,6 +94,7 @@ void Server::nick() // toomanyarg ??
     return;
 
 }
+
 void Server::user()
 {
     if (this->_cmd.size() - 1 < 4)
@@ -95,11 +103,10 @@ void Server::user()
     {
         if (!this->_clientList[this->_nbrclient]->getPassword_Status() || !this->_clientList[this->_nbrclient]->getNickname_Status())
         return(reply(461, "USER", "ERR_NEEDPASSWORDORNICK", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
-        // is print ?ER 
+        // is print ?
         if (this->_cmd[4].size() > 9 || this->_cmd[4].size() < 1)
         return(reply(432, "USER", "Erroneus nickname", *this->_clientList[this->_nbrclient]), (void)0);
 
-       
         if (this->_clientList[this->_nbrclient]->getPassword_Status() == -1)
             return this->closeClient("ERR_PASSWDMISMATCH");
         this->_clientList[this->_nbrclient]->setUsername(this->_cmd[1]);
@@ -108,7 +115,7 @@ void Server::user()
         std::string welcome_msg =
             ":Hueco Mundo 001 " + this->_clientList[this->_nbrclient]->getNickname() +
             " :Welcome to the Hueco Mundo Network, " + this->_clientList[this->_nbrclient]->getNickname() + "!~" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost\r\n";
-        send(this->_clientList[this->_nbrclient]->getFd(), welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);    
+        send(this->_clientList[this->_nbrclient]->getFd(), welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);   
     }
     else
         return(reply(462, "USER", "You may not reregister", *this->_clientList[this->_nbrclient]), (void)0);
