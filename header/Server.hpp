@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/03 12:57:42 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/03 16:48:51 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,8 +66,8 @@ public:
   int findChannel(std::string channel);
   int imInOrNot(std::string channel);
 
-  const std::vector<Client *> & getClientList() const;
-  const std::vector<Channel *> & getChannelList() const;
+  const std::vector<Client *> &getClientList() const;
+  const std::vector<Channel *> &getChannelList() const;
   int getNbrClient() const;
   const std::vector<std::string> getCmd() const;
 
@@ -83,7 +83,8 @@ public:
 
   void successfullJoin(int i);
   void successfullNick();
-  void ReadMsg(Client &client);
+  void ReadMsg(std::string &bufferClient);
+
   void PushMsg(std::string msg);
 
   void kickAllClient(std::string &clientToKick, std::string kicker, Channel *channel, std::string reason);

@@ -75,7 +75,7 @@ void Client::setMode(std::string mode)
 {
     _mode = mode;
 }
-std::string Client::setBuffer()
+std::string & Client::setBuffer()
 {
     return (_buffer);
 }

@@ -6,10 +6,13 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:57 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/03 13:10:38 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/03 16:41:56 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../../header/Client.hpp"
+#include "../../header/Server.hpp"
+#include "../../header/Channel.hpp"
 #include "../../header/Client.hpp"
 #include "../../header/Server.hpp"
 #include "../../header/Channel.hpp"
@@ -78,7 +81,7 @@ void Server::nick() // toomanyarg ??
     return(reply(432, "NICK", "Erroneus nickname", *this->_clientList[this->_nbrclient]), (void)0); // erroneus nickname
     if (findNick())
     return(reply(433, "NICK", "Nickname is already in use", *this->_clientList[this->_nbrclient]), (void)0); // nickname in use
-    this->successfullNick();
+    this->successfullNick(); // si le mdp est faux j'envoie quand meme un successful.
     this->_clientList[this->_nbrclient]->setNickname(this->_cmd[1]);
     this->_clientList[this->_nbrclient]->setNicknameStatus( 1);
     return;

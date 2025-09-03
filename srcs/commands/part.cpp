@@ -6,10 +6,13 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/03 13:05:15 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/03 16:34:23 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "../../header/Client.hpp"
+#include "../../header/Server.hpp"
+#include "../../header/Channel.hpp"
 #include "../../header/Client.hpp"
 #include "../../header/Server.hpp"
 #include "../../header/Channel.hpp"
@@ -32,22 +35,21 @@ void   Server::part()
             if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
                 return(reply(442, "PART", "You're not on that channel", *this->_clientList[this->_nbrclient]), (void)0);
             std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PART " + this->_channeList[i]->getName();
-            if (this->_cmd[2] != "")
-                msg += " :" + this->_cmd[2];
+            if (this->_cmd.size() > 2 && this->_cmd[2] != "")
+                msg += " : " + this->_cmd[2];
             msg += "\r\n";
             std::set<Client *> users = this->_channeList[i]->getUsers();
             for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
                 send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
-              this->_channeList[i]->removeClient(this->_clientList[this->_nbrclient]); // 2 
-            if (this->_channeList[i]->getUsers().empty()) 
-                delete this->_channeList[i]; // 1
               int b = whereIsChannel(this->_channeList[i]->getName());
               this->_clientList[this->_nbrclient]->setListOfchannel().erase(this->_clientList[this->_nbrclient]->setListOfchannel().begin() + b); // 3
-               
+              this->_channeList[i]->removeClient(this->_clientList[this->_nbrclient]); // 2 
+              if (this->_channeList[i]->getUsers().empty()) 
+                  delete this->_channeList[i]; // 1
             }     
 }
 
  // 1 supprimer le channel si il est vide.
 // 2 supprimer le client du channel.
 // 3 supprimer le channel de la liste du client.
-// msg -> nickame + channelist[i].getname + reason du coup _cmd[2]
+// msg -> nickame + _channelist[i].getname + reason du coup _cmd[2]
