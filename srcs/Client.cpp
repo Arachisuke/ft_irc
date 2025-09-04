@@ -119,3 +119,7 @@ void Client::setIsRegistered(int isRegistered)
 {
     _isRegistered = isRegistered;
 }
+void Client::removeMyChannel(Channel *channelToRemove) 
+{
+    this->_myChannels.erase(std::find(_myChannels.begin(), _myChannels.end(), channelToRemove));
+}

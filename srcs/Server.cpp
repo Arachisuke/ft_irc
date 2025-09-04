@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/03 16:56:39 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/04 17:21:40 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ int Server::Init()
 
 void Server::closeClient(std::string ERROR_MSG)
 {
+        std::cout << "ENTRYYY" << std::endl;
     if (!ERROR_MSG.empty())
         this->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
     if (this->_clientList[this->_nbrclient])
@@ -85,10 +86,11 @@ void Server::closeClient(std::string ERROR_MSG)
         if (this->_clientList[this->_nbrclient]->getFd() > 0)
         {
             {
+                std::cout << "client : "  << this->_clientList[this->_nbrclient]->getFd() << " disconnected" << std::endl;
                 close(this->_clientList[this->_nbrclient]->getFd());
                 epoll_ctl(this->_epfd, EPOLL_CTL_DEL, this->_clientList[this->_nbrclient]->getFd(), NULL); // CTLDEL
             }
-        }
+        } 
         delete this->_clientList[this->_nbrclient];                            // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
         this->_clientList.erase(this->_clientList.begin() + this->_nbrclient); // ERASE
     }
@@ -169,16 +171,23 @@ int Server::wait_client()
         else if (this->_events[i].data.fd != this->_fd)
         {
             _nbrclient = find_client(this->_events[i].data.fd); // correction erreur assignation nbrclient
-            if (this->_events[i].events == EPOLLIN)
+            if (_nbrclient == -1) // Client non trouvé, ignore
+                continue;
+                
+            // Vérifier les événements de déconnexion en premier
+            if (this->_events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR))
+            {
+                if (this->_events[i].events & EPOLLHUP)
+                    this->closeClient("HUP");
+                else if (this->_events[i].events & EPOLLRDHUP)
+                    this->closeClient("RDHUP");
+                else if (this->_events[i].events & EPOLLERR)
+                    this->closeClient("ERR");
+            }
+            else if (this->_events[i].events & EPOLLIN)
                 this->ReadMsg(this->_clientList[this->_nbrclient]->setBuffer());
-            else if (this->_events[i].events == EPOLLOUT)
+            else if (this->_events[i].events & EPOLLOUT)
                 this->PushMsg("MON MSG");
-            else if (this->_events[i].events == EPOLLHUP)
-                this->closeClient("HUP");
-            else if (this->_events[i].events == EPOLLRDHUP)
-                this->closeClient("RDHUP");
-            else if (this->_events[i].events == EPOLLERR)
-                this->closeClient("ERR");
         }
     }
     return 0;

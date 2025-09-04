@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/03 16:50:10 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/04 16:02:20 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
+
 #include <cstring>
 #include <fcntl.h>
 #include <sys/socket.h>
@@ -85,6 +87,8 @@ public:
     int getNickname_Status() const;
     int getUsername_Status() const;
     int getisRegistered() const;
+    void removeMyChannel(Channel *channelToRemove);
+
 
 private:
     int _fd;
