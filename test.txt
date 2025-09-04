@@ -46,5 +46,15 @@ tester une condition differente ? @@@
 
 
 // relire join t'as deconne sur le code relis bien c'est channel liste etc et tu supprimais liste qui etait une ref.
-// mauvais mot de passe ca me deco, je me reco ca segfault. ..
-// test le NICK faut que les gens du meme channel que lui et lui meme recoit, sil est dans aucun lui seul recois 
+
+
+
+
+
+
+// corriger JOIN.
+// corriger JOIN 0, copier join 0 dans part.
+// mauvais mot de passe ca me deco, je me reco ca segfault...
+// test le NICK faut que les gens du meme channel que lui et lui meme recoit, sil est dans aucun lui seul recois  
+
+
