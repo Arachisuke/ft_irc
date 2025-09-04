@@ -42,7 +42,7 @@ void   Server::part()
             for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
                 send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
               int b = whereIsChannel(this->_channeList[i]->getName());
-              this->_clientList[this->_nbrclient]->setListOfchannel().erase(this->_clientList[this->_nbrclient]->setListOfchannel().begin() + b); // 3
+              this->_clientList[this->_nbrclient]->setListOfChannel().erase(this->_clientList[this->_nbrclient]->setListOfChannel().begin() + b); // 3
               this->_channeList[i]->removeClient(this->_clientList[this->_nbrclient]); // 2 
               if (this->_channeList[i]->getUsers().empty()) 
                   delete this->_channeList[i]; // 1

@@ -56,8 +56,6 @@ class Client
 {
 
 public:
-    // int RPL_INFO;
-    int RPL_WELCOME;
     Client();
     ~Client();
     void Send_Welcome();
@@ -73,14 +71,15 @@ public:
     void setNicknameStatus(int nickNameStatus);
     void setUsernameStatus(int userNameStatus);
     void setIsRegistered(int isRegistered);
-    std::vector<Channel *> setListOfchannel();
+    std::vector<Channel *>& setMyChannel();
+
 
     const std::string getPrefiks() const;
     const std::string getNickname() const;
     const std::string getUsername() const;
     const std::string getMode() const;
     const std::string getBuffer() const;
-    const std::vector<Channel *> &getlistofchannel() const;
+    const std::vector<Channel *> &getMyChannel() const;
     int getFd() const;
     int getPassword_Status() const;
     int getNickname_Status() const;
@@ -89,7 +88,7 @@ public:
 
 private:
     int _fd;
-    std::vector<Channel *> _listofchannel;
+    std::vector<Channel *> _myChannels;
     int _Password_Status;
     int _Nickname_Status;
     int _Username_Status;

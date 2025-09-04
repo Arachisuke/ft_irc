@@ -13,11 +13,11 @@ int Server::findChannel(std::string channel)
     return (-1);
 }
 
-int Server::whereIsChannel(std::string channel)
+int Server::whereIsMyChannel(std::string channel)
 {
-    for (size_t i = 0; i < this->_clientList[this->_nbrclient]->getlistofchannel().size(); i++)
+    for (size_t i = 0; i < this->_clientList[this->_nbrclient]->getMyChannel().size(); i++)
     {
-        if (this->_clientList[this->_nbrclient]->getlistofchannel()[i]->getName() == channel)
+        if (this->_clientList[this->_nbrclient]->getMyChannel()[i]->getName() == channel)
             return (i);
     }
     return (-1);
@@ -51,23 +51,24 @@ void Server::join()
 
     if (this->_cmd[1] == "0")
     {
-            std::vector<Channel *> list = this->_clientList[this->_nbrclient]->getlistofchannel();
-            for (size_t i = 0; i < list.size(); i++)
+            std::vector<Channel *> myChannel = this->_clientList[this->_nbrclient]->getMyChannel();
+            int c = myChannel.size();
+            for (size_t i = 0; i < c; i++)
                 {
-                   if (!list[i]->isMember(this->_clientList[this->_nbrclient]))
+                   if (!myChannel[i]->isMember(this->_clientList[this->_nbrclient]))
                        return(reply(442, "JOIN", "You're not on that channel", *this->_clientList[this->_nbrclient]), (void)0);
-                   std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " JOIN " + list[i]->getName();
+                   std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PART? " + myChannel[i]->getName();
                     if (this->_cmd.size() > 2 && this->_cmd[2] != "")
                         msg += " : " + this->_cmd[2];
                     msg += "\r\n";
-                   std::set<Client *> users = list[i]->getUsers();
+                   std::set<Client *> users = myChannel[i]->getUsers();
                    for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
-                       send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT); // je change le msg ? car cest ecris join ca peut preter a confusions ?
-                    int b = whereIsChannel(list[i]->getName());
-                    this->_clientList[this->_nbrclient]->setListOfchannel().erase(this->_clientList[this->_nbrclient]->setListOfchannel().begin() + b);
-                    int x = findChannel(list[i]->getName());
+                       send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+                    int b = whereIsMyChannel(myChannel[i]->getName());
+                    int x = findChannel(myChannel[i]->getName());
+                    this->_clientList[this->_nbrclient]->setMyChannel().erase(this->_clientList[this->_nbrclient]->setMyChannel().begin() + b);
                     this->_channeList[x]->removeClient(this->_clientList[this->_nbrclient]);
-                   if (list[i]->getUsers().empty())
+                   if (myChannel[i]->getUsers().empty())
                        delete this->_channeList[x];
                     this->_channeList.erase(this->_channeList.begin() + i);
                 }
@@ -97,19 +98,19 @@ void Server::join()
                 {
                     std::string msg = ":" + this->_serverName + " 443 " + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " JOIN " + this->_channeList[i]->getName() + " is already on channel" + "\r\n";
                     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+                    return ;
                 }
                 this->_channeList[i]->setUsers(this->_clientList[this->_nbrclient]);
-                this->_clientList[this->_nbrclient]->setListOfchannel().push_back(this->_channeList[i]);
+                this->_clientList[this->_nbrclient]->setMyChannel().push_back(this->_channeList[i]);
                 this->successfullJoin(i);
             }
             else // les droits.
             {
-                std::cout << "JOIN basique : nameofchannel " << list[j] << std::endl;
                 Channel *newChannel = new Channel();
                 newChannel->setName(list[j]);
                 this->_channeList.push_back(newChannel);
                 this->_channeList[this->_channeList.size() - 1]->setUsers(this->_clientList[this->_nbrclient]);
-                this->_clientList[this->_nbrclient]->setListOfchannel().push_back(newChannel);
+                this->_clientList[this->_nbrclient]->setMyChannel().push_back(newChannel);
                 this->_channeList[this->_channeList.size() - 1]->addOperator(this->_clientList[this->_nbrclient]);
                 this->_channeList[this->_channeList.size() - 1]->setTopicSetter(this->_clientList[this->_nbrclient]->getNickname());
                 this->_channeList[this->_channeList.size() - 1]->setTopic("");
@@ -118,4 +119,3 @@ void Server::join()
         }
     }      
 }
-

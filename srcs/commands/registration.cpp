@@ -64,18 +64,18 @@ int Server::isprint(char c)
 void Server::successfullNick()
 {
     std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost NICK : " + this->_cmd[1] + "\r\n";
+    std::cout  << "nombre de channel "<< this->_clientList[this->_nbrclient]->getlistofchannel().size() << std::endl;
     for (size_t i = 0; i < this->_clientList[this->_nbrclient]->getlistofchannel().size(); i++)
     {
         const std::set<Client*>& users = this->_clientList[this->_nbrclient]->getlistofchannel()[i]->getUsers();
         for (std::set<Client*>::const_iterator it = users.begin(); it != users.end(); ++it)
         {
+            std::cout << "nickname : " << (*it)->getNickname() << std::endl;
             if ((*it)->getFd() != this->_clientList[this->_nbrclient]->getFd())
                 send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
         }
     }
-    if (this->_clientList[this->_nbrclient]->getlistofchannel().size() < 1)
-        send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
-        
+    send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
 }
 
 void Server::nick()

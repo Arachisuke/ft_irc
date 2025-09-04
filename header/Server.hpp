@@ -99,7 +99,7 @@ public:
 private:
   std::vector<Client *> _clientList;
   std::vector<Channel *> _channeList;
-  int whereIsChannel(std::string channel);
+  int whereIsMyChannel(std::string channel);
 
   std::vector<std::string> _cmd;
   std::map<std::string, CommandFunc> _commandList;

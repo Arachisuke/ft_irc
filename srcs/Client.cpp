@@ -3,7 +3,6 @@
 
 Client::Client()
 {
-    this->RPL_WELCOME = 0;
     this->_Password_Status = 0;
     this->_Nickname_Status = 0;
     this->_Username_Status = 0;
@@ -30,15 +29,6 @@ int Client::Init(int epfd, int hote)
     this->_event.data.fd = this->_fd;
     epoll_ctl(epfd, EPOLL_CTL_ADD, this->_fd, &this->_event);
     return (0);
-}
-
-void Client::Send_Welcome() // rajouter le message 2 3 4.
-{
-    std::string welcome_msg =
-        ":Hueco Mundo 001 " + this->_nickname +
-        " :Welcome to the Hueco Mundo Network, " + this->_nickname + "!~" + this->_username + "@localhost\r\n";
-    send(this->_fd, welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);
-    this->RPL_WELCOME = 1;
 }
 
 const std::string Client::getPrefiks() const
@@ -84,9 +74,9 @@ int Client::getFd() const
 {
     return (_fd);
 }
-const std::vector<Channel *> &Client::getlistofchannel() const
+const std::vector<Channel *> &Client::getMyChannel() const
 {
-    return (_listofchannel);
+    return (_myChannels);
 }
 int Client::getPassword_Status() const
 {
@@ -105,10 +95,10 @@ int Client::getisRegistered() const
     return (_isRegistered);
 }
 
-// void Client::setListOfChannel(std::string channelName)
-// {
-//     _listofchannel.push_back(channelName);
-// }
+std::vector<Channel *>& Client::setMyChannel()
+{
+    return(_myChannels);
+}
 void Client::setFd(int fd)
 {
     _fd = fd;
@@ -128,9 +118,4 @@ void Client::setUsernameStatus(int userNameStatus)
 void Client::setIsRegistered(int isRegistered)
 {
     _isRegistered = isRegistered;
-}
-
-std::vector<Channel *> Client::setListOfchannel()
-{
-    return (_listofchannel);
 }
