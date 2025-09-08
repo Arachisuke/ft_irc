@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/08 12:51:37 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 13:00:44 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
+
 #include <cstring>
 #include <fcntl.h>
 #include <sys/socket.h>
@@ -55,7 +57,6 @@ class Client
 {
 
 public:
-    // int RPL_INFO;
     Client();
     ~Client();
 
@@ -75,20 +76,25 @@ public:
     void setNicknameStatus(int nickNameStatus);
     void setUsernameStatus(int userNameStatus);
     void setIsRegistered(int isRegistered);
+    std::vector<Channel *>& setMyChannel();
+
 
     const std::string getPrefiksClient() const;
     const std::string &getNickname() const;
     const std::string &getUsername() const;
     const std::string &getMode() const;
     const std::string &getBuffer() const;
-    const std::vector<Channel *> &getlistofchannel() const;
+    const std::vector<Channel *> &getMyChannel() const;
     std::string &setBuffer();
 
     std::vector<Channel *> &setListOfchannel();
+    void removeMyChannel(Channel *channelToRemove);
+
 
 private:
     int _hote;
     int _fd;
+    std::vector<Channel *> _myChannels;
     int _Password_Status;
     int _Nickname_Status;
     int _Username_Status;

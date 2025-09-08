@@ -77,9 +77,9 @@ int Client::getFd() const
 {
     return (_fd);
 }
-const std::vector<Channel *> &Client::getlistofchannel() const
+const std::vector<Channel *> &Client::getMyChannel() const
 {
-    return (_listofchannel);
+    return (_myChannels);
 }
 int Client::getPassword_Status() const
 {
@@ -98,7 +98,10 @@ int Client::getisRegistered() const
     return (_isRegistered);
 }
 
-
+std::vector<Channel *>& Client::setMyChannel()
+{
+    return(_myChannels);
+}
 void Client::setFd(int fd)
 {
     _fd = fd;
@@ -119,8 +122,7 @@ void Client::setIsRegistered(int isRegistered)
 {
     _isRegistered = isRegistered;
 }
-
-std::vector<Channel *>  & Client::setListOfchannel()
+void Client::removeMyChannel(Channel *channelToRemove) 
 {
-    return (_listofchannel);
+    this->_myChannels.erase(std::find(_myChannels.begin(), _myChannels.end(), channelToRemove));
 }
