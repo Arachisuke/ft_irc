@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/03 16:50:10 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 13:00:44 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 #include <iostream>
 #include <string>
+#include <algorithm>
+
 #include <cstring>
 #include <fcntl.h>
 #include <sys/socket.h>
@@ -51,56 +53,63 @@
 class Server;
 class Channel;
 
-
 class Client
 {
 
 public:
-    // int RPL_INFO;
-    int RPL_WELCOME;
     Client();
     ~Client();
-    void Send_Welcome();
+
     int Init(int epfd, int hote);
-
-    void setNickname(std::string nickName);
-    void setUsername(std::string userName);
-    void setMode(std::string mode);
-    std::string & setBuffer();
-    // void setListOfChannel(std::string channelName);
-    void setFd(int fd);
-    void setPasswordStatus(int passwordStatus);
-    void setNicknameStatus(int nickNameStatus);
-    void setUsernameStatus(int userNameStatus);
-    void setIsRegistered(int isRegistered);
-    std::vector<Channel *> setListOfchannel();
-
-    const std::string getPrefiks() const;
-    const std::string getNickname() const;
-    const std::string getUsername() const;
-    const std::string getMode() const;
-    const std::string getBuffer() const;
-    const std::vector<Channel *> &getlistofchannel() const;
     int getFd() const;
     int getPassword_Status() const;
     int getNickname_Status() const;
     int getUsername_Status() const;
     int getisRegistered() const;
 
+    // void setListOfChannel(std::string channelName);
+    void setNickname(std::string nickName);
+    void setUsername(std::string userName);
+    void setMode(std::string mode);
+    void setFd(int fd);
+    void setPasswordStatus(int passwordStatus);
+    void setNicknameStatus(int nickNameStatus);
+    void setUsernameStatus(int userNameStatus);
+    void setIsRegistered(int isRegistered);
+    std::vector<Channel *>& setMyChannel();
+
+
+    const std::string getPrefiksClient() const;
+    const std::string &getNickname() const;
+    const std::string &getUsername() const;
+    const std::string &getMode() const;
+    const std::string &getBuffer() const;
+    const std::vector<Channel *> &getMyChannel() const;
+    std::string &setBuffer();
+
+    std::vector<Channel *> &setListOfchannel();
+    void removeMyChannel(Channel *channelToRemove);
+
+
 private:
+    int _hote;
     int _fd;
-    std::vector<Channel *> _listofchannel;
+    std::vector<Channel *> _myChannels;
     int _Password_Status;
     int _Nickname_Status;
     int _Username_Status;
     int _isRegistered;
+    
+    std::string _buffer;
     std::string _nickname; // 9 length
     std::string _username; // 9 length
     std::string _mode;     // 3 length
-    std::string _buffer;
-    int _hote;
+    
     struct epoll_event _event;
     struct sockaddr_in _client;
+    
     socklen_t _size_of_client;
+    
+    std::vector<Channel *> _listofchannel;
 };
 #endif
