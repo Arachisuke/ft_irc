@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/03 16:34:23 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/04 14:28:41 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ void   Server::part()
             std::set<Client *> users = this->_channeList[i]->getUsers();
             for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
                 send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
-              int b = whereIsChannel(this->_channeList[i]->getName());
-              this->_clientList[this->_nbrclient]->setListOfchannel().erase(this->_clientList[this->_nbrclient]->setListOfchannel().begin() + b); // 3
+              int b = whereIsMyChannel(this->_channeList[i]->getName());
+              this->_clientList[this->_nbrclient]->setMyChannel().erase(this->_clientList[this->_nbrclient]->setMyChannel().begin() + b); // 3
               this->_channeList[i]->removeClient(this->_clientList[this->_nbrclient]); // 2 
               if (this->_channeList[i]->getUsers().empty()) 
                   delete this->_channeList[i]; // 1

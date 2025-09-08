@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/08 12:52:49 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 13:01:15 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,8 @@ private:
 
   std::vector<Client *> _clientList;
   std::vector<Channel *> _channeList;
+  int whereIsMyChannel(std::string channel);
+
   std::vector<std::string> _cmd;
   std::map<std::string, CommandFunc> _commandList;
 
