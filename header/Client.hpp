@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/08 13:18:18 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 18:00:17 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,14 +94,14 @@ public:
 private:
     int _hote;
     int _fd;
-    int _Password_Status;
-    int _Nickname_Status;
-    int _Username_Status;
+    int _PasswordStatus;
+    int _NicknameStatus;
+    int _realNameStatus;
     int _isRegistered;
     
     std::string _buffer;
     std::string _nickname; // 9 length
-    std::string _username; // 9 length
+    std::string _realName; 
     std::string _mode;     // 3 length
     
     struct epoll_event _event;

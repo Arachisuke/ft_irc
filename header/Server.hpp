@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/08 15:38:24 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 17:24:32 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,6 @@ public:
   void quit();
   void part();
   void pass();
-  void cap();
   void ping();
   void kick();
   void invite();
@@ -76,7 +75,7 @@ public:
   void find_cmd();
   void kickAllClient(std::string &clientToKick, std::string kicker, Channel *channel, std::string reason);
   void parseCmd(std::string &wordPrefixLess);
-  void printParseCmd();
+  void printParsedCmd();
 
   int findNick();
   int nickpolicy();
