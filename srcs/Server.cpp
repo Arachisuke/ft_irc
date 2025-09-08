@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/08 13:09:44 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 15:57:50 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,13 +218,73 @@ void Server::ReadMsg(std::string &bufferClient)
     }
 }
 
+void removePrefix(std::string &wordPrefixLess)
+{
+    if (wordPrefixLess[0] == ':')
+    {
+        size_t spacePos = wordPrefixLess.find(' ');
+        if (spacePos != std::string::npos)
+            wordPrefixLess = wordPrefixLess.substr(spacePos + 1);
+    }
+    return;
+}
+
+void Server::parseCmd(std::string &wordPrefixLess)
+{
+    bool isTrailing = 0;
+    std::istringstream iss(wordPrefixLess); // gerer le parse ":" // alias relire la doc du parse
+    std::string finalWord;
+    while (iss >> finalWord)
+    {
+        if (finalWord[0] == ':')
+        {
+            isTrailing = 1;
+            break;
+        }
+        else
+        {
+            if (this->_cmd.size() < 14)
+                this->_cmd.push_back(finalWord);
+            else
+            {
+                isTrailing = 1;
+                break;
+            }
+        }
+    }
+    if (isTrailing)
+    {
+        std::string trailing = finalWord;
+        if (trailing[0] == ':')
+            trailing = trailing.substr(1);
+        std::string rest;
+        std::getline(iss, rest);
+        trailing += rest;
+        this->_cmd.push_back(trailing);
+    }
+}
+
+void Server::printParseCmd()
+{
+    int i = 0;
+    std::cout << "client: " << _clientList[_nbrclient]->getNickname() << " " << _clientList[_nbrclient]->getFd() << " send" << std::endl;
+    std::cout << "============ Original Entry ============" << std::endl
+              << std::endl
+              << _entry << std::endl;
+    std::cout << "============ Parsed Command ============" << std::endl
+              << std::endl;
+    for (std::vector<std::string>::const_iterator it = _cmd.begin(); it < _cmd.end(); it++)
+        std::cout << "cmd[" << i++ << "]: " << (*it) << std::endl
+                  << std::endl;
+}
+
 void Server::find_cmd()
 {
-    std::string word;
-    std::istringstream iss(this->_entry); // gerer le parse ":" // alias relire la doc du parse
+    std::string wordPrefixLess = _entry;
     this->_cmd.clear();
-    while (iss >> word)
-        this->_cmd.push_back(word);
+    removePrefix(wordPrefixLess);
+    parseCmd(wordPrefixLess);
+    printParseCmd();
     if (this->_cmd.empty())
         return;
     std::map<std::string, CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
