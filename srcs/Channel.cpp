@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/08 13:02:55 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 16:11:43 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,12 @@ void Channel::addOperator(Client *client)
 {
     _operators.insert(client);
 }
-void Channel::removeClient(Client *clientToRemove)
+void Channel::removeClient(Client *clientToRemove,Channel *channelToRemove)
 {
     _operators.erase(clientToRemove);
     _users.erase(clientToRemove);
     _invited.erase(clientToRemove);
+    clientToRemove->removeMyChannel(channelToRemove);
 }
 void Channel::removeOperator(Client *operatorToRemove)
 {
@@ -111,7 +112,7 @@ const std::string &Channel::getName() const
     return (_name);
 }
 
-int Channel::checkChannelNorm(const std::string &channelName) const
+bool Channel::checkChannelNorm(const std::string &channelName) const
 {
     if (channelName[0] != '#')
         return (0);

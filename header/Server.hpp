@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/08 13:01:15 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 15:38:24 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,21 +62,6 @@ public:
   void user();
   void nick();
   void closeClient(std::string ERROR_MSG);
-  int findNick();
-  int nickpolicy();
-  int findChannel(std::string channel);
-
-  const std::string getPrefiksServer() const;
-
-  int Init();
-  int find_client(int fd);
-  int isprint(char c);
-  int find_client(std::string &nameClient);
-  int wait_client();
-
-  Channel *findChannelPtr(std::string &channelName);
-
-  std::vector<std::string> ft_split(const std::string &str, char delimiter);
 
   void Finish();
   void Send_Welcome();
@@ -90,14 +75,29 @@ public:
   void load_cmd();
   void find_cmd();
   void kickAllClient(std::string &clientToKick, std::string kicker, Channel *channel, std::string reason);
+  void parseCmd(std::string &wordPrefixLess);
+  void printParseCmd();
+
+  int findNick();
+  int nickpolicy();
+  int findChannel(std::string channel);
+  int Init();
+  int find_client(int fd);
+  int isprint(char c);
+  int find_client(std::string &nameClient);
+  int wait_client();
+
+  const std::string getPrefiksServer() const;
+
+  Channel *findChannelPtr(std::string &channelName);
+
+  std::vector<std::string> ft_split(const std::string &str, char delimiter);
 
 private:
-  int whereIsChannel(std::string channel);
-
-  std::vector<Client *> _clientList;
-  std::vector<Channel *> _channeList;
   int whereIsMyChannel(std::string channel);
 
+  std::vector<Channel *> _channeList;
+  std::vector<Client *> _clientList;
   std::vector<std::string> _cmd;
   std::map<std::string, CommandFunc> _commandList;
 

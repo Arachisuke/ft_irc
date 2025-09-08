@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/08 13:00:44 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 13:18:18 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ public:
     int getUsername_Status() const;
     int getisRegistered() const;
 
-    // void setListOfChannel(std::string channelName);
     void setNickname(std::string nickName);
     void setUsername(std::string userName);
     void setMode(std::string mode);
@@ -76,6 +75,8 @@ public:
     void setNicknameStatus(int nickNameStatus);
     void setUsernameStatus(int userNameStatus);
     void setIsRegistered(int isRegistered);
+    void removeMyChannel(Channel *channelToRemove);
+    
     std::vector<Channel *>& setMyChannel();
 
 
@@ -85,16 +86,14 @@ public:
     const std::string &getMode() const;
     const std::string &getBuffer() const;
     const std::vector<Channel *> &getMyChannel() const;
+
     std::string &setBuffer();
 
-    std::vector<Channel *> &setListOfchannel();
-    void removeMyChannel(Channel *channelToRemove);
 
 
 private:
     int _hote;
     int _fd;
-    std::vector<Channel *> _myChannels;
     int _Password_Status;
     int _Nickname_Status;
     int _Username_Status;
@@ -110,6 +109,6 @@ private:
     
     socklen_t _size_of_client;
     
-    std::vector<Channel *> _listofchannel;
+    std::vector<Channel *> _myChannels;
 };
 #endif
