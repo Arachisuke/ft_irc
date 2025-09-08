@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/03 16:48:51 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 12:52:49 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ class Server
 {
 public:
   typedef void (Server::*CommandFunc)();
+
   Server();
   ~Server();
 
@@ -60,56 +61,54 @@ public:
   void privMsg();
   void user();
   void nick();
-  int findNick();
   void closeClient(std::string ERROR_MSG);
+  int findNick();
   int nickpolicy();
   int findChannel(std::string channel);
-  int imInOrNot(std::string channel);
 
-  const std::vector<Client *> &getClientList() const;
-  const std::vector<Channel *> &getChannelList() const;
-  int getNbrClient() const;
-  const std::vector<std::string> getCmd() const;
+  const std::string getPrefiksServer() const;
 
   int Init();
-  void create_server(int port, char *password);
-  void Finish();
   int find_client(int fd);
+  int isprint(char c);
   int find_client(std::string &nameClient);
   int wait_client();
 
   Channel *findChannelPtr(std::string &channelName);
-  void errorMsg(int codeError, const std::string command, const std::string message, Client &client) const;
 
+  std::vector<std::string> ft_split(const std::string &str, char delimiter);
+
+  void Finish();
+  void Send_Welcome();
+  void create_server(int port, char *password);
   void successfullJoin(int i);
   void successfullNick();
   void ReadMsg(std::string &bufferClient);
-
   void PushMsg(std::string msg);
-
-  void kickAllClient(std::string &clientToKick, std::string kicker, Channel *channel, std::string reason);
-  int isprint(char c);
-
+  void errorMsg(int codeError, const std::string command, const std::string message, Client &client) const;
   void reply(int codeError, const std::string command, const std::string message, Client &client) const;
   void load_cmd();
   void find_cmd();
-  void executeOrNot();
-  std::vector<std::string> ft_split(const std::string &str, char delimiter);
+  void kickAllClient(std::string &clientToKick, std::string kicker, Channel *channel, std::string reason);
 
 private:
-  std::vector<Client *> _clientList;
-  std::vector<Channel *> _channeList;
   int whereIsChannel(std::string channel);
 
+  std::vector<Client *> _clientList;
+  std::vector<Channel *> _channeList;
   std::vector<std::string> _cmd;
   std::map<std::string, CommandFunc> _commandList;
+
   struct sockaddr_in _hote;
   struct epoll_event _events[5];
+
   std::string _password;
   std::string _entry;
   std::string _buffer;
-  int _fd;
   std::string _serverName;
+
+  int _fd;
+  int _RPL_WELCOME;
   int _bytes;
   int _nbrclient;
   int _epfd;
