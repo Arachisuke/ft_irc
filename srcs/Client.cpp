@@ -4,9 +4,9 @@
 Client::Client()
 {
     this->_isRegistered = 0;
-    this->_Password_Status = 0;
-    this->_Nickname_Status = 0;
-    this->_Username_Status = 0;
+    this->_PasswordStatus = 0;
+    this->_NicknameStatus = 0;
+    this->_realNameStatus = 0;
     this->_isRegistered = 0;
     this->_fd = -1;
 }
@@ -36,7 +36,7 @@ int Client::Init(int epfd, int hote)
 
 const std::string Client::getPrefiksClient() const
 {
-    return (":" + _nickname + "!" + _username + "@localhost");
+    return (":" + _nickname + "!" + _realName + "@localhost");
 }
 
 const std::string &Client::getNickname() const
@@ -45,7 +45,7 @@ const std::string &Client::getNickname() const
 }
 const std::string &Client::getUsername() const
 {
-    return (_username);
+    return (_realName);
 }
 const std::string &Client::getMode() const
 {
@@ -62,7 +62,7 @@ void Client::setNickname(std::string nickName)
 }
 void Client::setUsername(std::string userName)
 {
-    _username = userName;
+    _realName = userName;
 }
 void Client::setMode(std::string mode)
 {
@@ -83,15 +83,15 @@ const std::vector<Channel *> &Client::getMyChannel() const
 }
 int Client::getPassword_Status() const
 {
-    return (_Password_Status);
+    return (_PasswordStatus);
 }
 int Client::getNickname_Status() const
 {
-    return (_Nickname_Status);
+    return (_NicknameStatus);
 }
 int Client::getUsername_Status() const
 {
-    return (_Username_Status);
+    return (_realNameStatus);
 }
 int Client::getisRegistered() const
 {
@@ -108,15 +108,15 @@ void Client::setFd(int fd)
 }
 void Client::setPasswordStatus(int passwordStatus)
 {
-    _Password_Status = passwordStatus;
+    _PasswordStatus = passwordStatus;
 }
 void Client::setNicknameStatus(int nickNameStatus)
 {
-    _Nickname_Status = nickNameStatus;
+    _NicknameStatus = nickNameStatus;
 }
 void Client::setUsernameStatus(int userNameStatus)
 {
-    _Username_Status = userNameStatus;
+    _realNameStatus = userNameStatus;
 }
 void Client::setIsRegistered(int isRegistered)
 {
