@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/08 15:57:50 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 17:52:22 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ int Server::Init()
 
 void Server::closeClient(std::string ERROR_MSG)
 {
-    std::cout << "ENTRYYY" << std::endl;
     if (!ERROR_MSG.empty())
         this->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
     if (this->_clientList[this->_nbrclient])
@@ -175,11 +174,20 @@ int Server::wait_client()
             if (this->_events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR))
             {
                 if (this->_events[i].events & EPOLLHUP)
+                {
+                    std::cout << "HUP" << std::endl;
                     this->closeClient("HUP");
+                }
                 else if (this->_events[i].events & EPOLLRDHUP)
+                {
+                    std::cout << "RDHUP" << std::endl;
                     this->closeClient("RDHUP");
+                }
                 else if (this->_events[i].events & EPOLLERR)
+                {
+                    std::cout << "ERR" << std::endl;
                     this->closeClient("ERR");
+                }
             }
             else if (this->_events[i].events & EPOLLIN)
                 this->ReadMsg(this->_clientList[this->_nbrclient]->setBuffer());
@@ -199,10 +207,11 @@ void Server::ReadMsg(std::string &bufferClient)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
             return;
-        return (this->closeClient("ERR_READ"));
+                    
+        return (std::cout << "ERR_READ 11111" << std::endl, this->closeClient("ERR_READ"));
     }
     else if (this->_bytes == 0)
-        return (this->closeClient("ERR_READ"));
+        return (std::cout << "ERR_READ 22221" << std::endl, this->closeClient("ERR_READ"));
     else if (this->_bytes > 0)
     {
         bufferClient.append(lecture, this->_bytes); // marche aps.
@@ -264,18 +273,18 @@ void Server::parseCmd(std::string &wordPrefixLess)
     }
 }
 
-void Server::printParseCmd()
+void Server::printParsedCmd()
 {
     int i = 0;
     std::cout << "client: " << _clientList[_nbrclient]->getNickname() << " " << _clientList[_nbrclient]->getFd() << " send" << std::endl;
     std::cout << "============ Original Entry ============" << std::endl
-              << std::endl
-              << _entry << std::endl;
+              << _entry << std::endl
+              << std::endl;
     std::cout << "============ Parsed Command ============" << std::endl
               << std::endl;
     for (std::vector<std::string>::const_iterator it = _cmd.begin(); it < _cmd.end(); it++)
-        std::cout << "cmd[" << i++ << "]: " << (*it) << std::endl
-                  << std::endl;
+        std::cout << "cmd[" << i++ << "]: " << (*it) << std::endl;
+    std::cout << std::endl;
 }
 
 void Server::find_cmd()
@@ -284,7 +293,7 @@ void Server::find_cmd()
     this->_cmd.clear();
     removePrefix(wordPrefixLess);
     parseCmd(wordPrefixLess);
-    printParseCmd();
+    printParsedCmd();
     if (this->_cmd.empty())
         return;
     std::map<std::string, CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
