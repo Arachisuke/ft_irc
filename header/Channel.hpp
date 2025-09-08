@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/08 16:11:07 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 16:25:58 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ public:
     // Clients Management
     void inviteClient(Client *client);                                   // ajoute client a set _invited
     void addOperator(Client *newClient);                                 // ajoute client a set _operator
-    void removeClient(Client *clientToRemove, Channel *channelToRemove); // remove from every set <>
+    void removeClient(Client *clientToRemove); // remove from every set <>
     void removeOperator(Client *operatorToRemove);                       // remove from operator only
 
 private:
