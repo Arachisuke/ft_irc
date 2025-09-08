@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:57 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/03 16:41:56 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 12:40:17 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,12 +105,13 @@ void Server::user()
         this->_clientList[this->_nbrclient]->setUsername(this->_cmd[1]);
         this->_clientList[this->_nbrclient]->setUsernameStatus(1);
         this->_clientList[this->_nbrclient]->setIsRegistered(1);
-        std::string welcome_msg =
-            ":Hueco Mundo 001 " + this->_clientList[this->_nbrclient]->getNickname() +
-            " :Welcome to the Hueco Mundo Network, " + this->_clientList[this->_nbrclient]->getNickname() + "!~" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost\r\n";
-        send(this->_clientList[this->_nbrclient]->getFd(), welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);    
+        Send_Welcome();
+        // std::string welcome_msg =
+        //     ":Hueco Mundo 001 " + this->_clientList[this->_nbrclient]->getNickname() +
+        //     " :Welcome to the Hueco Mundo Network, " + this->_clientList[this->_nbrclient]->getNickname() + "!~" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost\r\n";
+        // send(this->_clientList[this->_nbrclient]->getFd(), welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);
     }
     else
-        return(reply(462, "USER", "You may not reregister", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(462, "USER", "You may not reregister", *this->_clientList[this->_nbrclient]), (void)0);
     // join j'ai enlever le epollout. etc etc
 }

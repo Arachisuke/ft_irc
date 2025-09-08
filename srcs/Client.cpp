@@ -3,7 +3,7 @@
 
 Client::Client()
 {
-    this->RPL_WELCOME = 0;
+    this->_isRegistered = 0;
     this->_Password_Status = 0;
     this->_Nickname_Status = 0;
     this->_Username_Status = 0;
@@ -32,33 +32,26 @@ int Client::Init(int epfd, int hote)
     return (0);
 }
 
-void Client::Send_Welcome() // rajouter le message 2 3 4.
-{
-    std::string welcome_msg =
-        ":Hueco Mundo 001 " + this->_nickname +
-        " :Welcome to the Hueco Mundo Network, " + this->_nickname + "!~" + this->_username + "@localhost\r\n";
-    send(this->_fd, welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);
-    this->RPL_WELCOME = 1;
-}
 
-const std::string Client::getPrefiks() const
+
+const std::string Client::getPrefiksClient() const
 {
     return (":" + _nickname + "!" + _username + "@localhost");
 }
 
-const std::string Client::getNickname() const
+const std::string &Client::getNickname() const
 {
     return (_nickname);
 }
-const std::string Client::getUsername() const
+const std::string &Client::getUsername() const
 {
     return (_username);
 }
-const std::string Client::getMode() const
+const std::string &Client::getMode() const
 {
     return (_mode);
 }
-const std::string Client::getBuffer() const
+const std::string &Client::getBuffer() const
 {
     return (_buffer);
 }
@@ -75,7 +68,7 @@ void Client::setMode(std::string mode)
 {
     _mode = mode;
 }
-std::string & Client::setBuffer()
+std::string &Client::setBuffer()
 {
     return (_buffer);
 }
@@ -105,10 +98,7 @@ int Client::getisRegistered() const
     return (_isRegistered);
 }
 
-// void Client::setListOfChannel(std::string channelName)
-// {
-//     _listofchannel.push_back(channelName);
-// }
+
 void Client::setFd(int fd)
 {
     _fd = fd;
@@ -130,7 +120,7 @@ void Client::setIsRegistered(int isRegistered)
     _isRegistered = isRegistered;
 }
 
-std::vector<Channel *> Client::setListOfchannel()
+std::vector<Channel *>  & Client::setListOfchannel()
 {
     return (_listofchannel);
 }

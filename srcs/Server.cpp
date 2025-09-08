@@ -6,18 +6,15 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/03 16:56:39 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 12:52:49 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/Server.hpp"
 
-Server::Server()
+Server::Server(): _RPL_WELCOME(0), _serverName("HuecoMundo"), _fd(-1), _port(0), _nbrclient(-1), _bytes(-1)
 {
-    this->_serverName = "HuecoMundo";
-    this->_fd = -1;
     this->load_cmd();
-    this->_port = 0;
 }
 
 void Server::Finish()
@@ -184,11 +181,10 @@ int Server::wait_client()
     return 0;
 }
 
-void Server::ReadMsg(std::string& bufferClient)
+void Server::ReadMsg(std::string &bufferClient)
 {
 
     char lecture[512];
-
     this->_bytes = recv(this->_clientList[this->_nbrclient]->getFd(), &lecture, sizeof(lecture), MSG_DONTWAIT);
     if (this->_bytes == -1)
     {
@@ -230,7 +226,7 @@ void Server::find_cmd()
     }
     if (this->_cmd[0] == "CAP")
         return;
-    send(this->_clientList[this->_nbrclient]->getFd(),"Command not found\r\n", 20, MSG_DONTWAIT);
+    send(this->_clientList[this->_nbrclient]->getFd(), "Command not found\r\n", 20, MSG_DONTWAIT);
 }
 
 void Server::PushMsg(std::string msg) // a gerer apres
@@ -243,10 +239,34 @@ void Server::PushMsg(std::string msg) // a gerer apres
     epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_fd, &this->_events[_nbrclient]);
 }
 
-
 void Server::reply(int codeError, const std::string command, const std::string message, Client &client) const
 {
     std::ostringstream ost;
     ost << ":" << this->_serverName << " " << codeError << " " << client.getNickname() << " " << command << " :" << message << "\r\n";
     send(client.getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+}
+
+const std::string Server::getPrefiksServer() const
+{
+    return (":" + this->_serverName);
+}
+
+void Server::Send_Welcome() // rajouter le message 2 3 4.
+{
+    std::ostringstream ost;
+    ost << ":" << this->_serverName << " 001 " << this->_clientList[_nbrclient]->getNickname() << " :Welcome to the Hueco Mundo Network, " << this->_clientList[_nbrclient]->getNickname() << "!~" << this->_clientList[_nbrclient]->getUsername() << "@localhost\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    ost.str("");
+    ost.clear();
+    this->_RPL_WELCOME = 1;
+    ost << ":" << this->_serverName << " 002 " << this->_clientList[_nbrclient]->getNickname() << " :Your host is " << this->_serverName << ", running version 4.3.3\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    ost.str("");
+    ost.clear();
+    ost << ":" << this->_serverName << " 003 " << this->_clientList[_nbrclient]->getNickname() << " :This server was created " << __DATE__ << "\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    ost.str("");
+    ost.clear();
+    ost << ":" << this->_serverName << " 004 " << this->_clientList[_nbrclient]->getNickname() << " " << this->_serverName << " version-4.3.3 itkol :are supported by this server\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
 }
