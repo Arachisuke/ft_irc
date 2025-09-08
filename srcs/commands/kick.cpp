@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/08 16:10:27 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 16:56:54 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,9 @@ void Server::kickAllClient(std::string &clientsListToKick, std::string kicker, C
         ost << _clientList[_nbrclient]->getPrefiksClient() << " KICK " << channel->getName() << " " << (*it) << " :" << reason << "\r\n";
         for (std::set<Client *>::const_iterator it = channel->getUsers().begin(); it != channel->getUsers().end(); ++it)
             send((*it)->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
-        channel->removeClient(_clientList[clientIndex], channel);
+        channel->removeClient(_clientList[clientIndex]);
+        int i = whereIsMyChannel(channel->getName());
+        _clientList[clientIndex]->setMyChannel().erase(_clientList[clientIndex]->setMyChannel().begin() + i );
     }
 }
 
