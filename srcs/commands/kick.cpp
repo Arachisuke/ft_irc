@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/02 17:39:43 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 13:02:21 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void Server::kickAllClient(std::string &clientsListToKick, std::string kicker, C
         if (channel->isOperator(_clientList[clientIndex]))
             continue;           // a voir
         std::ostringstream ost; // ajouter ici le message de remove
-        ost << _clientList[_nbrclient]->getPrefiks() << " KICK " << channel->getName() << " " << (*it) << " :" << reason << "\r\n";
+        ost << _clientList[_nbrclient]->getPrefiksClient() << " KICK " << channel->getName() << " " << (*it) << " :" << reason << "\r\n";
         for (std::set<Client *>::const_iterator it = channel->getUsers().begin(); it != channel->getUsers().end(); ++it)
             send((*it)->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
         channel->removeClient(_clientList[clientIndex]);
