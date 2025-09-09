@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:57 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/08 18:02:08 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/09 14:21:53 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,10 +80,10 @@ void Server::nick()
     if (!this->_clientList[this->_nbrclient]->getPassword_Status())
         return (reply(461, "NICK", "ERR_PASSWORDBEFORE", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
     if (nickpolicy())
-        return (reply(432, "NICK", "Erroneus nickname", *this->_clientList[this->_nbrclient]), (void)0); // erroneus nickname
+        return (reply(432, "NICK", "Erroneus nickname", *this->_clientList[this->_nbrclient]), (void)0); 
     if (findNick())
-        return (reply(433, "NICK", "Nickname is already in use", *this->_clientList[this->_nbrclient]), (void)0); // nickname in use
-    this->successfullNick();                                                                                      // si le mdp est faux j'envoie quand meme un successful.
+        return (reply(433, "NICK", "Nickname is already in use", *this->_clientList[this->_nbrclient]), (void)0);
+    this->successfullNick();                                                                  
     this->_clientList[this->_nbrclient]->setNickname(this->_cmd[1]);
     this->_clientList[this->_nbrclient]->setNicknameStatus(1);
     return;
@@ -96,13 +96,12 @@ void Server::user()
     if (this->_clientList[this->_nbrclient]->getUsername_Status() == 0)
     {
         if (!this->_clientList[this->_nbrclient]->getPassword_Status() || !this->_clientList[this->_nbrclient]->getNickname_Status())
-            return (std::cout << "no mais allo\n", reply(461, "USER", "ERR_NEEDPASSWORDORNICK", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
-        // is print ?
+            return (reply(461, "USER", "ERR_NEEDPASSWORDORNICK", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
         if (this->_cmd[1].size() > 9 || this->_cmd[1].size() < 1) //walid verifiait la taille de real name alors qu'elle n'a pas de limite de taille a confirmer
             return (reply(432, "USER", "Erroneus nickname", *this->_clientList[this->_nbrclient]), (void)0);
 
         if (this->_clientList[this->_nbrclient]->getPassword_Status() == -1)
-            return this->closeClient("ERR_PASSWDMISMATCH");
+            throw std::runtime_error("Password Incorrect");
         this->_clientList[this->_nbrclient]->setUsername(this->_cmd[1]);
         this->_clientList[this->_nbrclient]->setUsernameStatus(1);
         this->_clientList[this->_nbrclient]->setIsRegistered(1);

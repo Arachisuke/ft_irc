@@ -176,3 +176,32 @@ Tu peux avoir plusieurs serveurs différents sur une même machine,
                         // ostream: notifier tout les membres du channel
 
    
+
+
+
+		// pour remove client, t'as juste besoin du pointeur de channel, pas besoin de le find.
+		// andy a fait commme ca moi j'ai utilise find
+		// mtn je fais des remove client removemychannel avec des find channel et des find my channel, c'est inutile car dans mychannel[i] j'ai deja le pointeur de channel.
+		
+
+
+		/* 
+		int b = whereIsMyChannel(myChannel[i]->getName()); // je cherche dans ma liste de channel ou est ce channel
+		int x = findChannel(myChannel[i]->getName()); // je cherche dans la liste de channel ou est ce channel
+
+		this->_clientList[this->_nbrclient]->removeMyChannel(this->_channeList[b]); // dans la liste des client ce client, je dis au client de quitter ce channel // je find ou est ce channel et ensuite je l'erase...
+		this->_channeList[x]->removeClient(this->_clientList[this->_nbrclient]); // dans la liste des channel, je dis au channel de quitter ce client.
+
+		std::cout << "channelptr = " << this->_channeList[x] << std::endl;
+		std::cout << "channelptr = " << this->_channeList[b] << std::endl;
+
+		if (myChannel[i]->getUsers().empty())
+		{
+				delete this->_channeList[x];
+				this->_channeList.erase(this->_channeList.begin() + i);
+		}
+		*/
+
+		// je peux directement utilise mychannel[i] pour remove le client et le channel pas besoin d'aucun find.
+		// jai le channel du coup je dis a ce channel remove le client
+		// et a ma liste de channel je dis remove le channel
