@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/04 18:07:27 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/08 16:25:49 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,15 +37,7 @@ void Channel::inviteClient(Client *client)
         return;
     _invited.insert(client);
 }
-bool Channel::isBannedClient(Client *client) const
-{
-    return (_banned.find(client) != _banned.end());
-}
 
-void Channel::banClient(Client *client)
-{
-    _banned.insert(client);
-}
 
 void Channel::addOperator(Client *client)
 {
@@ -119,7 +111,7 @@ const std::string &Channel::getName() const
     return (_name);
 }
 
-int Channel::checkChannelNorm(const std::string &channelName) const
+bool Channel::checkChannelNorm(const std::string &channelName) const
 {
     if (channelName[0] != '#')
         return (0);
