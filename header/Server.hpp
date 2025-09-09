@@ -95,6 +95,8 @@ public:
   void find_cmd();
   void executeOrNot();
   std::vector<std::string> ft_split(const std::string &str, char delimiter);
+  void successfullQuit(std::string msg);
+
 
 private:
   std::vector<Client *> _clientList;

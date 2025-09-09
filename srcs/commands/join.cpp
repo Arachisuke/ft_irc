@@ -56,28 +56,23 @@ void Server::join()
             if (!myChannel[i]->isMember(this->_clientList[this->_nbrclient]))
                 return (reply(442, "JOIN", "You're not on that channel", *this->_clientList[this->_nbrclient]), (void)0);
 
-            std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PART? " + myChannel[i]->getName();
+            std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PART " + myChannel[i]->getName();
             if (this->_cmd.size() > 2 && this->_cmd[2] != "")
-                msg += " : " + this->_cmd[2];
+                msg += " :" + this->_cmd[2];
             msg += "\r\n";
 
             std::set<Client *> users = myChannel[i]->getUsers();
             for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
                 send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
 
-            int b = whereIsMyChannel(myChannel[i]->getName());
-            int x = findChannel(myChannel[i]->getName());
-
-            this->_clientList[this->_nbrclient]->removeMyChannel(this->_channeList[b]);
-            this->_channeList[x]->removeClient(this->_clientList[this->_nbrclient]);
-
+            myChannel[i]->removeClient(this->_clientList[this->_nbrclient]);
+            this->_clientList[this->_nbrclient]->removeMyChannel(myChannel[i]); 
+            
             if (myChannel[i]->getUsers().empty())
             {
-                std::cout << "normalement je ne devrais pas m'affiche" << std::endl;
-                delete this->_channeList[x];
-                this->_channeList.erase(this->_channeList.begin() + i);
+                this->_channeList.erase(this->_channeList.begin() + findChannel(myChannel[i]->getName()));
+                delete myChannel[i];
             }
-            
         }
     }
     else
@@ -92,20 +87,20 @@ void Server::join()
             {
                 int i = findChannel(list[j]);
                 if (this->_channeList[i]->getModes('i')) // invite only
-                    return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
+                    return (reply(473, "JOIN", "Cannot join channel (+i)", *this->_clientList[this->_nbrclient]), (void)0);
                 if (this->_channeList[i]->getModes('k')) // key only
-                    return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
+                    return (reply(475, "JOIN", "Cannot join channel (+k)", *this->_clientList[this->_nbrclient]), (void)0);
                 if (this->_channeList[i]->getModes('l')) // limit only
-                    return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
+                    return (reply(471, "JOIN", "Cannot join channel (+l)", *this->_clientList[this->_nbrclient]), (void)0);
                 if (this->_channeList[i]->getModes('o')) // a changer
-                    return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
+                    return (reply(482, "JOIN", "You're not channel operator", *this->_clientList[this->_nbrclient]), (void)0);
                 if (this->_channeList[i]->getModes('t')) // a changer
-                    return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
+                    return (reply(474, "JOIN", "Cannot join channel (+b)", *this->_clientList[this->_nbrclient]), (void)0);
                 if (this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
                 {
                     std::string msg = ":" + this->_serverName + " 443 " + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " JOIN " + this->_channeList[i]->getName() + " is already on channel" + "\r\n";
                     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
-                    return;
+                   continue;
                 }
                 this->_channeList[i]->setUsers(this->_clientList[this->_nbrclient]);
                 this->_clientList[this->_nbrclient]->setMyChannel().push_back(this->_channeList[i]);

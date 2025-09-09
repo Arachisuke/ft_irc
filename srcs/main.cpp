@@ -38,6 +38,7 @@ int main(int argc, char **argv)
         return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl, 1);
 
     signal(SIGINT, &handler);
+    signal(SIGQUIT, &handler);
     Server server;
 
     int port  = range_port(argv[1]);

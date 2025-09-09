@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/03 16:56:39 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/04 17:21:40 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,22 @@ void Server::Finish()
     for (size_t i = 0; i < this->_clientList.size(); i++)
     {
         if (this->_clientList[i] && this->_clientList[i]->getFd() != -1)
-            delete this->_clientList[i]; // delete le client qui appel le destructeur qui lui close le fd.
+        {
+            this->_nbrclient = i;
+            this->closeClient("");
+        }
     }
-    close(this->_fd);
+    for (size_t i = 0; i < this->_channeList.size(); i++)
+        {
+            if (this->_channeList[i])
+                delete this->_channeList[i];   
+        }
+    // clear si tu veux les containers. il se clear en vrai a la fin..auto.
+    if (this->_fd > 0)
+        close(this->_fd);
 }
 Server::~Server()
 {
-
     this->Finish();
     std::cout << "Server shutdown" << std::endl;
 }
@@ -76,24 +85,7 @@ int Server::Init()
     return (0);
 }
 
-void Server::closeClient(std::string ERROR_MSG)
-{
-    if (!ERROR_MSG.empty())
-        this->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
-    if (this->_clientList[this->_nbrclient])
-    {
-        if (this->_clientList[this->_nbrclient]->getFd() > 0)
-        {
-            {
-                close(this->_clientList[this->_nbrclient]->getFd());
-                epoll_ctl(this->_epfd, EPOLL_CTL_DEL, this->_clientList[this->_nbrclient]->getFd(), NULL); // CTLDEL
-            }
-        }
-        delete this->_clientList[this->_nbrclient];                            // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
-        this->_clientList.erase(this->_clientList.begin() + this->_nbrclient); // ERASE
-    }
-    return;
-}
+
 // Server Server();
 
 void Server::load_cmd() // sans pass
@@ -101,12 +93,12 @@ void Server::load_cmd() // sans pass
 
     _commandList["NICK"] = &Server::nick; // valide
     _commandList["USER"] = &Server::user; // valide
-    _commandList["QUIT"] = &Server::quit;
-    _commandList["JOIN"] = &Server::join; // valide
-    _commandList["PART"] = &Server::part;
-    _commandList["PRIVMSG"] = &Server::privMsg; // valide
-    _commandList["NOTICE"] = &Server::notice;   // moi
-    _commandList["MODE"] = &Server::mode;       // duo
+    _commandList["QUIT"] = &Server::quit; // pas fait
+    _commandList["JOIN"] = &Server::join; // valide manque le mode
+    _commandList["PART"] = &Server::part; // valide 
+    _commandList["PRIVMSG"] = &Server::privMsg; // valide 
+    _commandList["NOTICE"] = &Server::notice;   // valider
+    _commandList["MODE"] = &Server::mode;       // a faire
     _commandList["TOPIC"] = &Server::topic;     // andy
     _commandList["INVITE"] = &Server::invite;   // andy
     _commandList["KICK"] = &Server::kick;       // andy
@@ -122,7 +114,7 @@ void Server::create_server(int port, char *password)
     this->Init();
 }
 
-int Server::find_client(std::string &nameClient)
+int Server::find_client(std::string &nameClient) // une reference ?
 {
     if (this->_clientList.empty())
         return (-1);
@@ -154,7 +146,7 @@ int Server::wait_client()
         throw(std::runtime_error("ERR_EPOLLWAIT"));
     for (int i = 0; i < nfds; ++i)
     {
-        if (this->_events[i].data.fd == this->_fd) // new client
+        if (this->_events[i].data.fd == this->_fd) 
         {
             Client *client = new Client();
             if (client->Init(this->_epfd, this->_fd))
@@ -168,20 +160,51 @@ int Server::wait_client()
         }
         else if (this->_events[i].data.fd != this->_fd)
         {
-            _nbrclient = find_client(this->_events[i].data.fd); // correction erreur assignation nbrclient
-            if (this->_events[i].events == EPOLLIN)
-                this->ReadMsg(this->_clientList[this->_nbrclient]->setBuffer());
-            else if (this->_events[i].events == EPOLLOUT)
+            _nbrclient = find_client(this->_events[i].data.fd); 
+            if (_nbrclient == -1) 
+                continue;   
+            if (this->_events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR))
+            {
+                if (this->_events[i].events & EPOLLHUP)
+                    this->closeClient("HUP");
+                else if (this->_events[i].events & EPOLLRDHUP)
+                    this->closeClient("RDHUP");
+                else if (this->_events[i].events & EPOLLERR)
+                    this->closeClient("ERR");
+            }
+            else if (this->_events[i].events & EPOLLIN)
+            {
+                try
+                {
+                    this->ReadMsg(this->_clientList[this->_nbrclient]->setBuffer());
+                }
+                catch (std::exception &e)
+                {
+                    this->PushMsg(e.what());
+                    this->closeClient("");
+                }
+            }
+            else if (this->_events[i].events & EPOLLOUT) // gerer le epollout
                 this->PushMsg("MON MSG");
-            else if (this->_events[i].events == EPOLLHUP)
-                this->closeClient("HUP");
-            else if (this->_events[i].events == EPOLLRDHUP)
-                this->closeClient("RDHUP");
-            else if (this->_events[i].events == EPOLLERR)
-                this->closeClient("ERR");
         }
     }
     return 0;
+}
+
+void Server::closeClient(std::string ERROR_MSG)
+{
+    if (!ERROR_MSG.empty())
+        this->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
+    if (this->_clientList[this->_nbrclient]->getFd() > 0)
+    {            
+            close(this->_clientList[this->_nbrclient]->getFd());
+            epoll_ctl(this->_epfd, EPOLL_CTL_DEL, this->_clientList[this->_nbrclient]->getFd(), NULL);
+    }
+
+    delete this->_clientList[this->_nbrclient];                            
+    this->_clientList.erase(this->_clientList.begin() + this->_nbrclient); // ERASE
+
+    return;
 }
 
 void Server::ReadMsg(std::string& bufferClient)
@@ -207,7 +230,6 @@ void Server::ReadMsg(std::string& bufferClient)
             this->_entry = bufferClient.substr(0, pos);
             bufferClient.erase(0, pos + 2);
             this->find_cmd();
-            this->_entry.clear();
             pos = bufferClient.find("\r\n");
         }
     }
@@ -216,10 +238,25 @@ void Server::ReadMsg(std::string& bufferClient)
 void Server::find_cmd()
 {
     std::string word;
-    std::istringstream iss(this->_entry); // gerer le parse ":" // alias relire la doc du parse
+    std::string concat;
+    int i = 0;
+    std::istringstream iss(this->_entry); 
     this->_cmd.clear();
     while (iss >> word)
-        this->_cmd.push_back(word);
+    {
+        if (word[0] == ':' || i == 15)
+        {
+            if (word[0] == ':')
+                word = word.substr(1);
+            concat += word;
+            while (iss >> word)
+                concat += ' ' + word;
+            this->_cmd.push_back(concat);
+        }
+        else
+            this->_cmd.push_back(word);
+        i++;
+    }
     if (this->_cmd.empty())
         return;
     std::map<std::string, CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
@@ -233,14 +270,11 @@ void Server::find_cmd()
     send(this->_clientList[this->_nbrclient]->getFd(),"Command not found\r\n", 20, MSG_DONTWAIT);
 }
 
-void Server::PushMsg(std::string msg) // a gerer apres
+void Server::PushMsg(std::string msg)  // sers plus a rien. juste a rajoute les normes.
 {
     msg.push_back('\r');
-    msg.push_back('\n'); // a verifie si c'est vraiment la norme.
+    msg.push_back('\n'); 
     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
-    this->_events[_nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
-    this->_events[_nbrclient].data.fd = this->_clientList[_nbrclient]->getFd();
-    epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_fd, &this->_events[_nbrclient]);
 }
 
 

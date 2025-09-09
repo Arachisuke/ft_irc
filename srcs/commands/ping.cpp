@@ -16,6 +16,6 @@
 void   Server::ping() // un ou plusieurs arg a renvoye
 {
     if (this->_cmd.size() - 1 == 0)
-            return(std::cout << "ERR_NEEDMOREPARAMS" << std::endl, (void)0);
+            return(reply(461, "PING", "Not enough parameters", *this->_clientList[this->_nbrclient]), (void)0);
     this->PushMsg("HuecoMundo: PONG" + this->_cmd[1]);
 }
