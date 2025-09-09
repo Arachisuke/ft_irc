@@ -12,9 +12,8 @@ Client::Client()
 }
 Client::~Client()
 {
-
     std::cout << "Client disconnected\r\n"
-              << std::endl;
+              << std::endl; 
 }
 
 int Client::Init(int epfd, int hote)
@@ -26,7 +25,7 @@ int Client::Init(int epfd, int hote)
     if (_fd == -1)
         return (1);
     // fcntl(this->fd, F_SETFL, O_NONBLOCK);
-    this->_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP; // surveille lecture et tout probleme.
+    this->_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP; 
     this->_event.data.fd = this->_fd;
     epoll_ctl(epfd, EPOLL_CTL_ADD, this->_fd, &this->_event);
     return (0);

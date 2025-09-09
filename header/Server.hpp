@@ -91,6 +91,8 @@ public:
   Channel *findChannelPtr(std::string &channelName);
 
   std::vector<std::string> ft_split(const std::string &str, char delimiter);
+  void successfullQuit(std::string msg);
+
 
 private:
   int whereIsMyChannel(std::string channel);
