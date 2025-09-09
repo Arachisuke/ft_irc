@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:02 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/02 17:11:22 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/09 13:00:36 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@ void Server::topic()
 {
 	if (!_clientList[_nbrclient]->getisRegistered())
 		return (errorMsg(451, _cmd[0], "You have not registered", *_clientList[_nbrclient]), (void)0);
-	if (_cmd.size() < 3)
+	if (_cmd.size() < 2)
 		return (errorMsg(461, _cmd[0], "Not enough parameters", *_clientList[_nbrclient]), (void)0);
+	if (!this->checkChannelNorm(_cmd[1]))
+		return (errorMsg(476, "TOPIC", "Bad Channel Mask", *_clientList[_nbrclient]));
 	Channel *channel = findChannelPtr(_cmd[1]);
 	if (!channel)
 		return (errorMsg(403, _cmd[2], "No such channel", *_clientList[_nbrclient]), (void)0);
-	if (!channel->checkChannelNorm(_cmd[1]))
-		return (errorMsg(476, "TOPIC", "Bad Channel Mask", *_clientList[_nbrclient]));
 	if (_cmd.size() == 3)
 	{
 		if (channel->getTopic().empty())
@@ -38,7 +38,7 @@ void Server::topic()
 	}
 	if (!channel->isMember(_clientList[_nbrclient]))
 		return (errorMsg(442, _cmd[2], "You're not on that channel", *_clientList[_nbrclient]), (void)0);
-	if (channel->getModes('t') && !channel->isOperator(_clientList[_nbrclient]))
+	if (channel->isModeActif('t') && !channel->isOperator(_clientList[_nbrclient]))
 		return (errorMsg(482, _cmd[2], "You're not channel operator", *_clientList[_nbrclient]), (void)0);
 	std::string newTopic;
 	if (_cmd[3][0] == ':')
