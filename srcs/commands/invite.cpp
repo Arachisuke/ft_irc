@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:06 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/02 17:10:26 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 12:36:38 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,6 @@ void Server::invite()
         return (errorMsg(482, _cmd[2], "You're not channel operator", *_clientList[_nbrclient]), (void)0);
     if (channel->isMember(_clientList[clientIndex])) // error guest deja sur la channel
         return (errorMsg(443, _cmd[1], "is already on channel", *_clientList[_nbrclient]), (void)0);
-    if (channel->isBannedClient(_clientList[clientIndex])) // error guest is banned
-        return (errorMsg(474, _cmd[2], "Cannot join channel (+b)", *_clientList[_nbrclient]), (void)0);
     if (channel->channelIsFull()) // error channel is full
         return (errorMsg(471, _cmd[1], "Cannot join channel (+l)", *_clientList[_nbrclient]), (void)0);
     channel->inviteClient(_clientList[clientIndex]);

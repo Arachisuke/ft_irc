@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/02 18:43:07 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/08 16:25:58 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,16 +46,15 @@ public:
     // Clients Status
     bool isMember(Client *client) const;
     bool isOperator(Client *client) const;
-    bool isInvited(Client *client) const;      // check set _invited si deja dans la liste
-    bool isBannedClient(Client *client) const; // check set _banned si deja dans la liste
+    bool isInvited(Client *client) const; // check set _invited si deja dans la liste
     bool channelIsFull();
 
     // Getters
     bool getModes(char modes) const;
+    bool checkChannelNorm(const std::string &channelName) const;
     const std::string &getName() const;
     const std::string &getTopic() const;
     const std::string &getTopicSetter() const;
-    int checkChannelNorm(const std::string &channelName) const;
     const std::set<Client *> &getUsers() const;
 
     // Setters
@@ -65,13 +64,12 @@ public:
     void setTopic(const std::string &newTopic);
     void setTopicSetter(const std::string &newTopicSetter);
     void setUsers(Client *client);
-    
+
     // Clients Management
-    void inviteClient(Client *client);             // ajoute client a set _invited
-    void banClient(Client *client);                // ajoute client a set _banned
-    void addOperator(Client *newClient);           // ajoute client a set _operator
-    void removeClient(Client *clientToRemove);     // remove from every set <>
-    void removeOperator(Client *operatorToRemove); // remove from operator only
+    void inviteClient(Client *client);                                   // ajoute client a set _invited
+    void addOperator(Client *newClient);                                 // ajoute client a set _operator
+    void removeClient(Client *clientToRemove); // remove from every set <>
+    void removeOperator(Client *operatorToRemove);                       // remove from operator only
 
 private:
     std::string _name;
@@ -79,13 +77,13 @@ private:
     std::string _topicSetter;
     std::string _mode;
     std::string _password; // mode +k
-    int _maxUsers;         // mode +l
 
     std::set<Client *> _users;     // all clients
     std::set<Client *> _operators; // client operator
     std::set<Client *> _invited;   // client invited
-    std::set<Client *> _banned;    // client banned
     std::set<char> _modes;         // modes actifs
+
+    int _maxUsers; // mode +l
 };
 
 #endif

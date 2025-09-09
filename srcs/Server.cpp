@@ -3,21 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/04 17:21:40 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/08 17:52:22 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/Server.hpp"
 
-Server::Server()
+Server::Server() : _serverName("HuecoMundo"), _fd(-1), _RPL_WELCOME(0), _bytes(-1), _nbrclient(-1), _port(0)
 {
-    this->_serverName = "HuecoMundo";
-    this->_fd = -1;
     this->load_cmd();
-    this->_port = 0;
 }
 
 void Server::Finish()
@@ -78,7 +75,6 @@ int Server::Init()
 
 void Server::closeClient(std::string ERROR_MSG)
 {
-        std::cout << "ENTRYYY" << std::endl;
     if (!ERROR_MSG.empty())
         this->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
     if (this->_clientList[this->_nbrclient])
@@ -86,11 +82,11 @@ void Server::closeClient(std::string ERROR_MSG)
         if (this->_clientList[this->_nbrclient]->getFd() > 0)
         {
             {
-                std::cout << "client : "  << this->_clientList[this->_nbrclient]->getFd() << " disconnected" << std::endl;
+                std::cout << "client : " << this->_clientList[this->_nbrclient]->getFd() << " disconnected" << std::endl;
                 close(this->_clientList[this->_nbrclient]->getFd());
                 epoll_ctl(this->_epfd, EPOLL_CTL_DEL, this->_clientList[this->_nbrclient]->getFd(), NULL); // CTLDEL
             }
-        } 
+        }
         delete this->_clientList[this->_nbrclient];                            // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
         this->_clientList.erase(this->_clientList.begin() + this->_nbrclient); // ERASE
     }
@@ -171,18 +167,27 @@ int Server::wait_client()
         else if (this->_events[i].data.fd != this->_fd)
         {
             _nbrclient = find_client(this->_events[i].data.fd); // correction erreur assignation nbrclient
-            if (_nbrclient == -1) // Client non trouvé, ignore
+            if (_nbrclient == -1)                               // Client non trouvé, ignore
                 continue;
-                
+
             // Vérifier les événements de déconnexion en premier
             if (this->_events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR))
             {
                 if (this->_events[i].events & EPOLLHUP)
+                {
+                    std::cout << "HUP" << std::endl;
                     this->closeClient("HUP");
+                }
                 else if (this->_events[i].events & EPOLLRDHUP)
+                {
+                    std::cout << "RDHUP" << std::endl;
                     this->closeClient("RDHUP");
+                }
                 else if (this->_events[i].events & EPOLLERR)
+                {
+                    std::cout << "ERR" << std::endl;
                     this->closeClient("ERR");
+                }
             }
             else if (this->_events[i].events & EPOLLIN)
                 this->ReadMsg(this->_clientList[this->_nbrclient]->setBuffer());
@@ -193,20 +198,20 @@ int Server::wait_client()
     return 0;
 }
 
-void Server::ReadMsg(std::string& bufferClient)
+void Server::ReadMsg(std::string &bufferClient)
 {
 
     char lecture[512];
-
     this->_bytes = recv(this->_clientList[this->_nbrclient]->getFd(), &lecture, sizeof(lecture), MSG_DONTWAIT);
     if (this->_bytes == -1)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
             return;
-        return (this->closeClient("ERR_READ"));
+                    
+        return (std::cout << "ERR_READ 11111" << std::endl, this->closeClient("ERR_READ"));
     }
     else if (this->_bytes == 0)
-        return (this->closeClient("ERR_READ"));
+        return (std::cout << "ERR_READ 22221" << std::endl, this->closeClient("ERR_READ"));
     else if (this->_bytes > 0)
     {
         bufferClient.append(lecture, this->_bytes); // marche aps.
@@ -222,13 +227,73 @@ void Server::ReadMsg(std::string& bufferClient)
     }
 }
 
+void removePrefix(std::string &wordPrefixLess)
+{
+    if (wordPrefixLess[0] == ':')
+    {
+        size_t spacePos = wordPrefixLess.find(' ');
+        if (spacePos != std::string::npos)
+            wordPrefixLess = wordPrefixLess.substr(spacePos + 1);
+    }
+    return;
+}
+
+void Server::parseCmd(std::string &wordPrefixLess)
+{
+    bool isTrailing = 0;
+    std::istringstream iss(wordPrefixLess); // gerer le parse ":" // alias relire la doc du parse
+    std::string finalWord;
+    while (iss >> finalWord)
+    {
+        if (finalWord[0] == ':')
+        {
+            isTrailing = 1;
+            break;
+        }
+        else
+        {
+            if (this->_cmd.size() < 14)
+                this->_cmd.push_back(finalWord);
+            else
+            {
+                isTrailing = 1;
+                break;
+            }
+        }
+    }
+    if (isTrailing)
+    {
+        std::string trailing = finalWord;
+        if (trailing[0] == ':')
+            trailing = trailing.substr(1);
+        std::string rest;
+        std::getline(iss, rest);
+        trailing += rest;
+        this->_cmd.push_back(trailing);
+    }
+}
+
+void Server::printParsedCmd()
+{
+    int i = 0;
+    std::cout << "client: " << _clientList[_nbrclient]->getNickname() << " " << _clientList[_nbrclient]->getFd() << " send" << std::endl;
+    std::cout << "============ Original Entry ============" << std::endl
+              << _entry << std::endl
+              << std::endl;
+    std::cout << "============ Parsed Command ============" << std::endl
+              << std::endl;
+    for (std::vector<std::string>::const_iterator it = _cmd.begin(); it < _cmd.end(); it++)
+        std::cout << "cmd[" << i++ << "]: " << (*it) << std::endl;
+    std::cout << std::endl;
+}
+
 void Server::find_cmd()
 {
-    std::string word;
-    std::istringstream iss(this->_entry); // gerer le parse ":" // alias relire la doc du parse
+    std::string wordPrefixLess = _entry;
     this->_cmd.clear();
-    while (iss >> word)
-        this->_cmd.push_back(word);
+    removePrefix(wordPrefixLess);
+    parseCmd(wordPrefixLess);
+    printParsedCmd();
     if (this->_cmd.empty())
         return;
     std::map<std::string, CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
@@ -239,7 +304,7 @@ void Server::find_cmd()
     }
     if (this->_cmd[0] == "CAP")
         return;
-    send(this->_clientList[this->_nbrclient]->getFd(),"Command not found\r\n", 20, MSG_DONTWAIT);
+    send(this->_clientList[this->_nbrclient]->getFd(), "Command not found\r\n", 20, MSG_DONTWAIT);
 }
 
 void Server::PushMsg(std::string msg) // a gerer apres
@@ -252,10 +317,34 @@ void Server::PushMsg(std::string msg) // a gerer apres
     epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_fd, &this->_events[_nbrclient]);
 }
 
-
 void Server::reply(int codeError, const std::string command, const std::string message, Client &client) const
 {
     std::ostringstream ost;
     ost << ":" << this->_serverName << " " << codeError << " " << client.getNickname() << " " << command << " :" << message << "\r\n";
     send(client.getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+}
+
+const std::string Server::getPrefiksServer() const
+{
+    return (":" + this->_serverName);
+}
+
+void Server::Send_Welcome() // rajouter le message 2 3 4.
+{
+    std::ostringstream ost;
+    ost << ":" << this->_serverName << " 001 " << this->_clientList[_nbrclient]->getNickname() << " :Welcome to the Hueco Mundo Network, " << this->_clientList[_nbrclient]->getNickname() << "!~" << this->_clientList[_nbrclient]->getUsername() << "@localhost\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    ost.str("");
+    ost.clear();
+    this->_RPL_WELCOME = 1;
+    ost << ":" << this->_serverName << " 002 " << this->_clientList[_nbrclient]->getNickname() << " :Your host is " << this->_serverName << ", running version 4.3.3\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    ost.str("");
+    ost.clear();
+    ost << ":" << this->_serverName << " 003 " << this->_clientList[_nbrclient]->getNickname() << " :This server was created " << __DATE__ << "\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    ost.str("");
+    ost.clear();
+    ost << ":" << this->_serverName << " 004 " << this->_clientList[_nbrclient]->getNickname() << " " << this->_serverName << " version-4.3.3 itkol :are supported by this server\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
 }
