@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/08 17:52:22 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/09 14:43:04 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -348,3 +348,19 @@ void Server::Send_Welcome() // rajouter le message 2 3 4.
     ost << ":" << this->_serverName << " 004 " << this->_clientList[_nbrclient]->getNickname() << " " << this->_serverName << " version-4.3.3 itkol :are supported by this server\r\n";
     send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
 }
+
+bool Server::checkChannelNorm(const std::string &channelName) const
+{
+    if (channelName[0] != '#')
+        return (0);
+    if (channelName.length() > 50 || channelName.length() == 1)
+        return (0);
+    for (size_t i = 0; i < channelName.length(); i++)
+    {
+        if (channelName[i] == ' ' || channelName[i] == ',' || channelName[i] == '\r' || channelName[i] == '\n' || channelName[i] == '\0')
+            return (0);
+    }
+    return (1);
+}
+
+
