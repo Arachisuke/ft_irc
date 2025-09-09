@@ -161,21 +161,33 @@ Tu peux avoir plusieurs serveurs différents sur une même machine,
 	// send msg de confirmation a l'hote (341)
 	// send msg d'invitation au guest 
 
-	//topic
-        // host is registered? continue : error (451)
-        // nb params < 3? error : continue (461)
-        // channel exist? continue : error (403)
-        // nb params == 2? read mode : set mode
-                // read mode (tout le monde peut lire)
-                        // topic empty? 331 : send topic + send topic setter
-                        // return
-                // set mode: host present sur le channel? continue : error (442)
-                        // topic restricted and host not operator? error : continue (482)
-                        // extract new topic cmd[3] et delete ":" du debut
-                        // set topic et topic setter
-                        // ostream: notifier tout les membres du channel
+//topic
+    // host is registered? continue : error (451)
+    // nb params < 3? error : continue (461)
+    // channel exist? continue : error (403)
+    // nb params == 2? read mode : set mode
+            // read mode (tout le monde peut lire)
+                    // topic empty? 331 : send topic + send topic setter
+                    // return
+            // set mode: host present sur le channel? continue : error (442)
+                    // topic restricted and host not operator? error : continue (482)
+                    // extract new topic cmd[3] et delete ":" du debut
+                    // set topic et topic setter
+                    // ostream: notifier tout les membres du channel
 
-   
+	
+// Mode
+	// client is registered? continue : error (451)
+    // nb params < 2? error : continue (461)
+	// check channel norm? continue : error (403)
+    // channel exist? continue : error (403)
+	// client qui utilise mode sur le channel? continue : error (442)
+	// nb params == 2 ? afficher mode actifs(tout le monde peut afficher) : continue
+	// client qui change un mode ou en met un operator? changger ou init mode : error (482)
+	// parse modes
+	// switch case 
+	//		'+' ? true : '-' ? false
+	//		quel mode itkol? si '+'? add mode : '-'? remove mode
 
 
 
