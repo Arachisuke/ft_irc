@@ -86,16 +86,16 @@ void Server::join()
             if (findChannel(list[j]) != -1) // channel exist
             {
                 int i = findChannel(list[j]);
-                if (this->_channeList[i]->getModes('i')) // invite only
-                    return (reply(473, "JOIN", "Cannot join channel (+i)", *this->_clientList[this->_nbrclient]), (void)0);
-                if (this->_channeList[i]->getModes('k')) // key only
-                    return (reply(475, "JOIN", "Cannot join channel (+k)", *this->_clientList[this->_nbrclient]), (void)0);
-                if (this->_channeList[i]->getModes('l')) // limit only
-                    return (reply(471, "JOIN", "Cannot join channel (+l)", *this->_clientList[this->_nbrclient]), (void)0);
-                if (this->_channeList[i]->getModes('o')) // a changer
-                    return (reply(482, "JOIN", "You're not channel operator", *this->_clientList[this->_nbrclient]), (void)0);
-                if (this->_channeList[i]->getModes('t')) // a changer
-                    return (reply(474, "JOIN", "Cannot join channel (+b)", *this->_clientList[this->_nbrclient]), (void)0);
+                if (this->_channeList[i]->isModeActif('i')) // invite only
+                    return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
+                if (this->_channeList[i]->isModeActif('k')) // key only
+                    return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
+                if (this->_channeList[i]->isModeActif('l')) // limit only
+                    return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
+                if (this->_channeList[i]->isModeActif('o')) // a changer
+                    return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
+                if (this->_channeList[i]->isModeActif('t')) // a changer
+                    return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
                 if (this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
                 {
                     std::string msg = ":" + this->_serverName + " 443 " + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " JOIN " + this->_channeList[i]->getName() + " is already on channel" + "\r\n";
@@ -109,6 +109,7 @@ void Server::join()
             else // les droits.
             {
                 Channel *newChannel = new Channel();
+                newChannel->setCreationDate();
                 newChannel->setName(list[j]);
                 this->_channeList.push_back(newChannel);
                 this->_channeList[this->_channeList.size() - 1]->setUsers(this->_clientList[this->_nbrclient]);

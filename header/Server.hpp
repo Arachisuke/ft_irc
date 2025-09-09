@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/08 17:24:32 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/09 13:29:38 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ public:
   void kickAllClient(std::string &clientToKick, std::string kicker, Channel *channel, std::string reason);
   void parseCmd(std::string &wordPrefixLess);
   void printParsedCmd();
+  void broadcastMsg(Channel *channel, char *msg, size_t size);
+  void addModesChannel(Channel *channel, std::string modes);
 
   int findNick();
   int nickpolicy();
@@ -85,6 +87,7 @@ public:
   int isprint(char c);
   int find_client(std::string &nameClient);
   int wait_client();
+  bool checkChannelNorm(const std::string &channelName) const;
 
   const std::string getPrefiksServer() const;
 

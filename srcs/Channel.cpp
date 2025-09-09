@@ -6,13 +6,13 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/08 16:25:49 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/09 15:04:57 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/Channel.hpp"
 
-Channel::Channel() : _name(""), _topic(""), _mode(""), _password(""), _maxUsers(-1)
+Channel::Channel() : _name(""), _topic(""), _password(""), _maxUsers(-1)
 {
 }
 Channel::~Channel()
@@ -38,7 +38,6 @@ void Channel::inviteClient(Client *client)
     _invited.insert(client);
 }
 
-
 void Channel::addOperator(Client *client)
 {
     _operators.insert(client);
@@ -60,15 +59,14 @@ bool Channel::channelIsFull()
         return (0);
     return (_users.size() >= static_cast<unsigned long>(_maxUsers));
 }
-bool Channel::getModes(char modes) const
+const std::string &Channel::getModes() const
 {
+    std::string modes = "";
     for (std::set<char>::const_iterator it = _modes.begin(); it != _modes.end(); it++)
-    {
-        if (*it == modes)
-            return (1);
-    }
-    return (0);
+        modes += *it;
+    return (modes);
 }
+
 const std::string &Channel::getTopic() const
 {
     return (_topic);
@@ -111,18 +109,21 @@ const std::string &Channel::getName() const
     return (_name);
 }
 
-bool Channel::checkChannelNorm(const std::string &channelName) const
+bool Channel::isModeActif(char mode)
 {
-    if (channelName[0] != '#')
-        return (0);
-    if (channelName.length() > 50 || channelName.length() == 1)
-        return (0);
-    for (size_t i = 0; i < channelName.length(); i++)
-    {
-        if (channelName[i] == ' ' || channelName[i] == ',' || channelName[i] == '\r' || channelName[i] == '\n' || channelName[i] == '\0')
-            return (0);
-    }
-    return (1);
+    for (std::set<char>::const_iterator it = _modes.begin(); it != _modes.end(); it++)
+        if (mode == *it)
+            return (1);
+    return (0);
 }
 
+void Channel::setCreationDate()
+{
+    _creationDate = __DATE__;
+}
+
+    const std::string Channel::getCreationDate() const
+    {
+        return (_creationDate);
+    }
 
