@@ -49,6 +49,7 @@
 #define ERR_CANNOTSENDTOCHAN "Cannot send to channel"
 #define ERR_TOOMANYCHANNELS "Too many channels"
 #define ERR_WASNOSUCHNICK "There was no such nickname"
+#define ERR_USERSDONTMATCH "Cant change mode for other users"
 
 class Server;
 class Channel;
