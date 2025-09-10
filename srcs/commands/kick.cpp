@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/09 13:38:22 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/09 15:19:21 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ std::vector<std::string> splitClients(std::string &clientsListToKick)
         clientToKick.push_back(buffer);
     return (clientToKick);
 }
-void Server::broadcastMsg(Channel *channel, char *msg, size_t size)
+void Server::broadcastMsg(Channel *channel, const char *msg, size_t size)
 {
     for (std::set<Client *>::const_iterator it = channel->getUsers().begin(); it != channel->getUsers().end(); ++it)
         send((*it)->getFd(), msg, size, MSG_DONTWAIT);
