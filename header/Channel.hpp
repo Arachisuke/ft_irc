@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/09 15:04:27 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/10 14:32:20 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ public:
     bool channelIsFull();
 
     // Getters
-    const std::string &getModes() const;
+    const std::string getModes() const;
     const std::string &getName() const;
     const std::string &getTopic() const;
     const std::string &getTopicSetter() const;
@@ -59,12 +59,13 @@ public:
     const std::string getCreationDate() const;
     
     // Setters
-    void setModes(char modes);
+    void setModes(char modes, bool addOrRemove);
     void setMaxUsers(int maxUsers);
     void setName(const std::string &name);
     void setTopic(const std::string &newTopic);
     void setTopicSetter(const std::string &newTopicSetter);
     void setUsers(Client *client);
+    void setPassword(std::string password, bool addOrRemove);
     void setCreationDate();
 
     // Clients Management

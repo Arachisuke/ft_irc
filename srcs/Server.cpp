@@ -6,13 +6,13 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/09 14:43:04 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/10 16:55:27 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/Server.hpp"
 
-Server::Server() : _serverName("HuecoMundo"), _fd(-1), _RPL_WELCOME(0), _bytes(-1), _nbrclient(-1), _port(0)
+Server::Server() : _serverName("HuecoMundo"), _bytes(-1), _fd(-1), _RPL_WELCOME(0), _nbrclient(-1), _port(0)
 {
     this->load_cmd();
 }
@@ -75,8 +75,9 @@ int Server::Init()
 
 void Server::closeClient(std::string ERROR_MSG)
 {
-    if (!ERROR_MSG.empty())
-        this->PushMsg(ERROR_MSG); // MSG ERROR push est au norme de IRC en type de msg.
+    if (!ERROR_MSG.empty() && ERROR_MSG != "RDHUP" && ERROR_MSG != "HUP") // 1 a verifier
+        this->PushMsg(ERROR_MSG);
+    // MSG ERROR push est au norme de IRC en type de msg.
     if (this->_clientList[this->_nbrclient])
     {
         if (this->_clientList[this->_nbrclient]->getFd() > 0)
@@ -89,6 +90,7 @@ void Server::closeClient(std::string ERROR_MSG)
         }
         delete this->_clientList[this->_nbrclient];                            // DELETE + (CLOSE + CTLDEL proteger par le if fd > 0)
         this->_clientList.erase(this->_clientList.begin() + this->_nbrclient); // ERASE
+        this->_nbrclient = -1;
     }
     return;
 }
@@ -170,7 +172,6 @@ int Server::wait_client()
             if (_nbrclient == -1)                               // Client non trouvé, ignore
                 continue;
 
-            // Vérifier les événements de déconnexion en premier
             if (this->_events[i].events & (EPOLLHUP | EPOLLRDHUP | EPOLLERR))
             {
                 if (this->_events[i].events & EPOLLHUP)
@@ -207,7 +208,7 @@ void Server::ReadMsg(std::string &bufferClient)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
             return;
-                    
+
         return (std::cout << "ERR_READ 11111" << std::endl, this->closeClient("ERR_READ"));
     }
     else if (this->_bytes == 0)
@@ -314,7 +315,7 @@ void Server::PushMsg(std::string msg) // a gerer apres
     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
     this->_events[_nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
     this->_events[_nbrclient].data.fd = this->_clientList[_nbrclient]->getFd();
-    epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_fd, &this->_events[_nbrclient]);
+    epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_clientList[_nbrclient]->getFd(), &this->_events[_nbrclient]); // 1 averifier
 }
 
 void Server::reply(int codeError, const std::string command, const std::string message, Client &client) const
@@ -362,5 +363,3 @@ bool Server::checkChannelNorm(const std::string &channelName) const
     }
     return (1);
 }
-
-
