@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/09 13:29:38 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/10 14:30:29 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,8 +76,8 @@ public:
   void kickAllClient(std::string &clientToKick, std::string kicker, Channel *channel, std::string reason);
   void parseCmd(std::string &wordPrefixLess);
   void printParsedCmd();
-  void broadcastMsg(Channel *channel, char *msg, size_t size);
-  void addModesChannel(Channel *channel, std::string modes);
+  void broadcastMsg(Channel *channel, const char *msg, size_t size);
+  void addModesChannel(Channel *channel,  std::vector<std::string> cmd);
 
   int findNick();
   int nickpolicy();
@@ -96,7 +96,6 @@ public:
   std::vector<std::string> ft_split(const std::string &str, char delimiter);
   void successfullQuit(std::string msg);
 
-
 private:
   int whereIsMyChannel(std::string channel);
 
@@ -113,9 +112,9 @@ private:
   std::string _buffer;
   std::string _serverName;
 
+  ssize_t _bytes;
   int _fd;
   int _RPL_WELCOME;
-  int _bytes;
   int _nbrclient;
   int _epfd;
   int _port;

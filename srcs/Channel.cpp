@@ -6,13 +6,13 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/09 15:04:57 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/10 15:02:42 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/Channel.hpp"
 
-Channel::Channel() : _name(""), _topic(""), _password(""), _maxUsers(-1)
+Channel::Channel() : _name(""), _topic(""), _password(""), _creationDate(""), _maxUsers(-1)
 {
 }
 Channel::~Channel()
@@ -59,7 +59,7 @@ bool Channel::channelIsFull()
         return (0);
     return (_users.size() >= static_cast<unsigned long>(_maxUsers));
 }
-const std::string &Channel::getModes() const
+const std::string Channel::getModes() const
 {
     std::string modes = "";
     for (std::set<char>::const_iterator it = _modes.begin(); it != _modes.end(); it++)
@@ -75,9 +75,12 @@ const std::string &Channel::getTopicSetter() const
 {
     return (_topicSetter);
 }
-void Channel::setModes(char modes)
+void Channel::setModes(char modes, bool addOrRemove)
 {
-    _modes.insert(modes);
+    if (addOrRemove == 1)
+        _modes.insert(modes);
+    else
+        _modes.erase(_modes.find(modes));
 }
 void Channel::setMaxUsers(int maxUsers)
 {
@@ -119,11 +122,22 @@ bool Channel::isModeActif(char mode)
 
 void Channel::setCreationDate()
 {
-    _creationDate = __DATE__;
+    time_t presentTime = time(NULL);                 // nombre de secondes ecoulee depuis creation unix 1 janvier 1970
+    struct tm *localeTime = localtime(&presentTime); // convertit les secondes dans une structures (D/Y/M/...)
+    char date[30];
+    strftime(date, sizeof(date), "%b %d %Y %H:%M:%S", localeTime); // formate selon un pattern dans un buffer
+    _creationDate = date;
 }
 
-    const std::string Channel::getCreationDate() const
-    {
-        return (_creationDate);
-    }
+const std::string Channel::getCreationDate() const
+{
+    return (_creationDate);
+}
 
+void Channel::setPassword(std::string password, bool addOrRemove)
+{
+    if (addOrRemove)
+        this->_password = password;
+    else
+        this->_password = "";
+}
