@@ -86,16 +86,16 @@ void Server::join()
             if (findChannel(list[j]) != -1) // channel exist
             {
                 int i = findChannel(list[j]);
-                if (this->_channeList[i]->isModeActif('i')) // invite only
-                    return (std::cout << "ERR_INVITEONLYCHAN" << std::endl, (void)0);
-                if (this->_channeList[i]->isModeActif('k')) // key only
-                    return (std::cout << "ERR_BADCHANNELKEY" << std::endl, (void)0);
-                if (this->_channeList[i]->isModeActif('l')) // limit only
-                    return (std::cout << "ERR_CHANNELISFULL" << std::endl, (void)0);
-                if (this->_channeList[i]->isModeActif('o')) // a changer
-                    return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
-                if (this->_channeList[i]->isModeActif('t')) // a changer
-                    return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
+                if (this->_channeList[i]->isModeActif('i') && !_channeList[i]->isInvited(_clientList[_nbrclient])) // invite only
+                    return (send(_clientList[_nbrclient]->getFd(), "ERR_INVITEONLYCHAN\n", 18, MSG_DONTWAIT), (void)0);
+                if (this->_channeList[i]->isModeActif('k') && _cmd.size() != 3 && _cmd[2] != this->_channeList[i]->getPassword()) // key only
+                    return (send(_clientList[_nbrclient]->getFd(), "ERR_BADCHANNELKEY\n", 18, MSG_DONTWAIT), (void)0);
+                if (this->_channeList[i]->isModeActif('l') && this->_channeList[i]->getUsers().size() >= this->_channeList[i]->getMaxUsers()) // limit only
+                    return (send(_clientList[_nbrclient]->getFd(), "ERR_CHANNELISFULL\n", 18, MSG_DONTWAIT), (void)0);
+                // if (this->_channeList[i]->isModeActif('o')) // a changer
+                //     return (std::cout << "ERR_CHANOPRIVSNEEDED" << std::endl, (void)0);
+                // if (this->_channeList[i]->isModeActif('t')) // a changer
+                //     return (std::cout << "ERR_BANNEDFROMCHAN" << std::endl, (void)0);
                 if (this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
                 {
                     std::string msg = ":" + this->_serverName + " 443 " + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " JOIN " + this->_channeList[i]->getName() + " is already on channel" + "\r\n";
@@ -112,11 +112,11 @@ void Server::join()
                 newChannel->setCreationDate();
                 newChannel->setName(list[j]);
                 this->_channeList.push_back(newChannel);
-                this->_channeList[this->_channeList.size() - 1]->setUsers(this->_clientList[this->_nbrclient]);
+                newChannel->setUsers(this->_clientList[this->_nbrclient]);
                 this->_clientList[this->_nbrclient]->setMyChannel().push_back(newChannel);
-                this->_channeList[this->_channeList.size() - 1]->addOperator(this->_clientList[this->_nbrclient]);
-                this->_channeList[this->_channeList.size() - 1]->setTopicSetter(this->_clientList[this->_nbrclient]->getNickname());
-                this->_channeList[this->_channeList.size() - 1]->setTopic("");
+                newChannel->addOperator(this->_clientList[this->_nbrclient]);
+                newChannel->setTopicSetter(this->_clientList[this->_nbrclient]->getNickname());
+                newChannel->setTopic("");
                 this->successfullJoin(this->_channeList.size() - 1);
             }
         }
