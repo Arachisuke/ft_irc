@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/10 14:32:20 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/11 14:26:28 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,9 @@ public:
     const std::string &getTopicSetter() const;
     const std::set<Client *> &getUsers() const;
     const std::string getCreationDate() const;
-    
+    const std::string &getPassword() const;
+    size_t getMaxUsers() const;
+
     // Setters
     void setModes(char modes, bool addOrRemove);
     void setMaxUsers(int maxUsers);
