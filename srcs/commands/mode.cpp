@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:34 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/10 16:47:58 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/11 11:03:12 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,44 +18,44 @@
 void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
 {
     bool addOrRemove = 1;
-    int param = 1;
-    if (cmd[0][0] == '-')
+    int param = 3;
+    if (cmd[2][0] == '-')
         addOrRemove = 0;
-    if (cmd[0][0] == '+')
+    if (cmd[2][0] == '+')
         addOrRemove = 1;
-    for (size_t i = 1; i < cmd[0].length(); i++)
+    for (size_t i = 1; i < cmd[2].length(); i++)
     {
-        if (cmd[0][i] == 'i')
+        if (cmd[2][i] == 'i')
         {
             channel->setModes('i', addOrRemove);
         }
-        else if (cmd[0][i] == 't')
+        else if (cmd[2][i] == 't')
         {
             channel->setModes('t', addOrRemove);
         }
-        else if (cmd[0][i] == 'k')
+        else if (cmd[2][i] == 'k')
         {
             if (!addOrRemove)
                 channel->setModes('k', addOrRemove);
             else if (static_cast<size_t>(param) >= cmd.size() || cmd[param].empty())
             {
-                errorMsg(461, _cmd[0], "Not enough parameters", *_clientList[_nbrclient]);
+                errorMsg(461, _cmd[2], "Not enough parameters", *_clientList[_nbrclient]);
                 continue;
             }
             channel->setModes('k', addOrRemove);
             channel->setPassword(cmd[param++], addOrRemove);
         }
-        else if (cmd[0][i] == 'o')
+        else if (cmd[2][i] == 'o')
         {
             if (static_cast<size_t>(param) >= cmd.size() || cmd[param].empty())
             {
-                errorMsg(461, _cmd[0], "Not enough parameters", *_clientList[_nbrclient]);
+                errorMsg(461, _cmd[2], "Not enough parameters", *_clientList[_nbrclient]);
                 continue;
             }
             int i = find_client(cmd[param++]);
             if (i == -1 || i == _nbrclient)
             {
-                errorMsg(401, _cmd[0], "No such nick", *_clientList[_nbrclient]);
+                errorMsg(401, _cmd[2], "No such nick", *_clientList[_nbrclient]);
                 continue;
             }
             if (addOrRemove)
@@ -63,7 +63,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
             else
                 channel->removeOperator(_clientList[i]);
         }
-        else if (cmd[0][i] == 'l')
+        else if (cmd[2][i] == 'l')
         {
             if (!addOrRemove)
                 channel->setModes('l', addOrRemove);
@@ -85,7 +85,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
         }
         else
         {
-            errorMsg(461, _cmd[0], "Not enough parameters", *_clientList[_nbrclient]);
+            errorMsg(461, _cmd[2], "Not enough parameters", *_clientList[_nbrclient]);
             continue;
         }
     }
@@ -108,7 +108,7 @@ void Server::mode()
         return (reply(324, _cmd[1], channel->getModes(), *_clientList[_nbrclient]), reply(329, _cmd[1], channel->getCreationDate(), *_clientList[_nbrclient]));
     if (!channel->isOperator(_clientList[_nbrclient]))
         return (errorMsg(482, _cmd[1], "You're not channel operator", *_clientList[_nbrclient]));
-    addModesChannel(channel, std::vector<std::string>(_cmd.begin() + 2, _cmd.end()));
+    addModesChannel(channel, _cmd);
 }
 
 // // MODE WALID
