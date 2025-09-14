@@ -1,3 +1,0 @@
-PASS 1\r\n
-NICK Ichigo\r\n
-USER Kurosaki k k k\r\n

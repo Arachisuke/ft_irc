@@ -6,7 +6,7 @@
 /*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/14 12:58:07 by macos            ###   ########.fr       */
+/*   Updated: 2025/09/14 13:02:21 by macos            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,7 +202,7 @@ void Server::closeClient(std::string ERROR_MSG)
     }
 
     delete this->_clientList[this->_nbrclient];                            
-    this->_clientList.erase(this->_clientList.begin() + this->_nbrclient); // ERASE
+        this->_clientList.erase(this->_clientList.begin() + this->_nbrclient);
 
     return;
 }
