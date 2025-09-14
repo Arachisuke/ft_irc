@@ -23,7 +23,6 @@ int Client::Init(int epfd, int hote)
     this->_fd = accept(this->_hote, reinterpret_cast<sockaddr *>(&this->_client), &_size_of_client);
     if (_fd == -1)
         return (1);
-    // fcntl(this->fd, F_SETFL, O_NONBLOCK);
     this->_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP; 
     this->_event.data.fd = this->_fd;
     epoll_ctl(epfd, EPOLL_CTL_ADD, this->_fd, &this->_event);
@@ -120,5 +119,6 @@ void Client::setIsRegistered(int isRegistered)
 }
 void Client::removeMyChannel(Channel *channelToRemove) 
 {
-    this->_myChannels.erase(std::find(_myChannels.begin(), _myChannels.end(), channelToRemove));
+    if (std::find(_myChannels.begin(), _myChannels.end(), channelToRemove) != _myChannels.end()))
+        this->_myChannels.erase(std::find(_myChannels.begin(), _myChannels.end(), channelToRemove));
 }

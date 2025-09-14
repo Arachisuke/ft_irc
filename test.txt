@@ -118,6 +118,6 @@ notice join privmsg part -> multiple with error continue to check other arg.  @@
 // le test c join part privmsg notice quit.
 
 
-// mode a faire !!!! -> reste qu'a implementer le setter et une erreur.
+// mode a faire !!!!
 
 

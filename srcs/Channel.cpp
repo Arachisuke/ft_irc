@@ -51,7 +51,7 @@ void Channel::addOperator(Client *client)
 {
     _operators.insert(client);
 }
-void Channel::removeClient(Client *clientToRemove)
+void Channel::removeClient(Client *clientToRemove) // est ce que ca marche celui la ?
 {
     _operators.erase(clientToRemove);
     _users.erase(clientToRemove);
@@ -88,6 +88,11 @@ const std::string &Channel::getTopicSetter() const
 void Channel::setModes(char modes)
 {
     _modes.insert(modes);
+}
+void Channel::suppModes(char modes)
+{
+    if (std::find(_modes.begin(), _modes.end(), modes) != modes.end())
+        this->_modes.erase(std::find(_modes.begin(), _modes.end(), modes));
 }
 void Channel::setMaxUsers(int maxUsers)
 {

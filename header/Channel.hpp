@@ -60,6 +60,7 @@ public:
 
     // Setters
     void setModes(char modes);
+    void suppModes(char modes);
     void setMaxUsers(int maxUsers);
     void setName(const std::string &name);
     void setTopic(const std::string &newTopic);
