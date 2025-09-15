@@ -122,6 +122,6 @@ void Client::setIsRegistered(int isRegistered)
 }
 void Client::removeMyChannel(Channel *channelToRemove) 
 {
-    if (std::find(_myChannels.begin(), _myChannels.end(), channelToRemove) != _myChannels.end()))
+    if (std::find(_myChannels.begin(), _myChannels.end(), channelToRemove) != _myChannels.end())
         this->_myChannels.erase(std::find(_myChannels.begin(), _myChannels.end(), channelToRemove));
 }

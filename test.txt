@@ -150,3 +150,17 @@
 // :HuecoMundo 004 po HuecoMundo version-4.3.3 itkol :are supported by this server
 // JOIN #42^M
 // :HuecoMundo 443 po!p@localhost JOIN #42 is already on channel
+
+
+
+
+
+
+
+== = = = = = = = = = = = ========= = = = = = = = = ====== ==== =. ==. = == = =. == = = = = ===. = === = = = =
+
+
+
+NEW TEST :
+
+-> name operator, le @ est ajoute a chaque channel cree par l'user du coup si je JOIN plusieurs channel, l'USER a pour chaque channel un @ en plus

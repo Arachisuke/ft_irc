@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/15 13:41:11 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/15 15:10:00 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,19 +139,18 @@ int Server::find_client(int fd)
 int Server::wait_client()
 {
 	int		nfds;
-	Client	*client;
-	delete	client;
 
 	nfds = epoll_wait(this->_epfd, this->_events, MAX_EVENTS, -1);
 	if (nfds == -1)
-		throw(std::runtime_error("ERR_EPOLLWAIT"));
+		throw(std::runtime_error(""));
 	for (int i = 0; i < nfds; ++i)
 	{
 		if (this->_events[i].data.fd == this->_fd)
 		{
-			client = new Client();
+			Client *client = new Client();
 			if (client->Init(this->_epfd, this->_fd))
 			{
+				delete client;
 				std::cerr << "Failed to accept new client" << std::endl;
 				continue ;
 			}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/11 14:26:20 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/15 14:23:00 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,11 +83,7 @@ void Channel::setModes(char modes, bool addOrRemove)
     else
         _modes.erase(_modes.find(modes));
 }
-void Channel::suppModes(char modes)
-{
-    if (std::find(_modes.begin(), _modes.end(), modes) != modes.end())
-        this->_modes.erase(std::find(_modes.begin(), _modes.end(), modes));
-}
+
 void Channel::setMaxUsers(int maxUsers)
 {
     _maxUsers = maxUsers;
