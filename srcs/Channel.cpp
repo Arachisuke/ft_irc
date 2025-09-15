@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/04 18:07:27 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/11 14:26:20 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/Channel.hpp"
 
-Channel::Channel() : _name(""), _topic(""), _mode(""), _password(""), _maxUsers(-1)
+Channel::Channel() : _name(""), _topic(""), _password(""), _creationDate(""), _maxUsers(-1)
 {
 }
 Channel::~Channel()
@@ -37,18 +37,10 @@ void Channel::inviteClient(Client *client)
         return;
     _invited.insert(client);
 }
-bool Channel::isBannedClient(Client *client) const
-{
-    return (_banned.find(client) != _banned.end());
-}
-
-void Channel::banClient(Client *client)
-{
-    _banned.insert(client);
-}
 
 void Channel::addOperator(Client *client)
 {
+    client->setNickname("@" + client->getNickname()); // name operator dans nickname ou une autre variable dediee???
     _operators.insert(client);
 }
 void Channel::removeClient(Client *clientToRemove) // est ce que ca marche celui la ?
@@ -68,15 +60,14 @@ bool Channel::channelIsFull()
         return (0);
     return (_users.size() >= static_cast<unsigned long>(_maxUsers));
 }
-bool Channel::getModes(char modes) const
+const std::string Channel::getModes() const
 {
+    std::string modes = "";
     for (std::set<char>::const_iterator it = _modes.begin(); it != _modes.end(); it++)
-    {
-        if (*it == modes)
-            return (1);
-    }
-    return (0);
+        modes += *it;
+    return (modes);
 }
+
 const std::string &Channel::getTopic() const
 {
     return (_topic);
@@ -85,9 +76,12 @@ const std::string &Channel::getTopicSetter() const
 {
     return (_topicSetter);
 }
-void Channel::setModes(char modes)
+void Channel::setModes(char modes, bool addOrRemove)
 {
-    _modes.insert(modes);
+    if (addOrRemove == 1)
+        _modes.insert(modes);
+    else
+        _modes.erase(_modes.find(modes));
 }
 void Channel::suppModes(char modes)
 {
@@ -124,18 +118,41 @@ const std::string &Channel::getName() const
     return (_name);
 }
 
-int Channel::checkChannelNorm(const std::string &channelName) const
+bool Channel::isModeActif(char mode)
 {
-    if (channelName[0] != '#')
-        return (0);
-    if (channelName.length() > 50 || channelName.length() == 1)
-        return (0);
-    for (size_t i = 0; i < channelName.length(); i++)
-    {
-        if (channelName[i] == ' ' || channelName[i] == ',' || channelName[i] == '\r' || channelName[i] == '\n' || channelName[i] == '\0')
-            return (0);
-    }
-    return (1);
+    for (std::set<char>::const_iterator it = _modes.begin(); it != _modes.end(); it++)
+        if (mode == *it)
+            return (1);
+    return (0);
 }
 
+void Channel::setCreationDate()
+{
+    time_t presentTime = time(NULL);                 // nombre de secondes ecoulee depuis creation unix 1 janvier 1970
+    struct tm *localeTime = localtime(&presentTime); // convertit les secondes dans une structures (D/Y/M/...)
+    char date[30];
+    strftime(date, sizeof(date), "%b %d %Y %H:%M:%S", localeTime); // formate selon un pattern dans un buffer
+    _creationDate = date;
+}
 
+const std::string Channel::getCreationDate() const
+{
+    return (_creationDate);
+}
+
+void Channel::setPassword(std::string password, bool addOrRemove)
+{
+    if (addOrRemove)
+        this->_password = password;
+    else
+        this->_password = "";
+}
+const std::string &Channel::getPassword() const
+{
+    return (_password);
+}
+
+size_t Channel::getMaxUsers() const
+{
+    return (_maxUsers);
+}

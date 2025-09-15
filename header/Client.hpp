@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/04 16:02:20 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/11 12:12:03 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,57 +54,61 @@
 class Server;
 class Channel;
 
-
 class Client
 {
 
 public:
     Client();
     ~Client();
-    void Send_Welcome();
+
     int Init(int epfd, int hote);
-
-    void setNickname(std::string nickName);
-    void setUsername(std::string userName);
-    void setMode(std::string mode);
-    std::string & setBuffer();
-    // void setListOfChannel(std::string channelName);
-    void setFd(int fd);
-    void setPasswordStatus(int passwordStatus);
-    void setNicknameStatus(int nickNameStatus);
-    void setUsernameStatus(int userNameStatus);
-    void setIsRegistered(int isRegistered);
-    std::vector<Channel *>& setMyChannel();
-
-
-    const std::string getPrefiks() const;
-    const std::string getNickname() const;
-    const std::string getUsername() const;
-    const std::string getMode() const;
-    const std::string getBuffer() const;
-    const std::vector<Channel *> &getMyChannel() const;
     int getFd() const;
     int getPassword_Status() const;
     int getNickname_Status() const;
     int getUsername_Status() const;
     int getisRegistered() const;
+
+    void setNickname(std::string nickName);
+    void setUsername(std::string userName);
+    void setMode(std::string mode);
+    void setFd(int fd);
+    void setPasswordStatus(int passwordStatus);
+    void setNicknameStatus(int nickNameStatus);
+    void setUsernameStatus(int userNameStatus);
+    void setIsRegistered(int isRegistered);
     void removeMyChannel(Channel *channelToRemove);
+    std::vector<Channel *>& setMyChannel();
+
+
+    const std::string getPrefiksClient() const;
+    const std::string &getNickname() const;
+    const std::string &getUsername() const;
+    const std::string &getMode() const;
+    const std::string &getBuffer() const;
+    const std::vector<Channel *> &getMyChannel() const;
+
+    std::string &setBuffer();
+
 
 
 private:
-    int _fd;
-    std::vector<Channel *> _myChannels;
-    int _Password_Status;
-    int _Nickname_Status;
-    int _Username_Status;
-    int _isRegistered;
-    std::string _nickname; // 9 length
-    std::string _username; // 9 length
-    std::string _mode;     // 3 length
-    std::string _buffer;
     int _hote;
+    int _fd;
+    int _PasswordStatus;
+    int _NicknameStatus;
+    int _realNameStatus;
+    int _isRegistered;
+    
+    std::string _buffer;
+    std::string _nickname; // 9 length
+    std::string _realName; 
+    std::string _mode;     // 3 length
+    
     struct epoll_event _event;
     struct sockaddr_in _client;
+    
     socklen_t _size_of_client;
+    
+    std::vector<Channel *> _myChannels;
 };
 #endif

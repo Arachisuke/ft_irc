@@ -1,45 +1,45 @@
-tester les users affiche en entrant en second dans un channel ca n'affiche pas le membre qui vient actuellement d'entrer ca affiche que le premier membre @@@
+// tester les users affiche en entrant en second dans un channel ca n'affiche pas le membre qui vient actuellement d'entrer ca affiche que le premier membre @@@
 
-privmsg -> j'envoie que un mot et pas tout le msg. @@@@@
-privmsg -> channel et clients @@@@@
-privmsg -> double USER, et channel. @@@@
+// privmsg -> j'envoie que un mot et pas tout le msg. @@@@@
+// privmsg -> channel et clients @@@@@
+// privmsg -> double USER, et channel. @@@@
 
-JOIN -> PART @@
-JOIN -> multiple @@@@
-JOIN -> MODE.
-
-
-PART -> a tester @@@
-
-le parsing a gerer quand ya : lire la doc etc.
+// JOIN -> PART @@
+// JOIN -> multiple @@@@
+// JOIN -> MODE.
 
 
+// PART -> a tester @@@
 
-PART -> quitter, le erase de la liste des users et de sa propre liste des channels, et s'il est le dernier delete le channel. @@@
+// le parsing a gerer quand ya : lire la doc etc.
 
 
 
-list des channels via server  @@@@
-list des users du channel via servers@@@@ 
-list des channels via user. @@@@
+// PART -> quitter, le erase de la liste des users et de sa propre liste des channels, et s'il est le dernier delete le channel. @@@
 
 
+
+// list des channels via server  @@@@
+// list des users du channel via servers@@@@ 
+// list des channels via user. @@@@
 
 
 
 
-je me suis tormpe dans le mdp il a pas change c normal ? peut etre oui vu que javais pas fini la norme du coup ca a fait un mauvais mdp @@@@
 
 
-jai ressaye ca a coupe le fd, normal du coup je me reconnecte ca marche aps et je fais segfault le server ..
-aussi c'est que les autres ont ete alerte par mon nick, mais du coup j'ai pas reussi a me co, doit-je les informer meme quand je rate ou je dois attendre d'avoir fini la registration de maniere safe.
+// je me suis tormpe dans le mdp il a pas change c normal ? peut etre oui vu que javais pas fini la norme du coup ca a fait un mauvais mdp @@@@
 
 
-// segfault quand je fais part ? @@@@
-// a reason "k" ? alors que j'ai rien envoyer ??? @@@
+// jai ressaye ca a coupe le fd, normal du coup je me reconnecte ca marche aps et je fais segfault le server ..
+// aussi c'est que les autres ont ete alerte par mon nick, mais du coup j'ai pas reussi a me co, doit-je les informer meme quand je rate ou je dois attendre d'avoir fini la registration de maniere safe.
 
-??????????????? probleme en cours celui juste au dessus.
-tester une condition differente ? @@@
+
+// // segfault quand je fais part ? @@@@
+// // a reason "k" ? alors que j'ai rien envoyer ??? @@@
+
+// ??????????????? probleme en cours celui juste au dessus.
+// tester une condition differente ? @@@
 
 
 
@@ -77,47 +77,76 @@ tester une condition differente ? @@@
 
 // le SIGQUIT -> // @@@@@@
 
-parsing : @@@@
+// parsing : @@@@
 
 
-// join plus logique...@@@@
-// j'ai rendu part aussi plus logique, part est different de JOIN. @@@@
+// // join plus logique...@@@@
+// // j'ai rendu part aussi plus logique, part est different de JOIN. @@@@
 
-QUIT 
-// continuer pour retirer le client des channels. @@@@
-
-
-tester QUIT -> S'il quitte bien envoie a tlm le msg, et s'il y a pas de leaks et voila.
-tester TOPIC -> no erreur tester les 4-5 cas et s'il envoie bien.
+// QUIT 
+// // continuer pour retirer le client des channels. @@@@
 
 
-join 0 
-part 
-topic
-quit
+// tester QUIT -> S'il quitte bien envoie a tlm le msg, et s'il y a pas de leaks et voila.
+// tester TOPIC -> no erreur tester les 4-5 cas et s'il envoie bien.
 
 
-join -> si jessaye de join un channel dont je suis deja membre mais qu'en deuxieme argument je ne suis pas membre, il ne calcule pas et return, la j'ai mis continue. @@@@
-
-quit -> envoyez qu'un quit meme si j'ai deux channel en commun  @@@@
-
-quit? -> leaks. invalid read. du a la boucle faut throw une exception.@@@
-
-
-quit -> double msg du throw et de send. @@@@
-// reverifie le cas du faux password les msg et les leaks. @@@@
-
-// 
+// join 0 
+// part 
+// topic
+// quit
 
 
-notice join privmsg part -> multiple with error continue to check other arg.  @@@ a tester @@@@@
+// join -> si jessaye de join un channel dont je suis deja membre mais qu'en deuxieme argument je ne suis pas membre, il ne calcule pas et return, la j'ai mis continue. @@@@
 
-// retester le msg closing link et quit. @@@@
+// quit -> envoyez qu'un quit meme si j'ai deux channel en commun  @@@@
 
-// faire full test puis controle C, ya un leaks a priori
-// le test c join part privmsg notice quit.
-
-
-// mode a faire !!!!
+// quit? -> leaks. invalid read. du a la boucle faut throw une exception.@@@
 
 
+// quit -> double msg du throw et de send. @@@@
+// // reverifie le cas du faux password les msg et les leaks. @@@@
+
+// // 
+
+
+// notice join privmsg part -> multiple with error continue to check other arg.  @@@ a tester @@@@@
+
+// // retester le msg closing link et quit. @@@@
+
+// // faire full test puis controle C, ya un leaks a priori
+// // le test c join part privmsg notice quit.
+
+
+// // mode a faire !!!! -> reste qu'a implementer le setter et une erreur.
+
+
+
+
+// //probleme de retrait du channel lors d'un ctrl+c
+
+// ➜  ft_irc git:(server) ✗ nc localhost 1080
+// PASS p^M
+// NICK po^M
+// :!@localhost NICK : po
+// USER p p p p^M
+// :HuecoMundo 001 po :Welcome to the Hueco Mundo Network, po!~p@localhost
+// :HuecoMundo 002 po :Your host is HuecoMundo, running version 4.3.3
+// :HuecoMundo 003 po :This server was created Sep 10 2025
+// :HuecoMundo 004 po HuecoMundo version-4.3.3 itkol :are supported by this server
+// JOIN #42^M
+// :po!p@localhost JOIN #42
+// :HuecoMundo 353 po = #42 : po 
+// :HuecoMundo 366 po #42 :End of /NAME list
+// MODE #42^C
+// ➜  ft_irc git:(server) ✗ nc localhost 1080
+// PASS p^M
+// NICK po^M
+// :!@localhost NICK : po
+// USER p p p p^M
+// :HuecoMundo 001 po :Welcome to the Hueco Mundo Network, po!~p@localhost
+// :HuecoMundo 002 po :Your host is HuecoMundo, running version 4.3.3
+// :HuecoMundo 003 po :This server was created Sep 10 2025
+// :HuecoMundo 004 po HuecoMundo version-4.3.3 itkol :are supported by this server
+// JOIN #42^M
+// :HuecoMundo 443 po!p@localhost JOIN #42 is already on channel
