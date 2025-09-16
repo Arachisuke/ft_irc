@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/15 14:23:00 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/15 16:54:38 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void Channel::inviteClient(Client *client)
 
 void Channel::addOperator(Client *client)
 {
+    
     client->setNickname("@" + client->getNickname()); // name operator dans nickname ou une autre variable dediee???
     _operators.insert(client);
 }

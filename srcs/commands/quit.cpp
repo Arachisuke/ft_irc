@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quit.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: macos <macos@student.42.fr>                +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/14 13:05:44 by macos            ###   ########.fr       */
+/*   Updated: 2025/09/15 16:31:09 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ void   Server::quit()
         msg += this->_cmd[1];
     msg += "\r\n";
     this->successfullQuit(msg);
-    std::string msg2 = "ERROR :Closing Link: " + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost (Quit: ";
+    std::string msg2 = "ERROR :Closing Link: " + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost (Quit:";
   if (this->_cmd.size() > 1)
-      msg2 += ' ' + this->_cmd[1];
+      msg2 += this->_cmd[1];
   msg2 += " )\r\n";
     
     send(this->_clientList[this->_nbrclient]->getFd(), msg2.c_str(), msg2.size(), MSG_DONTWAIT);
@@ -56,12 +56,7 @@ void   Server::quit()
             delete this->_clientList[this->_nbrclient]->getMyChannel()[i];
       }
 
-
-
-
-
-
-      throw std::runtime_error("");
+      throw std::runtime_error("throwtime ce message est a suppr");
 }
 
 

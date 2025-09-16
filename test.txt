@@ -88,7 +88,7 @@
 
 
 // tester QUIT -> S'il quitte bien envoie a tlm le msg, et s'il y a pas de leaks et voila.
-// tester TOPIC -> no erreur tester les 4-5 cas et s'il envoie bien.
+// tester NOTICE -> no erreur tester les 4-5 cas et s'il envoie bien.
 
 
 // join 0 
@@ -164,3 +164,24 @@
 NEW TEST :
 
 -> name operator, le @ est ajoute a chaque channel cree par l'user du coup si je JOIN plusieurs channel, l'USER a pour chaque channel un @ en plus
+
+
+-> ordre des clients dans NAME LIST est ce normal ? 
+
+
+-> NICK already on USE, si le gars c'est un operator, il aura @ du coup je pourrais plus les comparer.
+
+-> NICK successfullNick dans plusieurs channel, il faut l'envoyer qu'a un seul client meme si ya plusieurs channel en commun.
+
+
+
+-> QUIT leak....
+
+-> QUIT msg entre parenthese trop d'espace.
+
+
+
+
+-> QUIT, me reconnecte et faire JOIN ca leak.
+
+-> jai join un channel ya encore kenpachi, alors qu'il a quit avant....

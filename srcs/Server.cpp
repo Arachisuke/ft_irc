@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/15 15:10:00 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/15 16:28:54 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ void Server::Finish()
 		if (this->_channeList[i])
 			delete this->_channeList[i];
 	}
-	// clear si tu veux les containers. il se clear en vrai a la fin..auto.
 	if (this->_fd > 0)
 		close(this->_fd);
 }
@@ -194,7 +193,6 @@ void Server::closeClient(std::string ERROR_MSG)
 {
 	if (!ERROR_MSG.empty())
 		this->PushMsg(ERROR_MSG);
-	// MSG ERROR push est au norme de IRC en type de msg.
 	if (this->_clientList[this->_nbrclient]->getFd() > 0)
 	{
 		close(this->_clientList[this->_nbrclient]->getFd());

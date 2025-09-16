@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:47 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/09 16:04:50 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/15 15:19:42 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void Server::privMsg()
       std::set<Client *> users = this->_channeList[n]->getUsers();
       for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
       {
-        if ((*it)->getFd() != _clientList[_nbrclient]->getFd())
+        // if ((*it)->getFd() != _clientList[_nbrclient]->getFd())  bizarre...
             send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
       }
     }
