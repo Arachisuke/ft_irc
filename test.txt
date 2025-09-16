@@ -164,24 +164,35 @@
 NEW TEST :
 
 -> name operator, le @ est ajoute a chaque channel cree par l'user du coup si je JOIN plusieurs channel, l'USER a pour chaque channel un @ en plus
+-> NICK already on USE, si le gars c'est un operator, il aura @ du coup je pourrais plus les comparer.
 
 
 -> ordre des clients dans NAME LIST est ce normal ? 
 
 
--> NICK already on USE, si le gars c'est un operator, il aura @ du coup je pourrais plus les comparer.
 
--> NICK successfullNick dans plusieurs channel, il faut l'envoyer qu'a un seul client meme si ya plusieurs channel en commun.
-
-
-
--> QUIT leak....
-
--> QUIT msg entre parenthese trop d'espace.
+-> NICK successfullNick dans plusieurs channel, il faut l'envoyer qu'a un seul client meme si ya plusieurs channel en commun. @@@@
 
 
 
+-> QUIT leak.... @@@@
 
--> QUIT, me reconnecte et faire JOIN ca leak.
+-> QUIT msg entre parenthese trop d'espace. @@@@
 
--> jai join un channel ya encore kenpachi, alors qu'il a quit avant....
+
+
+
+-> QUIT, me reconnecte et faire JOIN ca leak. @@@
+
+-> jai join un channel ya encore kenpachi, alors qu'il a quit avant....@@@@
+
+
+
+// QUIT + controle C server double free etc etc...leak etc etc @@@@@
+
+// Verifie tout les endroit ou je nettoie les repertorier avec le point rouge, ensuite reverifie la logique a chaque fois et la correlation entre eux.
+// JOIN QUIT CLOSE CLIENT FINISH PART
+// JOIN QUIT CLOSE PART @@@@@
+
+
+// refaire le test de leak avec toute les fonctions a free tu les utilises toutes + controle C seerver ou client

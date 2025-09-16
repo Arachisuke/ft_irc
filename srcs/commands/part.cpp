@@ -47,6 +47,7 @@ void   Server::part()
             {
                 delete this->_channeList[i];
                 this->_channeList.erase(this->_channeList.begin() + i);
+                this->_channeList[i] = NULL;
             }
           }
 }

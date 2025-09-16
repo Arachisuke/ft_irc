@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/15 16:31:09 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/16 17:36:09 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,15 +48,21 @@ void   Server::quit()
   msg2 += " )\r\n";
     
     send(this->_clientList[this->_nbrclient]->getFd(), msg2.c_str(), msg2.size(), MSG_DONTWAIT);
-    
-    for (size_t i = 0; i < this->_clientList[this->_nbrclient]->getMyChannel().size(); i++)
+    for (int i = this->_clientList[this->_nbrclient]->getMyChannel().size() - 1; i >= 0 ; --i)
       {
         this->_clientList[this->_nbrclient]->getMyChannel()[i]->removeClient(this->_clientList[this->_nbrclient]);
         if (this->_clientList[this->_nbrclient]->getMyChannel()[i]->getUsers().empty())
-            delete this->_clientList[this->_nbrclient]->getMyChannel()[i];
+        {
+            int b = findChannel(this->_clientList[this->_nbrclient]->setMyChannel()[i]->getName());
+            delete this->_clientList[this->_nbrclient]->setMyChannel()[i];
+            this->_clientList[this->_nbrclient]->setMyChannel().erase(this->_clientList[this->_nbrclient]->setMyChannel().begin() + i);
+            this->_channeList.erase(this->_channeList.begin() + b);
+            this->_clientList[this->_nbrclient]->setMyChannel()[i] = NULL;
+            
+        }
       }
 
-      throw std::runtime_error("throwtime ce message est a suppr");
+      throw std::runtime_error("");
 }
 
 

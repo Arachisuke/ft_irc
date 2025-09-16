@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/15 16:28:54 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/16 18:02:03 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ Server::Server() : _serverName("HuecoMundo"), _bytes(-1), _fd(-1),
 
 void Server::Finish()
 {
-	for (size_t i = 0; i < this->_clientList.size(); i++)
+	for (int i = this->_clientList.size(); i >= 0; i--)
 	{
 		if (this->_clientList[i] && this->_clientList[i]->getFd() != -1)
 		{
@@ -199,6 +199,19 @@ void Server::closeClient(std::string ERROR_MSG)
 		epoll_ctl(this->_epfd, EPOLL_CTL_DEL,
 			this->_clientList[this->_nbrclient]->getFd(), NULL);
 	}
+	for (int i = this->_clientList[this->_nbrclient]->getMyChannel().size() - 1; i >= 0 ; --i)
+      {
+        this->_clientList[this->_nbrclient]->getMyChannel()[i]->removeClient(this->_clientList[this->_nbrclient]);
+        if (this->_clientList[this->_nbrclient]->getMyChannel()[i]->getUsers().empty())
+        {
+            int b = findChannel(this->_clientList[this->_nbrclient]->setMyChannel()[i]->getName());
+            delete this->_clientList[this->_nbrclient]->setMyChannel()[i];
+            this->_clientList[this->_nbrclient]->setMyChannel().erase(this->_clientList[this->_nbrclient]->setMyChannel().begin() + i);
+            this->_channeList.erase(this->_channeList.begin() + b);
+            this->_clientList[this->_nbrclient]->setMyChannel()[i] = NULL;
+            
+        }
+      }
 	delete this->_clientList[this->_nbrclient];
 	this->_clientList.erase(this->_clientList.begin() + this->_nbrclient);
 	this->_nbrclient = -1;
