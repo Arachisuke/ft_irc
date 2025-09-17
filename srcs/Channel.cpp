@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/15 16:54:38 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/17 14:36:08 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,11 +40,9 @@ void Channel::inviteClient(Client *client)
 
 void Channel::addOperator(Client *client)
 {
-    
-    client->setNickname("@" + client->getNickname()); // name operator dans nickname ou une autre variable dediee???
     _operators.insert(client);
 }
-void Channel::removeClient(Client *clientToRemove) // est ce que ca marche celui la ?
+void Channel::removeClient(Client *clientToRemove)
 {
     _operators.erase(clientToRemove);
     _users.erase(clientToRemove);
@@ -84,7 +82,6 @@ void Channel::setModes(char modes, bool addOrRemove)
     else
         _modes.erase(_modes.find(modes));
 }
-
 void Channel::setMaxUsers(int maxUsers)
 {
     _maxUsers = maxUsers;

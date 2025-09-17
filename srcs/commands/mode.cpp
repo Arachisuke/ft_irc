@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:34 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/15 12:55:26 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/17 14:30:26 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
                 channel->setModes('k', addOrRemove);
             else if (static_cast<size_t>(param) >= cmd.size() || cmd[param].empty())
             {
-                errorMsg(461, _cmd[2], "Not enough parameters", *_clientList[_nbrclient]);
+                errorMsg(461, _cmd[2], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]);
                 continue;
             }
             channel->setModes('k', addOrRemove);
@@ -49,7 +49,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
         {
             if (static_cast<size_t>(param) >= cmd.size() || cmd[param].empty())
             {
-                errorMsg(461, _cmd[2], "Not enough parameters", *_clientList[_nbrclient]);
+                errorMsg(461, _cmd[2], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]);
                 continue;
             }
             int i = find_client(cmd[param++]);
@@ -85,7 +85,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
         }
         else
         {
-            errorMsg(461, _cmd[2], "Not enough parameters", *_clientList[_nbrclient]);
+            errorMsg(461, _cmd[2], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]);
             continue;
         }
     }
@@ -96,12 +96,12 @@ void Server::mode()
     if (!_clientList[_nbrclient]->getisRegistered())
         return (errorMsg(451, this->_cmd[0], "You have not registered", *_clientList[_nbrclient]));
     if (this->_cmd.size() < 2)
-        return (errorMsg(461, this->_cmd[0], "Not enough parameters", *_clientList[_nbrclient]));
+        return (errorMsg(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]));
     if (!this->checkChannelNorm(_cmd[1]))
         return (errorMsg(476, "TOPIC", "Bad Channel Mask", *_clientList[_nbrclient]));
     Channel *channel = this->findChannelPtr(this->_cmd[1]);
     if (!channel)
-        return (errorMsg(403, _cmd[2], "No such channel", *_clientList[_nbrclient]));
+        return (errorMsg(403, _cmd[2], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]));
     if (!channel->isMember(_clientList[_nbrclient]))
         return (errorMsg(442, _cmd[2], "You're not on that channel", *_clientList[_nbrclient]));
     if (_cmd.size() == 2 || (_cmd.size() > 2 && (_cmd[2][0] != '-' && _cmd[2][0] != '+')))
@@ -116,7 +116,7 @@ void Server::mode()
 // void   Server::mode()
 // {
 //   if (this->_cmd.size() - 1 == 0)
-//     return(reply(461, "MODE", "Not enough parameters", *this->_clientList[this->_nbrclient]), (void)0);
+//     return(reply(461, "MODE", ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
 //   if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
 //     return(reply(451, "MODE", "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
 //   if (this->_cmd[1][0] == '#')
