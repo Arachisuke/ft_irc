@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/10 16:55:27 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/17 12:33:24 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,6 @@ void Server::closeClient(std::string ERROR_MSG)
 {
     if (!ERROR_MSG.empty() && ERROR_MSG != "RDHUP" && ERROR_MSG != "HUP") // 1 a verifier
         this->PushMsg(ERROR_MSG);
-    // MSG ERROR push est au norme de IRC en type de msg.
     if (this->_clientList[this->_nbrclient])
     {
         if (this->_clientList[this->_nbrclient]->getFd() > 0)
@@ -94,7 +93,6 @@ void Server::closeClient(std::string ERROR_MSG)
     }
     return;
 }
-// Server Server();
 
 void Server::load_cmd() // sans pass
 {
@@ -222,6 +220,8 @@ void Server::ReadMsg(std::string &bufferClient)
             this->_entry = bufferClient.substr(0, pos);
             bufferClient.erase(0, pos + 2);
             this->find_cmd();
+            // if (this->_nbrclient == -1) // verifier si le client n a pas ete supprime par une command comme quit avant de continuer
+            //     return;
             this->_entry.clear();
             pos = bufferClient.find("\r\n");
         }
@@ -362,4 +362,14 @@ bool Server::checkChannelNorm(const std::string &channelName) const
             return (0);
     }
     return (1);
+}
+
+std::string Server::whatToDisplay(Channel *channel, Client *client)
+{
+    std::string msg;
+    if (channel->isOperator(client))
+        msg = "@" + (client)->getNickname() + " ";
+    else
+        msg = (client)->getNickname() + " ";
+    return (msg);
 }

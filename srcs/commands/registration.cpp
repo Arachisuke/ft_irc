@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:57 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/09 14:21:53 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/17 12:31:04 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@
 void Server::pass()
 {
     if (this->_cmd.size() - 1 == 0)
-        return (reply(461, "PASS", "Not enough parameters", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
     if (this->_clientList[this->_nbrclient]->getisRegistered() == 1)
-        return (reply(462, "PASS", "You may not reregister", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(462, this->_cmd[0], ERR_ALREADYREGISTRED, *this->_clientList[this->_nbrclient]), (void)0);
     this->_clientList[this->_nbrclient]->setPasswordStatus(1);
     if (this->_cmd[1] != this->_password)
         this->_clientList[this->_nbrclient]->setPasswordStatus(-1);
@@ -76,13 +76,13 @@ void Server::successfullNick()
 void Server::nick()
 {
     if (this->_cmd.size() - 1 == 0)
-        return (reply(461, "NICK", "Not enough parameters", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(461,this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
     if (!this->_clientList[this->_nbrclient]->getPassword_Status())
-        return (reply(461, "NICK", "ERR_PASSWORDBEFORE", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
+        return (reply(461,this->_cmd[0], "ERR_PASSWORDBEFORE", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
     if (nickpolicy())
-        return (reply(432, "NICK", "Erroneus nickname", *this->_clientList[this->_nbrclient]), (void)0); 
+        return (reply(432,this->_cmd[0], ERR_ERRONEUSNICKNAME, *this->_clientList[this->_nbrclient]), (void)0); 
     if (findNick())
-        return (reply(433, "NICK", "Nickname is already in use", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(433,this->_cmd[0], ERR_NICKNAMEINUSE, *this->_clientList[this->_nbrclient]), (void)0);
     this->successfullNick();                                                                  
     this->_clientList[this->_nbrclient]->setNickname(this->_cmd[1]);
     this->_clientList[this->_nbrclient]->setNicknameStatus(1);
@@ -92,16 +92,16 @@ void Server::nick()
 void Server::user()
 {
     if (this->_cmd.size() - 1 < 4)
-        return (reply(461, "USER", "Not enough parameters", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
     if (this->_clientList[this->_nbrclient]->getUsername_Status() == 0)
     {
         if (!this->_clientList[this->_nbrclient]->getPassword_Status() || !this->_clientList[this->_nbrclient]->getNickname_Status())
-            return (reply(461, "USER", "ERR_NEEDPASSWORDORNICK", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
+            return (reply(461, this->_cmd[0], "ERR_NEEDPASSWORDORNICK", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
         if (this->_cmd[1].size() > 9 || this->_cmd[1].size() < 1) //walid verifiait la taille de real name alors qu'elle n'a pas de limite de taille a confirmer
-            return (reply(432, "USER", "Erroneus nickname", *this->_clientList[this->_nbrclient]), (void)0);
+            return (reply(432, this->_cmd[0], ERR_ERRONEUSNICKNAME, *this->_clientList[this->_nbrclient]), (void)0);
 
         if (this->_clientList[this->_nbrclient]->getPassword_Status() == -1)
-            throw std::runtime_error("Password Incorrect");
+            throw std::runtime_error(ERR_PASSWDMISMATCH);
         this->_clientList[this->_nbrclient]->setUsername(this->_cmd[1]);
         this->_clientList[this->_nbrclient]->setUsernameStatus(1);
         this->_clientList[this->_nbrclient]->setIsRegistered(1);
@@ -112,6 +112,6 @@ void Server::user()
         // send(this->_clientList[this->_nbrclient]->getFd(), welcome_msg.c_str(), welcome_msg.size(), MSG_DONTWAIT);
     }
     else
-        return (reply(462, "USER", "You may not reregister", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(462, this->_cmd[0], ERR_ALREADYREGISTRED, *this->_clientList[this->_nbrclient]), (void)0);
     // join j'ai enlever le epollout. etc etc
 }

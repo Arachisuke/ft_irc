@@ -34,7 +34,7 @@ void Server::successfullJoin(int i)
         std::string topic = ":" + this->_serverName + " 332 " + this->_clientList[this->_nbrclient]->getNickname() + this->_channeList[i]->getName() + " :" + this->_channeList[i]->getTopic();
     std::string msg = ":" + this->_serverName + " 353 " + this->_clientList[this->_nbrclient]->getNickname() + " = " + this->_channeList[i]->getName() + " : ";
     for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++) // afficher les membres
-        msg += (*it)->getNickname() + " ";
+        msg += whatToDisplay(this->_channeList[i], *(it));
     msg += "\r\n";
     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
     std::string msg2 = ":" + this->_serverName + " 366 " + this->_clientList[this->_nbrclient]->getNickname() + " " + this->_channeList[i]->getName() + " :End of /NAME list" + "\r\n";
@@ -44,9 +44,9 @@ void Server::successfullJoin(int i)
 void Server::join()
 {
     if (this->_cmd.size() - 1 == 0)
-        return (reply(461, "JOIN", "Not Enough Parameters", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
     if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-        return (reply(451, "JOIN", "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
 
     if (this->_cmd[1] == "0")
     {
@@ -54,7 +54,7 @@ void Server::join()
         for (int i = myChannel.size() - 1; i >= 0; i--)
         {
             if (!myChannel[i]->isMember(this->_clientList[this->_nbrclient]))
-                return (reply(442, "JOIN", "You're not on that channel", *this->_clientList[this->_nbrclient]), (void)0);
+                return (reply(442, this->_cmd[0], "You're not on that channel", *this->_clientList[this->_nbrclient]), (void)0);
 
             std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PART " + myChannel[i]->getName();
             if (this->_cmd.size() > 2 && this->_cmd[2] != "")
@@ -66,8 +66,8 @@ void Server::join()
                 send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
 
             myChannel[i]->removeClient(this->_clientList[this->_nbrclient]);
-            this->_clientList[this->_nbrclient]->removeMyChannel(myChannel[i]); 
-            
+            this->_clientList[this->_nbrclient]->removeMyChannel(myChannel[i]);
+
             if (myChannel[i]->getUsers().empty())
             {
                 this->_channeList.erase(this->_channeList.begin() + findChannel(myChannel[i]->getName()));
@@ -81,7 +81,7 @@ void Server::join()
         for (size_t j = 0; j < list.size(); j++)
         {
             if (list[j][0] != '#')
-                return (reply(403, "JOIN", ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]), (void)0);
+                return (reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]), (void)0);
 
             if (findChannel(list[j]) != -1) // channel exist
             {
@@ -100,7 +100,7 @@ void Server::join()
                 {
                     std::string msg = ":" + this->_serverName + " 443 " + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " JOIN " + this->_channeList[i]->getName() + " is already on channel" + "\r\n";
                     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
-                   continue;
+                    continue;
                 }
                 this->_channeList[i]->setUsers(this->_clientList[this->_nbrclient]);
                 this->_clientList[this->_nbrclient]->setMyChannel().push_back(this->_channeList[i]);
