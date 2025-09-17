@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   quit.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/16 17:36:09 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/17 14:33:44 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../header/Client.hpp"
-#include "../../header/Server.hpp"
-#include "../../header/Channel.hpp"
+#include "Client.hpp"
+#include "Server.hpp"
+#include "Channel.hpp"
 
 void Server::successfullQuit(std::string msg)
 {
@@ -27,7 +27,8 @@ void Server::successfullQuit(std::string msg)
             alreadysent.push_back((*it)->getFd());
         }
     }
-    send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+
+    send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);// pourquoi envoyer un msg au client qui quitte? a supprimmer? 
 }
 
 

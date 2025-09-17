@@ -3,19 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/16 18:02:03 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/17 14:45:43 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../header/Server.hpp"
 
-Server::Server() : _serverName("HuecoMundo"), _bytes(-1), _fd(-1),
-	_RPL_WELCOME(0), _nbrclient(-1), _port(0)
+Server::Server() : _serverName("HuecoMundo"), _bytes(-1), _fd(-1), _RPL_WELCOME(0), _nbrclient(-1), _port(0)
 {
-	this->load_cmd();
+    this->load_cmd();
 }
 
 void Server::Finish()
@@ -260,153 +259,135 @@ void	removePrefix(std::string &wordPrefixLess)
 
 void Server::parseCmd(std::string &wordPrefixLess)
 {
-	bool	isTrailing;
-
-	isTrailing = 0;
-	std::istringstream iss(wordPrefixLess); // gerer le parse ":"
-											// alias relire la doc du parse
-	std::string finalWord;
-	while (iss >> finalWord)
-	{
-		if (finalWord[0] == ':')
-		{
-			isTrailing = 1;
-			break ;
-		}
-		else
-		{
-			if (this->_cmd.size() < 14)
-				this->_cmd.push_back(finalWord);
-			else
-			{
-				isTrailing = 1;
-				break ;
-			}
-		}
-	}
-	if (isTrailing)
-	{
-		std::string trailing = finalWord;
-		if (trailing[0] == ':')
-			trailing = trailing.substr(1);
-		std::string rest;
-		std::getline(iss, rest);
-		trailing += rest;
-		this->_cmd.push_back(trailing);
-	}
+    bool isTrailing = 0;
+    std::istringstream iss(wordPrefixLess); // gerer le parse ":" // alias relire la doc du parse
+    std::string finalWord;
+    while (iss >> finalWord)
+    {
+        if (finalWord[0] == ':')
+        {
+            isTrailing = 1;
+            break;
+        }
+        else
+        {
+            if (this->_cmd.size() < 14)
+                this->_cmd.push_back(finalWord);
+            else
+            {
+                isTrailing = 1;
+                break;
+            }
+        }
+    }
+    if (isTrailing)
+    {
+        std::string trailing = finalWord;
+        if (trailing[0] == ':')
+            trailing = trailing.substr(1);
+        std::string rest;
+        std::getline(iss, rest);
+        trailing += rest;
+        this->_cmd.push_back(trailing);
+    }
 }
 
 void Server::printParsedCmd()
 {
-	int	i;
-
-	i = 0;
-	std::cout << "client: " << _clientList[_nbrclient]->getNickname() << " " << _clientList[_nbrclient]->getFd() << " send" << std::endl;
-	std::cout << "============ Original Entry ============" << std::endl << _entry << std::endl << std::endl;
-	std::cout << "============ Parsed Command ============" << std::endl << std::endl;
-	for (std::vector<std::string>::const_iterator it = _cmd.begin(); it < _cmd.end(); it++)
-		std::cout << "cmd[" << i++ << "]: " << (*it) << std::endl;
-	std::cout << std::endl;
+    int i = 0;
+    std::cout << "client: " << _clientList[_nbrclient]->getNickname() << " " << _clientList[_nbrclient]->getFd() << " send" << std::endl;
+    std::cout << "============ Original Entry ============" << std::endl
+              << _entry << std::endl
+              << std::endl;
+    std::cout << "============ Parsed Command ============" << std::endl
+              << std::endl;
+    for (std::vector<std::string>::const_iterator it = _cmd.begin(); it < _cmd.end(); it++)
+        std::cout << "cmd[" << i++ << "]: " << (*it) << std::endl;
+    std::cout << std::endl;
 }
 
 void Server::find_cmd()
 {
-	int	i;
-
-	std::string word;
-	std::string concat;
-	i = 0;
-	std::istringstream iss(this->_entry);
-	this->_cmd.clear();
-	while (iss >> word)
-	{
-		if (word[0] == ':' || i == 15)
-		{
-			if (word[0] == ':')
-				word = word.substr(1);
-			concat += word;
-			while (iss >> word)
-				concat += ' ' + word;
-			this->_cmd.push_back(concat);
-		}
-		else
-			this->_cmd.push_back(word);
-		i++;
-	}
-	if (this->_cmd.empty())
-		return ;
-	std::map<std::string,
-		CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
-	if (it != _commandList.end())
-	{
-		(this->*(it->second))();
-		return ;
-	}
-	if (this->_cmd[0] == "CAP")
-		return ;
-	send(this->_clientList[this->_nbrclient]->getFd(), "Command not found\r\n",
-		20, MSG_DONTWAIT);
+    std::string wordPrefixLess = _entry;
+    this->_cmd.clear();
+    removePrefix(wordPrefixLess);
+    parseCmd(wordPrefixLess);
+    printParsedCmd();
+    if (this->_cmd.empty())
+        return;
+    std::map<std::string, CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
+    if (it != _commandList.end())
+    {
+        (this->*(it->second))();
+        return;
+    }
+    if (this->_cmd[0] == "CAP")
+        return;
+    send(this->_clientList[this->_nbrclient]->getFd(), "Command not found\r\n", 20, MSG_DONTWAIT);
 }
 
-void Server::PushMsg(std::string msg)
-// sers plus a rien. juste a rajoute les normes.
+void Server::PushMsg(std::string msg) // a gerer apres
 {
-	msg.push_back('\r');
-	msg.push_back('\n');
-	send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(),
-		MSG_DONTWAIT);
+    msg.push_back('\r');
+    msg.push_back('\n'); // a verifie si c'est vraiment la norme.
+    send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+    this->_events[_nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
+    this->_events[_nbrclient].data.fd = this->_clientList[_nbrclient]->getFd();
+    epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_clientList[_nbrclient]->getFd(), &this->_events[_nbrclient]); // 1 averifier
 }
 
-void Server::reply(int codeError, const std::string command,
-	const std::string message, Client &client) const
+void Server::reply(int codeError, const std::string command, const std::string message, Client &client) const
 {
-	std::ostringstream ost;
-	ost << ":" << this->_serverName << " " << codeError << " " << client.getNickname() << " " << command << " :" << message << "\r\n";
-	send(client.getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    std::ostringstream ost;
+    ost << ":" << this->_serverName << " " << codeError << " " << client.getNickname() << " " << command << " :" << message << "\r\n";
+    send(client.getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
 }
 
 const std::string Server::getPrefiksServer() const
 {
-	return (":" + this->_serverName);
+    return (":" + this->_serverName);
 }
 
 void Server::Send_Welcome() // rajouter le message 2 3 4.
 {
-	std::ostringstream ost;
-	ost << ":" << this->_serverName << " 001 " << this->_clientList[_nbrclient]->getNickname() << " :Welcome to the Hueco Mundo Network, " << this->_clientList[_nbrclient]->getNickname() << " !~" << this->_clientList[_nbrclient]->getUsername() << " @localhost\r\n ";
-		send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(),
-			ost.str().size(), MSG_DONTWAIT);
-	ost.str("");
-	ost.clear();
-	this->_RPL_WELCOME = 1;
-	ost << ":" << this->_serverName << " 002 " << this->_clientList[_nbrclient]->getNickname() << " :Your host is " << this->_serverName
-		<< ", running version 4.3.3\r\n ";
-		send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(),
-			ost.str().size(), MSG_DONTWAIT);
-	ost.str("");
-	ost.clear();
-	ost << ":" << this->_serverName << " 003 " << this->_clientList[_nbrclient]->getNickname() << " :This server was created " << __DATE__ << "\r\n";
-	send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(),
-		ost.str().size(), MSG_DONTWAIT);
-	ost.str("");
-	ost.clear();
-	ost << ":" << this->_serverName << " 004 " << this->_clientList[_nbrclient]->getNickname() << " " << this->_serverName << " version-4.3.3 itkol :are supported by this server\r\n";
-	send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(),
-		ost.str().size(), MSG_DONTWAIT);
+    std::ostringstream ost;
+    ost << ":" << this->_serverName << " 001 " << this->_clientList[_nbrclient]->getNickname() << " :Welcome to the Hueco Mundo Network, " << this->_clientList[_nbrclient]->getNickname() << "!~" << this->_clientList[_nbrclient]->getUsername() << "@localhost\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    ost.str("");
+    ost.clear();
+    this->_RPL_WELCOME = 1;
+    ost << ":" << this->_serverName << " 002 " << this->_clientList[_nbrclient]->getNickname() << " :Your host is " << this->_serverName << ", running version 4.3.3\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    ost.str("");
+    ost.clear();
+    ost << ":" << this->_serverName << " 003 " << this->_clientList[_nbrclient]->getNickname() << " :This server was created " << __DATE__ << "\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
+    ost.str("");
+    ost.clear();
+    ost << ":" << this->_serverName << " 004 " << this->_clientList[_nbrclient]->getNickname() << " " << this->_serverName << " version-4.3.3 itkol :are supported by this server\r\n";
+    send(this->_clientList[_nbrclient]->getFd(), ost.str().c_str(), ost.str().size(), MSG_DONTWAIT);
 }
 
 bool Server::checkChannelNorm(const std::string &channelName) const
 {
-	if (channelName[0] != '#')
-		return (0);
-	if (channelName.length() > 50 || channelName.length() == 1)
-		return (0);
-	for (size_t i = 0; i < channelName.length(); i++)
-	{
-		if (channelName[i] == ' ' || channelName[i] == ','
-			|| channelName[i] == '\r' || channelName[i] == '\n'
-			|| channelName[i] == '\0')
-			return (0);
-	}
-	return (1);
+    if (channelName[0] != '#')
+        return (0);
+    if (channelName.length() > 50 || channelName.length() == 1)
+        return (0);
+    for (size_t i = 0; i < channelName.length(); i++)
+    {
+        if (channelName[i] == ' ' || channelName[i] == ',' || channelName[i] == '\r' || channelName[i] == '\n' || channelName[i] == '\0')
+            return (0);
+    }
+    return (1);
+}
+
+std::string Server::whatToDisplay(Channel *channel, Client *client)
+{
+    std::string msg;
+    if (channel->isOperator(client))
+        msg = "@" + (client)->getNickname() + " ";
+    else
+        msg = (client)->getNickname() + " ";
+    return (msg);
 }
