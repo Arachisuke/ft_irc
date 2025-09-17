@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:47 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/09 16:04:50 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/17 12:27:42 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ void Server::privMsg()
 {
   std::vector<std::string> list;
   if (this->_cmd.size() - 1 == 0)
-    return (reply(461, "PRIVMSG", "Not Enough Parameters", *this->_clientList[this->_nbrclient]), (void)0);
+    return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
   if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-    return (reply(451, "PRIVMSG", "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
+    return (reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
   list = ft_split(this->_cmd[1], ',');
   for (size_t i = 0; i < list.size(); i++)
   {
@@ -46,13 +46,13 @@ void Server::privMsg()
     {
       if (findChannel(list[i]) == -1)
       {
-        reply(403, "PRIVMSG", ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
+        reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
         continue;
       }
       int n = findChannel(list[i]);
       if (!this->_channeList[n]->isMember(this->_clientList[this->_nbrclient]))
       {
-        reply(404, "PRIVMSG", ERR_CANNOTSENDTOCHAN, *this->_clientList[this->_nbrclient]);
+        reply(404, this->_cmd[0], ERR_CANNOTSENDTOCHAN, *this->_clientList[this->_nbrclient]);
         continue;
       }
       std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PRIVMSG " + this->_channeList[n]->getName() + " : ";
@@ -72,7 +72,7 @@ void Server::privMsg()
     {
       if (find_client(list[i]) == -1)
       {
-        reply(401, "PRIVMSG", ERR_NOSUCHNICK, *this->_clientList[this->_nbrclient]);
+        reply(401, this->_cmd[0], ERR_NOSUCHNICK, *this->_clientList[this->_nbrclient]);
         continue;
       }
       int n = find_client(list[i]);
