@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:57 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 12:31:04 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/17 14:34:29 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,14 +60,16 @@ int Server::isprint(char c)
 
 void Server::successfullNick()
 {
+    std::vector<int> alreadysent;
     std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost NICK : " + this->_cmd[1] + "\r\n";
     for (size_t i = 0; i < this->_clientList[this->_nbrclient]->getMyChannel().size(); i++)
     {
         const std::set<Client *> &users = this->_clientList[this->_nbrclient]->getMyChannel()[i]->getUsers();
         for (std::set<Client *>::const_iterator it = users.begin(); it != users.end(); ++it)
         {
-            if ((*it)->getFd() != this->_clientList[this->_nbrclient]->getFd())
+            if ((*it)->getFd() != this->_clientList[this->_nbrclient]->getFd() && std::find(alreadysent.begin(), alreadysent.end(), (*it)->getFd()) == alreadysent.end())
                 send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+            alreadysent.push_back((*it)->getFd());
         }
     }
     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
