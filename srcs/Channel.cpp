@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:36:08 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/17 16:50:36 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,11 @@ void Channel::setTopic(const std::string &newTopic)
 }
 void Channel::setTopicSetter(const std::string &newTopicSetter)
 {
-    _topicSetter = newTopicSetter;
+    time_t presentTime = time(NULL);                 // nombre de secondes ecoulee depuis creation unix 1 janvier 1970
+    struct tm *localeTime = localtime(&presentTime); // convertit les secondes dans une structures (D/Y/M/...)
+    char date[30];
+    strftime(date, sizeof(date), "%b %d %Y %H:%M:%S", localeTime); // formate selon un pattern dans un buffer
+    _topicSetter = newTopicSetter + " " + date;
 }
 const std::set<Client *> &Channel::getUsers() const
 {

@@ -196,3 +196,33 @@ NEW TEST :
 
 
 // refaire le test de leak avec toute les fonctions a free tu les utilises toutes + controle C seerver ou client
+
+
+
+
+
+
+
+
+
+
+// premier NICK le client ne recoit rien  @@@@@
+
+
+// IRSSI -> JOIN 0 fail car il parse en lui mettant un diez. @@@@
+
+// si loperator quitte, est ce que le chanelops se transmet....@@@@@
+
+
+
+
+
+
+
+//15:11 -!- Cannot join to channel TOPIC (Bad channel mask)
+
+// @ => JOIN display client @@@ / basic type message a change // PRIVMSG NOTICE, KICK, 
+
+// JOIN #channel1 1212 #channel pour le mode k, pour bien parser. 
+// -> Mode k, avoir un int nbrkey incrementer quand j'ai utilise le premier 
+// cas -> good key or not
