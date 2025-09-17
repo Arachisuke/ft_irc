@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/09 15:19:21 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/15 13:04:23 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,12 @@ void Server::kick()
     if (!_clientList[_nbrclient]->getisRegistered())
         return (errorMsg(451, _cmd[0], "You have not registered", *_clientList[_nbrclient]), (void)0);
     if (_cmd.size() < 3) // error not enough params
-        return (errorMsg(461, _cmd[0], "Not enough parameters", *_clientList[_nbrclient]), (void)0);
+        return (errorMsg(461, _cmd[0], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]), (void)0);
     if (!this->checkChannelNorm(_cmd[1])) // error  invalid channel name
         return (errorMsg(476, _cmd[0], "Bad Channel Mask", *_clientList[_nbrclient]));
     Channel *channel = findChannelPtr(_cmd[1]);
     if (!channel)
-        return (errorMsg(403, _cmd[1], "No such channel", *_clientList[_nbrclient]), (void)0);
+        return (errorMsg(403, _cmd[1], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]), (void)0);
     if (!channel->isMember(_clientList[_nbrclient])) // error client qui kick n est pas dans le channel
         return (errorMsg(442, _cmd[1], "You're not on that channel", *_clientList[_nbrclient]), (void)0);
     if (!channel->isOperator(_clientList[_nbrclient])) // error non operator

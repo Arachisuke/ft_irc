@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/04 14:28:41 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/17 12:27:03 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,21 @@
 void   Server::part()
 {
     if (this->_cmd.size() - 1 == 0)
-        return(reply(461, "PART", "Not Enough Parameters", *this->_clientList[this->_nbrclient]), (void)0);
+        return(reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
     if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-        return(reply(451, "PART", "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
+        return(reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
     std::vector<std::string> list;
     list = ft_split(this->_cmd[1], ',');
     for (size_t j = 0; j < list.size(); j++)
           {
             if (list[j][0] != '#')
             {
-                reply(403, "PART", ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
+                reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
                 continue;                
             }
             if (findChannel(list[j]) == -1)
             {
-                reply(403, "PART", ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
+                reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
                 continue;                
             }
               
@@ -39,7 +39,7 @@ void   Server::part()
 
             if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
             {
-                reply(442, "PART", "You're not on that channel", *this->_clientList[this->_nbrclient]);
+                reply(442, this->_cmd[0], "You're not on that channel", *this->_clientList[this->_nbrclient]);
                 continue;                
             }
 
