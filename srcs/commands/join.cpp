@@ -72,6 +72,7 @@ void Server::join()
             {
                 this->_channeList.erase(this->_channeList.begin() + findChannel(myChannel[i]->getName()));
                 delete myChannel[i];
+                myChannel[i] = NULL;
             }
         }
     }

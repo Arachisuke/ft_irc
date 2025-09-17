@@ -11,49 +11,54 @@
  */
 /* ************************************************************************** */
 
-#include "../header/Server.hpp"
 #include "../header/Client.hpp"
+#include "../header/Server.hpp"
 
-bool stop = false;
+bool	stop = false;
 
-void handler(int) { stop = true; }
-
-
-int range_port(char *port)
+void	handler(int)
 {
-    const char *s = port;
-    char *end;
-    errno = 0;
-    long val = strtol(s, &end, 10);
-    if (errno == ERANGE || val > 65535 || val <= 0)
-        return (std::cerr << "Port number out of range." << std::endl, -1);
-    if (*end != '\0')
-        return (std::cerr << "Invalid port number." << std::endl, -1);
-    return(static_cast<int>(val));
+	stop = true;
 }
 
-int main(int argc, char **argv)
+int	range_port(char *port)
 {
-    if (argc != 3)
-        return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl, 1);
+	const char	*s = port;
+	char		*end;
+	long		val;
 
-    signal(SIGINT, &handler);
-    signal(SIGQUIT, &handler);
-    Server server;
+	errno = 0;
+	val = strtol(s, &end, 10);
+	if (errno == ERANGE || val > 65535 || val <= 0)
+		return (std::cerr << "Port number out of range." << std::endl, -1);
+	if (*end != '\0')
+		return (std::cerr << "Invalid port number." << std::endl, -1);
+	return (static_cast<int>(val));
+}
 
-    int port  = range_port(argv[1]);
-    if (port < 0)
-        return(1);
-    try
-    {
-        server.create_server(port, argv[2]);
-        while (!stop)
-            server.wait_client();
-    }
-    catch (std::exception &e)
-    {
-        std::cerr << e.what() << std::endl;
-        return (1);
-    }
-    return 0;
+int	main(int argc, char **argv)
+{
+	if (argc != 3)
+		return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl,
+			1);
+
+	signal(SIGINT, &handler);
+	signal(SIGQUIT, &handler);
+	Server server;
+
+	int port = range_port(argv[1]);
+	if (port < 0)
+		return (1);
+	try
+	{
+		server.create_server(port, argv[2]);
+		while (!stop)
+			server.wait_client();
+	}
+	catch (std::exception &e)
+	{
+		std::cerr << e.what() << std::endl;
+		return (1);
+	}
+	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 12:27:03 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/17 14:31:22 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ void   Server::part()
             {
                 delete this->_channeList[i];
                 this->_channeList.erase(this->_channeList.begin() + i);
+                this->_channeList[i] = NULL;
             }
           }
 }
