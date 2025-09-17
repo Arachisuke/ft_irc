@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:26:49 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/17 16:50:45 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,7 +80,7 @@ private:
     std::string _name;
     std::string _topic;
     std::string _topicSetter;
-    std::string _password; // mode +k
+    std::string _password; // mode +k_
     std::string _creationDate;
 
     std::set<Client *> _users;     // all clients
