@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:06 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 12:38:50 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 15:15:45 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void Server::invite()
     if (clientIndex == -1 || _clientList[_nbrclient]->getNickname() == _clientList[clientIndex]->getNickname()) // error client introuvable ou host lui meme
         return (errorMsg(401, _cmd[0], "No such nick", *_clientList[_nbrclient]), (void)0);
     if (!this->checkChannelNorm(_cmd[2])) // error  invalid channel name
-        return (errorMsg(476, "INVITE", "Bad Channel Mask", *_clientList[_nbrclient]));
+        return (errorMsg(476, _cmd[0], "Bad Channel Mask", *_clientList[_nbrclient]));
     Channel *channel = this->findChannelPtr(_cmd[2]);
     if (!channel) // error channel n existe pas
         return (errorMsg(403, _cmd[2], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]), (void)0);

@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:34 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 15:09:50 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 15:16:26 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
 				}
 				else
 				{
-					errorMsg(400, "MODE", "Invalid user limit", *_clientList[_nbrclient]);
+					errorMsg(400, _cmd[0], "Invalid user limit", *_clientList[_nbrclient]);
 					continue;
 				}
 				broadcastMsg(channel, ost.str().c_str(), ost.str().size());
@@ -114,7 +114,7 @@ void Server::mode()
 	if (this->_cmd.size() < 2)
 		return (errorMsg(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]));
 	if (!this->checkChannelNorm(_cmd[1]))
-		return (errorMsg(476, "TOPIC", "Bad Channel Mask", *_clientList[_nbrclient]));
+		return (errorMsg(476, _cmd[0], "Bad Channel Mask", *_clientList[_nbrclient]));
 	Channel *channel = this->findChannelPtr(this->_cmd[1]);
 	if (!channel)
 		return (errorMsg(403, _cmd[2], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]));
