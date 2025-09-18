@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   topic.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:02 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 16:54:48 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/18 13:28:22 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,8 @@ void Server::topic()
 	channel->setTopic(newTopic);
 	channel->setTopicSetter(_clientList[_nbrclient]->getNickname());
 	std::ostringstream topicAdvert;
-	topicAdvert << ":" << _clientList[_nbrclient]->getNickname() << "!" << _clientList[_nbrclient]->getUsername() << "@localhost TOPIC " << channel->getName() << " :" << newTopic << "\r\n";
+	std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
+	topicAdvert << ":" << addArobase << "!" << _clientList[_nbrclient]->getUsername() << "@localhost TOPIC " << channel->getName() << " :" << newTopic << "\r\n";
 	const std::set<Client *> &users = channel->getUsers();
 	for (std::set<Client *>::const_iterator it = users.begin(); it != users.end(); it++)
 		send((*it)->getFd(), topicAdvert.str().c_str(), topicAdvert.str().size(), MSG_DONTWAIT);

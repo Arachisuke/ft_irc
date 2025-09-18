@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/18 12:36:39 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/18 15:36:13 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,7 @@ public:
   Channel *findChannelPtr(std::string &channelName);
 
   std::vector<std::string> ft_split(const std::string &str, char delimiter);
-  void successfullQuit(std::string msg);
+  void successfullQuit();
 
 private:
   int whereIsMyChannel(std::string channel);

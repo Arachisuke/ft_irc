@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 14:12:59 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/18 15:41:44 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,12 @@
 #include "../../header/Server.hpp"
 #include "../../header/Channel.hpp"
 
-void   Server::part()
+void Server::part()
 {
     if (this->_cmd.size() - 1 == 0)
-        return(reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
     if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-        return(reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
     std::vector<std::string> list;
     list = ft_split(this->_cmd[1], ',');
     for (int j = list.size() - 1; j >= 0; --j)
@@ -41,17 +41,16 @@ void   Server::part()
                 continue;                
             }
 
-            std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PART " + this->_channeList[i]->getName();
-            if (this->_cmd.size() > 2 && this->_cmd[2] != "")
-                msg += " :" + this->_cmd[2];
-            msg += "\r\n";
-            
-            std::set<Client *> users = this->_channeList[i]->getUsers();
-            for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
-                send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
-    
-            this->_clientList[this->_nbrclient]->removeMyChannel(this->_channeList[i]);
-            this->_channeList[i]->removeClient(this->_clientList[this->_nbrclient]);
+        if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
+        {
+            reply(442, this->_cmd[0], "You're not on that channel", *this->_clientList[this->_nbrclient]);
+            continue;
+        }
+        std::string addArobase = whatToDisplay(_channeList[i], this->_clientList[this->_nbrclient]);
+        std::string msg = ":" + addArobase + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PART " + this->_channeList[i]->getName();
+        if (this->_cmd.size() > 2 && this->_cmd[2] != "")
+            msg += " :" + this->_cmd[2];
+        msg += "\r\n";
 
             if (this->_channeList[i]->getUsers().empty())
             {
