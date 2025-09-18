@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quit.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:33:44 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 13:10:28 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,10 +56,9 @@ void   Server::quit()
         {
             int b = findChannel(this->_clientList[this->_nbrclient]->setMyChannel()[i]->getName());
             delete this->_clientList[this->_nbrclient]->setMyChannel()[i];
+            this->_clientList[this->_nbrclient]->setMyChannel()[i] = NULL;
             this->_clientList[this->_nbrclient]->setMyChannel().erase(this->_clientList[this->_nbrclient]->setMyChannel().begin() + i);
             this->_channeList.erase(this->_channeList.begin() + b);
-            this->_clientList[this->_nbrclient]->setMyChannel()[i] = NULL;
-            
         }
       }
 

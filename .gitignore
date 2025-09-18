@@ -3,3 +3,4 @@ ircserv
 objs
 .ccls-cache
 .replit
+vgcore.*
