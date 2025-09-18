@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:34 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:30:26 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 13:24:05 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,10 @@ void Server::mode()
         return (errorMsg(451, this->_cmd[0], "You have not registered", *_clientList[_nbrclient]));
     if (this->_cmd.size() < 2)
         return (errorMsg(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]));
+    if (_cmd[1] == this->_clientList[this->_nbrclient]->getNickname())
+        return ;
     if (!this->checkChannelNorm(_cmd[1]))
-        return (errorMsg(476, "TOPIC", "Bad Channel Mask", *_clientList[_nbrclient]));
+        return (errorMsg(476, "MODE", "Bad Channel Mask", *_clientList[_nbrclient]));
     Channel *channel = this->findChannelPtr(this->_cmd[1]);
     if (!channel)
         return (errorMsg(403, _cmd[2], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]));

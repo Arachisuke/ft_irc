@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:31:22 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 14:12:59 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void   Server::part()
         return(reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
     std::vector<std::string> list;
     list = ft_split(this->_cmd[1], ',');
-    for (size_t j = 0; j < list.size(); j++)
+    for (int j = list.size() - 1; j >= 0; --j)
           {
             if (list[j][0] != '#')
             {
@@ -34,9 +34,7 @@ void   Server::part()
                 reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
                 continue;                
             }
-              
-            int i = findChannel(list[j]);
-
+            int i = findChannel(list[j]); // je cherche l'argument dans channelist.
             if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
             {
                 reply(442, this->_cmd[0], "You're not on that channel", *this->_clientList[this->_nbrclient]);
@@ -58,13 +56,7 @@ void   Server::part()
             if (this->_channeList[i]->getUsers().empty())
             {
                 delete this->_channeList[i];
-                this->_channeList.erase(this->_channeList.begin() + i);
-                this->_channeList[i] = NULL;
+                this->_channeList.erase(this->_channeList.begin() + findChannel(list[j]));
             }
           }
 }
-
- // 1 supprimer le channel si il est vide.
-// 2 supprimer le client du channel.
-// 3 supprimer le channel de la liste du client.
-// msg -> nickame + _channelist[i].getname + reason du coup _cmd[2]
