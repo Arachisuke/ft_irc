@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/18 12:31:40 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 15:42:16 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,9 +205,9 @@ void Server::closeClient(std::string ERROR_MSG)
         {
             int b = findChannel(this->_clientList[this->_nbrclient]->setMyChannel()[i]->getName());
             delete this->_clientList[this->_nbrclient]->setMyChannel()[i];
+            this->_clientList[this->_nbrclient]->setMyChannel()[i] = NULL;
             this->_clientList[this->_nbrclient]->setMyChannel().erase(this->_clientList[this->_nbrclient]->setMyChannel().begin() + i);
             this->_channeList.erase(this->_channeList.begin() + b);
-            this->_clientList[this->_nbrclient]->setMyChannel()[i] = NULL;
             
         }
       }

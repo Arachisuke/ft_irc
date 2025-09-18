@@ -225,6 +225,35 @@ NEW TEST :
 
 // JOIN #channel1 1212 #channel pour le mode k, pour bien parser. 
 // -> Mode k, avoir un int nbrkey incrementer quand j'ai utilise le premier 
-// cas -> good key or not
+// cas -> good key or not@@@@
 
 
+MODE K -> JOIN@@@
+
+     Command: JOIN
+  Parameters: <channel>{,<channel>} [<key>{,<key>}]
+  Alt Params: 0
+
+
+  channel = cmd[1] => SPLIT
+  key = cmd[2] => SPLIT
+
+if -> 
+
+
+
+// est ce que tu genere vraiment un password dans mode. @@@
+
+
+PART corriger // part y avais pas besoin -> car je bouclais sur quelque chose que je supprimais pas.
+ #1 boucle decroissant
+ #2 channel[i] = NULL, apres l'erase channel[i] du vector du coup j'accedais a un autre index du vector.
+QUIT
+error #2 juste au dessus, corriger.
+CLOSE
+error #2
+
+
+ 
+// erreur -> JOIN multiple => PART multiple.  // il marche ....
+// JOIN Multiple -> JOIN 0 ...
