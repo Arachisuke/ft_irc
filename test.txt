@@ -226,3 +226,5 @@ NEW TEST :
 // JOIN #channel1 1212 #channel pour le mode k, pour bien parser. 
 // -> Mode k, avoir un int nbrkey incrementer quand j'ai utilise le premier 
 // cas -> good key or not
+
+

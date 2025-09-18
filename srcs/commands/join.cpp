@@ -37,7 +37,7 @@ void Server::successfullJoin(int i)
     }
     std::string msg = ":" + this->_serverName + " 353 " + this->_clientList[this->_nbrclient]->getNickname() + " = " + this->_channeList[i]->getName() + " :";
     for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++) // afficher les membres
-        msg += whatToDisplay(this->_channeList[i], *(it));
+        msg += " " + whatToDisplay(this->_channeList[i], *(it));
     msg += "\r\n";
 
     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
