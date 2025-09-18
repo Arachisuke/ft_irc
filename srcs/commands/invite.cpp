@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:06 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:28:07 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 12:38:50 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,9 @@ void Server::invite()
     channel->inviteClient(_clientList[clientIndex]);
     std::ostringstream serverOst;
     std::ostringstream guestOst;
+    std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
     serverOst << ":" << _serverName << " 341 " << _clientList[_nbrclient]->getNickname() << " " << _clientList[clientIndex]->getNickname() << " " << _cmd[2] << "\r\n";
-    guestOst << ":" << _clientList[_nbrclient]->getNickname() << "!" << _clientList[_nbrclient]->getUsername() << "@localhost INVITE " << _clientList[clientIndex]->getNickname() << " " << _cmd[2] << "\r\n";
+    guestOst << ":" << addArobase << "!" << _clientList[_nbrclient]->getUsername() << "@localhost INVITE " << _clientList[clientIndex]->getNickname() << " " << _cmd[2] << "\r\n";
     send(_clientList[_nbrclient]->getFd(), serverOst.str().c_str(), serverOst.str().size(), MSG_DONTWAIT);
     send(_clientList[clientIndex]->getFd(), guestOst.str().c_str(), guestOst.str().size(), MSG_DONTWAIT);
 }
