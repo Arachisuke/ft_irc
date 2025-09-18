@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:47 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:32:37 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 12:28:06 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,8 @@ void Server::privMsg()
         reply(404, this->_cmd[0], ERR_CANNOTSENDTOCHAN, *this->_clientList[this->_nbrclient]);
         continue;
       }
-      std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PRIVMSG " + this->_channeList[n]->getName() + " : ";
+      std::string addArobase = whatToDisplay(_channeList[n], this->_clientList[this->_nbrclient]);
+      std::string msg = ":" + addArobase + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PRIVMSG " + this->_channeList[n]->getName() + " : ";
 
       for (size_t i = 2; i < this->_cmd.size(); i++)
         msg += this->_cmd[i] + " ";

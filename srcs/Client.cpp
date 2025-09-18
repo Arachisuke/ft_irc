@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 14:36:21 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:36:55 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 13:26:34 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ Client::Client()
 Client::~Client()
 {
     std::cout << "Client disconnected\r\n"
-              << std::endl; 
+              << std::endl;
 }
 
 int Client::Init(int epfd, int hote)
@@ -36,13 +36,11 @@ int Client::Init(int epfd, int hote)
     this->_fd = accept(this->_hote, reinterpret_cast<sockaddr *>(&this->_client), &_size_of_client);
     if (_fd == -1)
         return (1);
-    this->_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP; 
+    this->_event.events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
     this->_event.data.fd = this->_fd;
     epoll_ctl(epfd, EPOLL_CTL_ADD, this->_fd, &this->_event);
     return (0);
 }
-
-
 
 const std::string Client::getPrefiksClient() const
 {
@@ -99,6 +97,12 @@ int Client::getNickname_Status() const
 {
     return (_NicknameStatus);
 }
+
+const std::string & Client::getRealname() const
+{
+    return (_realName);
+}
+
 int Client::getUsername_Status() const
 {
     return (_realNameStatus);
@@ -108,9 +112,9 @@ int Client::getisRegistered() const
     return (_isRegistered);
 }
 
-std::vector<Channel *>& Client::setMyChannel()
+std::vector<Channel *> &Client::setMyChannel()
 {
-    return(_myChannels);
+    return (_myChannels);
 }
 void Client::setFd(int fd)
 {
@@ -132,7 +136,7 @@ void Client::setIsRegistered(int isRegistered)
 {
     _isRegistered = isRegistered;
 }
-void Client::removeMyChannel(Channel *channelToRemove) 
+void Client::removeMyChannel(Channel *channelToRemove)
 {
     if (std::find(_myChannels.begin(), _myChannels.end(), channelToRemove) != _myChannels.end())
         this->_myChannels.erase(std::find(_myChannels.begin(), _myChannels.end(), channelToRemove));
