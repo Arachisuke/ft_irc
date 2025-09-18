@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/17 18:03:25 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/18 12:31:40 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -383,8 +383,8 @@ std::string Server::whatToDisplay(Channel *channel, Client *client)
 {
     std::string msg;
     if (channel->isOperator(client))
-        msg = "@" + (client)->getNickname() + " ";
+        msg = "@" + (client)->getNickname();
     else
-        msg = (client)->getNickname() + " ";
+        msg = (client)->getNickname();
     return (msg);
 }

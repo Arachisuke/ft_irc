@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:29:30 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 13:58:26 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,8 @@ void Server::kickAllClient(std::string &clientsListToKick, std::string kicker, C
         if (channel->isOperator(_clientList[clientIndex]))
             continue;           // a voir
         std::ostringstream ost; // ajouter ici le message de remove
-        ost << _clientList[_nbrclient]->getPrefiksClient() << " KICK " << channel->getName() << " " << (*it) << " :" << reason << "\r\n";
+        std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
+        ost << ":" << addArobase << "!" << this->_clientList[this->_nbrclient]->getRealname() << "@localhost" << " KICK " << channel->getName() << " " << (*it) << " :" << reason << "\r\n";
         broadcastMsg(channel, ost.str().c_str(), ost.str().size());
         channel->removeClient(_clientList[clientIndex]);
         int i = whereIsMyChannel(channel->getName());
@@ -72,7 +73,7 @@ void Server::kick()
         return (errorMsg(442, _cmd[1], "You're not on that channel", *_clientList[_nbrclient]), (void)0);
     if (!channel->isOperator(_clientList[_nbrclient])) // error non operator
         return (errorMsg(482, _cmd[1], "You're not channel operator", *_clientList[_nbrclient]), (void)0);
-    if (!_cmd[3].empty())
+    if (_cmd.size() > 3)
         reason = _cmd[3];
     else
         reason = "kicked";
