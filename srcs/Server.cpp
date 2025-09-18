@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/17 14:45:43 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/17 18:03:25 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ Server::Server() : _serverName("HuecoMundo"), _bytes(-1), _fd(-1), _RPL_WELCOME(
 
 void Server::Finish()
 {
-	for (int i = this->_clientList.size(); i >= 0; i--)
+	for (int i = this->_clientList.size() -1 ; i >= 0; i--)
 	{
 		if (this->_clientList[i] && this->_clientList[i]->getFd() != -1)
 		{
@@ -213,7 +213,6 @@ void Server::closeClient(std::string ERROR_MSG)
       }
 	delete this->_clientList[this->_nbrclient];
 	this->_clientList.erase(this->_clientList.begin() + this->_nbrclient);
-	this->_nbrclient = -1;
 }
 
 void Server::ReadMsg(std::string &bufferClient)
@@ -313,8 +312,6 @@ void Server::find_cmd()
     removePrefix(wordPrefixLess);
     parseCmd(wordPrefixLess);
     printParsedCmd();
-    if (this->_cmd.empty())
-        return;
     std::map<std::string, CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
     if (it != _commandList.end())
     {
@@ -376,7 +373,7 @@ bool Server::checkChannelNorm(const std::string &channelName) const
         return (0);
     for (size_t i = 0; i < channelName.length(); i++)
     {
-        if (channelName[i] == ' ' || channelName[i] == ',' || channelName[i] == '\r' || channelName[i] == '\n' || channelName[i] == '\0')
+        if (channelName[i] == ' ' || channelName[i] == ',' || channelName[i] == '\r' || channelName[i] == '\n' || channelName[i] == '\0' || channelName[i] == '0')
             return (0);
     }
     return (1);
