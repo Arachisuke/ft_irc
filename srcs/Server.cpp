@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/18 13:13:01 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/18 15:42:16 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -383,8 +383,8 @@ std::string Server::whatToDisplay(Channel *channel, Client *client)
 {
     std::string msg;
     if (channel->isOperator(client))
-        msg = "@" + (client)->getNickname() + " ";
+        msg = "@" + (client)->getNickname();
     else
-        msg = (client)->getNickname() + " ";
+        msg = (client)->getNickname();
     return (msg);
 }

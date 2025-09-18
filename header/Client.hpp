@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/11 12:12:03 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 13:26:49 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ public:
     int getFd() const;
     int getPassword_Status() const;
     int getNickname_Status() const;
+    const std::string &getRealname() const;
     int getUsername_Status() const;
     int getisRegistered() const;
 
@@ -77,8 +78,7 @@ public:
     void setUsernameStatus(int userNameStatus);
     void setIsRegistered(int isRegistered);
     void removeMyChannel(Channel *channelToRemove);
-    std::vector<Channel *>& setMyChannel();
-
+    std::vector<Channel *> &setMyChannel();
 
     const std::string getPrefiksClient() const;
     const std::string &getNickname() const;
@@ -89,8 +89,6 @@ public:
 
     std::string &setBuffer();
 
-
-
 private:
     int _hote;
     int _fd;
@@ -98,17 +96,17 @@ private:
     int _NicknameStatus;
     int _realNameStatus;
     int _isRegistered;
-    
+
     std::string _buffer;
     std::string _nickname; // 9 length
-    std::string _realName; 
-    std::string _mode;     // 3 length
-    
+    std::string _realName;
+    std::string _mode; // 3 length
+
     struct epoll_event _event;
     struct sockaddr_in _client;
-    
+
     socklen_t _size_of_client;
-    
+
     std::vector<Channel *> _myChannels;
 };
 #endif

@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:06 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 14:28:07 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 15:15:45 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void Server::invite()
     if (clientIndex == -1 || _clientList[_nbrclient]->getNickname() == _clientList[clientIndex]->getNickname()) // error client introuvable ou host lui meme
         return (errorMsg(401, _cmd[0], "No such nick", *_clientList[_nbrclient]), (void)0);
     if (!this->checkChannelNorm(_cmd[2])) // error  invalid channel name
-        return (errorMsg(476, "INVITE", "Bad Channel Mask", *_clientList[_nbrclient]));
+        return (errorMsg(476, _cmd[0], "Bad Channel Mask", *_clientList[_nbrclient]));
     Channel *channel = this->findChannelPtr(_cmd[2]);
     if (!channel) // error channel n existe pas
         return (errorMsg(403, _cmd[2], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]), (void)0);
@@ -57,8 +57,9 @@ void Server::invite()
     channel->inviteClient(_clientList[clientIndex]);
     std::ostringstream serverOst;
     std::ostringstream guestOst;
+    std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
     serverOst << ":" << _serverName << " 341 " << _clientList[_nbrclient]->getNickname() << " " << _clientList[clientIndex]->getNickname() << " " << _cmd[2] << "\r\n";
-    guestOst << ":" << _clientList[_nbrclient]->getNickname() << "!" << _clientList[_nbrclient]->getUsername() << "@localhost INVITE " << _clientList[clientIndex]->getNickname() << " " << _cmd[2] << "\r\n";
+    guestOst << ":" << addArobase << "!" << _clientList[_nbrclient]->getUsername() << "@localhost INVITE " << _clientList[clientIndex]->getNickname() << " " << _cmd[2] << "\r\n";
     send(_clientList[_nbrclient]->getFd(), serverOst.str().c_str(), serverOst.str().size(), MSG_DONTWAIT);
     send(_clientList[clientIndex]->getFd(), guestOst.str().c_str(), guestOst.str().size(), MSG_DONTWAIT);
 }
