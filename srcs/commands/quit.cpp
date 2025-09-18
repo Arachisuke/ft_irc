@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 13:25:09 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/18 15:23:07 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void Server::successfullQuit()
 void Server::quit()
 {
     if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-        return (reply(451, "QUIT", "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(451, _cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
     this->successfullQuit();
     std::string msg2 = "ERROR :Closing Link: " + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost (Quit:";
     if (this->_cmd.size() > 1)
