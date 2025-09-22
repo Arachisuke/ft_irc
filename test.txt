@@ -281,8 +281,8 @@ TOPIC -> en mode T et pas en MODE T pour le modifier ou non OP/notOP
 
 
 
-PASSWORD -> faux vrai faux mdp
-PASSWORD -> vrai faux mdp.
+PASSWORD -> faux vrai faux mdp @@@
+PASSWORD -> vrai faux mdp. @@@@
 NICK -> already, succesfful -> premiere fois, seconde fois, channel multiple.
 USER -> envoyez pas mal d'argument.
 JOIN -> tenter avant le register 
@@ -296,3 +296,27 @@ JOIN -> I L K
 
 
 tout en verifiant les LEAK -> QUIT -> CLOSECLIENT -> FINISH \
+
+
+
+PARSING de chaque commande avec ou sans argument -> QUIT KICK PING PART 
+
+
+
+QUIT -> IRSSI bizarrre
+JOIN -> invalid read size, je n'arrive pas a reproduire le cas.
+-> juste un make pas un make re, tu lance le premier client fait un JOIN avec UN channel ! et c'est pas sur, le pb vient de l'initialisation du constructeur
+
+
+// reverifier lheure de irssi et netcat.
+
+
+// corriger les commentaires.
+
+
+// test alreadyinUSE, avec channel, j'ai fais un mixte de changement de l'operateur ect, je n'ai aps reussi a PART 
+// PARRT a ete MODIFIER a reverifier entierement.
+// PART a corriger il a des invalid read.
+
+
+// bien faire des removes client, car ca enleve de tout , operator user etc.
