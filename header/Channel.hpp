@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 16:50:45 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/22 15:14:10 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ public:
     const std::string &getTopic() const;
     const std::string &getTopicSetter() const;
     const std::set<Client *> &getUsers() const;
-    const std::string getCreationDate() const;
+    const std::string getCreationDate();
+    const std::string getCreationDateIrssi() const;
     const std::string &getPassword() const;
     size_t getMaxUsers() const;
 
@@ -69,6 +70,8 @@ public:
     void setUsers(Client *client);
     void setPassword(std::string password, bool addOrRemove);
     void setCreationDate();
+    void setCreationDate1();
+
 
     // Clients Management
     void inviteClient(Client *client);             // ajoute client a set _invited
@@ -82,6 +85,9 @@ private:
     std::string _topicSetter;
     std::string _password; // mode +k_
     std::string _creationDate;
+    std::string _creationDateirssi;
+    time_t _presentTime;
+    
 
     std::set<Client *> _users;     // all clients
     std::set<Client *> _operators; // client operator

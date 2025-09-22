@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/18 15:42:16 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/22 15:02:47 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -319,7 +319,7 @@ void Server::find_cmd()
         return;
     }
     if (this->_cmd[0] == "CAP")
-        return;
+        return(this->_clientList[this->_nbrclient]->setIrssi(1), (void)0);
     send(this->_clientList[this->_nbrclient]->getFd(), "Command not found\r\n", 20, MSG_DONTWAIT);
 }
 
@@ -345,7 +345,7 @@ const std::string Server::getPrefiksServer() const
     return (":" + this->_serverName);
 }
 
-void Server::Send_Welcome() // rajouter le message 2 3 4.
+void Server::Send_Welcome() 
 {
     std::ostringstream ost;
     ost << ":" << this->_serverName << " 001 " << this->_clientList[_nbrclient]->getNickname() << " :Welcome to the Hueco Mundo Network, " << this->_clientList[_nbrclient]->getNickname() << "!~" << this->_clientList[_nbrclient]->getUsername() << "@localhost\r\n";
