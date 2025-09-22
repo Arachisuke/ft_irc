@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/17 16:50:36 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/22 15:16:26 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,16 +126,23 @@ bool Channel::isModeActif(char mode)
 
 void Channel::setCreationDate()
 {
-    time_t presentTime = time(NULL);                 // nombre de secondes ecoulee depuis creation unix 1 janvier 1970
-    struct tm *localeTime = localtime(&presentTime); // convertit les secondes dans une structures (D/Y/M/...)
-    char date[30];
-    strftime(date, sizeof(date), "%b %d %Y %H:%M:%S", localeTime); // formate selon un pattern dans un buffer
-    _creationDate = date;
+    _presentTime = time(NULL);
+    std::ostringstream oss;
+    oss << _presentTime;
+    _creationDateirssi = oss.str();
 }
 
-const std::string Channel::getCreationDate() const
+const std::string Channel::getCreationDate()
 {
+    struct tm *localeTime = localtime(&_presentTime); // convertit les secondes dans une structures (D/Y/M/...)
+    char date[30];
+    strftime(date, sizeof(date), "%a %b %d %H:%M:%S %Y", localeTime);
+    _creationDate = date;   
     return (_creationDate);
+}
+const std::string Channel::getCreationDateIrssi() const
+{
+    return (_creationDateirssi);
 }
 
 void Channel::setPassword(std::string password, bool addOrRemove)
