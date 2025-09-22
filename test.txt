@@ -257,3 +257,42 @@ error #2
  
 // erreur -> JOIN multiple => PART multiple.  // il marche ....
 // JOIN Multiple -> JOIN 0 ...
+
+
+
+
+
+-- - - - ---------------------- ---------------------------- --------------------------------------- --------------------- --------------------- ----------------- --------------- ----------------- -------------  ----------------- ----------- -----------
+
+
+
+
+KICK -> multi message ?
+
+TOPIC -> essayer de change le topic op/notOP
+Invite -> inviter 
+MODE -> I T K O L 
+
+KICK TOPIC -> mode O T
+TOPIC -> en mode T et pas en MODE T pour le modifier ou non OP/notOP
+
+
+
+
+
+
+PASSWORD -> faux vrai faux mdp
+PASSWORD -> vrai faux mdp.
+NICK -> already, succesfful -> premiere fois, seconde fois, channel multiple.
+USER -> envoyez pas mal d'argument.
+JOIN -> tenter avant le register 
+JOIN -> multichannel, channel faux, channel alreadyIN
+JOIN -> 0
+QUIT -> multi message ?
+PART -> multichannel, channel faux, channel notIN
+PRIVMSG NOTICE -> notIN, multichannel/user faux user faux channel 
+PING -> argument long ou bizarre
+JOIN -> I L K
+
+
+tout en verifiant les LEAK -> QUIT -> CLOSECLIENT -> FINISH \

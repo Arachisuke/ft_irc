@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 13:26:49 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/22 15:05:32 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,14 @@ public:
     const std::string &getRealname() const;
     int getUsername_Status() const;
     int getisRegistered() const;
+    int getIrssi() const;
+
 
     void setNickname(std::string nickName);
     void setUsername(std::string userName);
     void setMode(std::string mode);
     void setFd(int fd);
+    void setIrssi(int fd);
     void setPasswordStatus(int passwordStatus);
     void setNicknameStatus(int nickNameStatus);
     void setUsernameStatus(int userNameStatus);
@@ -96,6 +99,8 @@ private:
     int _NicknameStatus;
     int _realNameStatus;
     int _isRegistered;
+    int _isIrssi;
+    
 
     std::string _buffer;
     std::string _nickname; // 9 length
