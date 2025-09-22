@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 15:41:44 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/22 18:14:03 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,23 +23,23 @@ void Server::part()
     std::vector<std::string> list;
     list = ft_split(this->_cmd[1], ',');
     for (int j = list.size() - 1; j >= 0; --j)
-          {
-            if (list[j][0] != '#')
-            {
-                reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
-                continue;                
-            }
-            if (findChannel(list[j]) == -1)
-            {
-                reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
-                continue;                
-            }
-            int i = findChannel(list[j]); // je cherche l'argument dans channelist.
-            if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
-            {
-                reply(442, this->_cmd[0], "You're not on that channel", *this->_clientList[this->_nbrclient]);
-                continue;                
-            }
+    {
+        if (list[j][0] != '#')
+        {
+            reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
+            continue;
+        }
+        if (findChannel(list[j]) == -1)
+        {
+            reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
+            continue;
+        }
+        int i = findChannel(list[j]); // je cherche l'argument dans channelist.
+        if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
+        {
+            reply(442, this->_cmd[0], "You're not on that channel", *this->_clientList[this->_nbrclient]);
+            continue;
+        }
 
         if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
         {
@@ -52,10 +52,16 @@ void Server::part()
             msg += " :" + this->_cmd[2];
         msg += "\r\n";
 
-            if (this->_channeList[i]->getUsers().empty())
-            {
-                delete this->_channeList[i];
-                this->_channeList.erase(this->_channeList.begin() + findChannel(list[j]));
-            }
-          }
+        std::set<Client *> users = this->_channeList[i]->getUsers();
+        for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
+            send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+
+        this->_clientList[this->_nbrclient]->removeMyChannel(this->_channeList[i]);
+
+        if (this->_channeList[i]->getUsers().empty())
+        {
+            delete this->_channeList[i];
+            this->_channeList[i]->removeClient(this->_clientList[this->_nbrclient]);
+        }
+    }
 }
