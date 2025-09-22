@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:47 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 12:28:06 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/22 16:24:22 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ std::vector<std::string> Server::ft_split(const std::string &str, char delimiter
 
 void Server::privMsg()
 {
-  std::vector<std::string> list;
-  if (this->_cmd.size() - 1 == 0)
-    return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
   if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
     return (reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
+  if (this->_cmd.size() - 1 == 0)
+    return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
+  std::vector<std::string> list;
   list = ft_split(this->_cmd[1], ',');
   for (size_t i = 0; i < list.size(); i++)
   {
@@ -66,7 +66,7 @@ void Server::privMsg()
       for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
       {
         // if ((*it)->getFd() != _clientList[_nbrclient]->getFd())  bizarre...
-            send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+        send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
       }
     }
     else

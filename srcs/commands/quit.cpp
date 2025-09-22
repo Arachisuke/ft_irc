@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   quit.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 15:40:27 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/22 16:21:35 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ void Server::successfullQuit()
 
 void Server::quit()
 {
-    if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-        return (reply(451, _cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
     this->successfullQuit();
     std::string msg2 = "ERROR :Closing Link: " + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost (Quit:";
     if (this->_cmd.size() > 1)
