@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 14:36:21 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 13:26:34 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/22 15:05:53 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,11 @@ int Client::getisRegistered() const
 {
     return (_isRegistered);
 }
+int Client::getIrssi() const
+{
+    return (_isIrssi);
+}
+
 
 std::vector<Channel *> &Client::setMyChannel()
 {
@@ -119,6 +124,10 @@ std::vector<Channel *> &Client::setMyChannel()
 void Client::setFd(int fd)
 {
     _fd = fd;
+}
+void Client::setIrssi(int irssi)
+{
+    _isIrssi = irssi;
 }
 void Client::setPasswordStatus(int passwordStatus)
 {
