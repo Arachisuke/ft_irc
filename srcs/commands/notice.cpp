@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   notice.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:37 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 13:08:06 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/23 18:03:40 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,12 @@ void Server::notice()
         msg += this->_cmd[i] + " ";
       msg += "\r\n";
 
-      std::set<Client *> users = this->_channeList[n]->getUsers();
+     std::set<Client *> users = this->_channeList[n]->getUsers();
       for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
-        send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+      {
+        if ((*it)->getFd() != _clientList[_nbrclient]->getFd())
+          send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+      }
     }
     else // client
     {

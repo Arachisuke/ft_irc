@@ -283,16 +283,23 @@ TOPIC -> en mode T et pas en MODE T pour le modifier ou non OP/notOP
 
 PASSWORD -> faux vrai faux mdp @@@
 PASSWORD -> vrai faux mdp. @@@@
-NICK -> already, succesfful -> premiere fois, seconde fois, channel multiple.
-USER -> envoyez pas mal d'argument.
-JOIN -> tenter avant le register 
-JOIN -> multichannel, channel faux, channel alreadyIN
-JOIN -> 0
-QUIT -> multi message ?
-PART -> multichannel, channel faux, channel notIN
-PRIVMSG NOTICE -> notIN, multichannel/user faux user faux channel 
-PING -> argument long ou bizarre
-JOIN -> I L K
+NICK -> already, succesfful -> premiere fois, seconde fois, channel multiple. @@@@
+USER -> envoyez pas mal d'argument. @@@@
+JOIN -> tenter avant le register @@@@@
+JOIN -> multichannel, channel faux, channel alreadyIN @@@@
+JOIN -> 0 @@@
+QUIT -> multi message ? @@@@ 
+PART -> multichannel, channel faux, channel notIN @@@@
+PRIVMSG NOTICE -> notIN, multichannel/user faux user faux channel @@@@
+PING -> argument long ou bizarre @@@
+
+
+
+
+
+JOIN -> I K @@@@@
+
+JOIN -> L 
 
 
 tout en verifiant les LEAK -> QUIT -> CLOSECLIENT -> FINISH \
@@ -304,6 +311,8 @@ PARSING de chaque commande avec ou sans argument -> QUIT KICK PING PART
 
 
 QUIT -> IRSSI bizarrre
+
+
 JOIN -> invalid read size, je n'arrive pas a reproduire le cas.
 -> juste un make pas un make re, tu lance le premier client fait un JOIN avec UN channel ! et c'est pas sur, le pb vient de l'initialisation du constructeur
 
