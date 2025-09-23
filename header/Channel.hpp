@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/22 15:14:10 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/22 16:43:51 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ public:
     void addOperator(Client *newClient);           // ajoute client a set _operator
     void removeClient(Client *clientToRemove);     // remove from every set <>
     void removeOperator(Client *operatorToRemove); // remove from operator only
+    void removeInvited(Client *invitedToRemove); // remove from invited only
 
 private:
     std::string _name;
