@@ -11,21 +11,22 @@
  */
 /* ************************************************************************** */
 
-#include "../header/Client.hpp"
-#include "../header/Server.hpp"
+#include "Client.hpp"
+#include "Server.hpp"
+#include "Bot.hpp"
 
-bool	stop = false;
+bool stop = false;
 
-void	handler(int)
+void handler(int)
 {
 	stop = true;
 }
 
-int	range_port(char *port)
+int range_port(char *port)
 {
-	const char	*s = port;
-	char		*end;
-	long		val;
+	const char *s = port;
+	char *end;
+	long val;
 
 	errno = 0;
 	val = strtol(s, &end, 10);
@@ -36,16 +37,13 @@ int	range_port(char *port)
 	return (static_cast<int>(val));
 }
 
-int	main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	if (argc != 3)
-		return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl,
-			1);
-
+		return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl, 1);
 	signal(SIGINT, &handler);
 	signal(SIGQUIT, &handler);
 	Server server;
-
 	int port = range_port(argv[1]);
 	if (port < 0)
 		return (1);

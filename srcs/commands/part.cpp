@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/23 15:01:16 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/23 15:34:46 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,6 @@ void Server::part()
             continue;
         }
 
-        if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
-        {
-            reply(442, this->_cmd[0], "You're not on that channel", *this->_clientList[this->_nbrclient]);
-            continue;
-        }
         std::string addArobase = whatToDisplay(_channeList[i], this->_clientList[this->_nbrclient]);
         std::string msg = ":" + addArobase + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PART " + this->_channeList[i]->getName();
         if (this->_cmd.size() > 2 && this->_cmd[2] != "")
@@ -53,10 +48,6 @@ void Server::part()
         msg += "\r\n";
 
         std::set<Client *> users = this->_channeList[i]->getUsers();
-        for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
-            send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
-
-                std::set<Client *> users = this->_channeList[i]->getUsers();
         for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
             send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
 

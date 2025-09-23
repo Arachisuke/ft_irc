@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/22 15:02:47 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/23 14:28:34 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,8 @@ int Server::wait_client()
 					this->closeClient("RDHUP");
 				else if (this->_events[i].events & EPOLLERR)
 					this->closeClient("ERR");
+
+				
 			}
 			else if (this->_events[i].events & EPOLLIN)
 			{
@@ -222,6 +224,9 @@ void Server::ReadMsg(std::string &bufferClient)
 
 	this->_bytes = recv(this->_clientList[this->_nbrclient]->getFd(), &lecture,
 			sizeof(lecture), MSG_DONTWAIT);
+	std::cout << "============ IN BYTES ============" << std::endl
+              << this->_bytes << std::endl
+              << std::endl;
 	if (this->_bytes == -1)
 	{
 		if (errno == EAGAIN || errno == EWOULDBLOCK)
@@ -234,6 +239,9 @@ void Server::ReadMsg(std::string &bufferClient)
 	{
 		bufferClient.append(lecture, this->_bytes); // marche aps.
 		pos = bufferClient.find("\r\n");
+		std::cout << "============ IN BUFFER ============" << std::endl
+              << bufferClient << std::endl
+              << std::endl;
 		while (pos != std::string::npos)
 		{
 			this->_entry = bufferClient.substr(0, pos);
@@ -312,6 +320,8 @@ void Server::find_cmd()
     removePrefix(wordPrefixLess);
     parseCmd(wordPrefixLess);
     printParsedCmd();
+	if (this->_cmd.empty())
+		return;
     std::map<std::string, CommandFunc>::iterator it = _commandList.find(this->_cmd[0]);
     if (it != _commandList.end())
     {
@@ -327,6 +337,7 @@ void Server::PushMsg(std::string msg) // a gerer apres
 {
     msg.push_back('\r');
     msg.push_back('\n'); // a verifie si c'est vraiment la norme.
+	std::cout << "err :" << msg << std::endl;
     send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
     this->_events[_nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
     this->_events[_nbrclient].data.fd = this->_clientList[_nbrclient]->getFd();
