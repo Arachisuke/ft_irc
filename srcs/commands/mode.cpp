@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:34 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/22 15:09:59 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/23 18:34:20 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
 				continue;
 			}
 			int i = find_client(cmd[param++]);
-			if (i == -1 || i == _nbrclient)
+			if (i == -1 || i == _nbrclient || !channel->isMember(_clientList[i]))
 			{
 				errorMsg(401, _cmd[2], "No such nick", *_clientList[_nbrclient]);
 				continue;
@@ -128,7 +128,6 @@ void Server::mode()
 			return (reply(324, _cmd[1], channel->getModes(), *_clientList[_nbrclient]), reply(329, _cmd[1], channel->getCreationDateIrssi(), *_clientList[_nbrclient]));
 		else
 			return (reply(324, _cmd[1], channel->getModes(), *_clientList[_nbrclient]), reply(329, _cmd[1], channel->getCreationDate(), *_clientList[_nbrclient]));
-			
 	}
 	if (!channel->isOperator(_clientList[_nbrclient]))
 		return (errorMsg(482, _cmd[1], "You're not channel operator", *_clientList[_nbrclient]));

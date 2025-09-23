@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/17 14:36:21 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/22 15:05:53 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/23 16:43:56 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ Client::Client()
     this->_realNameStatus = 0;
     this->_isRegistered = 0;
     this->_fd = -1;
+    this->_isIrssi = 0;
 }
 Client::~Client()
 {
