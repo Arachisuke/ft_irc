@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 13:58:26 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/22 16:33:20 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,6 @@ void Server::kickAllClient(std::string &clientsListToKick, std::string kicker, C
             errorMsg(441, (*it), "They aren't on that channel", *_clientList[_nbrclient]);
             continue;
         }
-        if (channel->isOperator(_clientList[clientIndex]))
-            continue;           // a voir
         std::ostringstream ost; // ajouter ici le message de remove
         std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
         ost << ":" << addArobase << "!" << this->_clientList[this->_nbrclient]->getRealname() << "@localhost" << " KICK " << channel->getName() << " " << (*it) << " :" << reason << "\r\n";

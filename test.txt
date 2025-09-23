@@ -267,9 +267,9 @@ error #2
 
 
 
-KICK -> multi message ?
+KICK -> multi message ? @@@@@@@@@
 
-TOPIC -> essayer de change le topic op/notOP
+TOPIC -> essayer de change le topic op/notOP @@@@@@@@@@@
 Invite -> inviter 
 MODE -> I T K O L 
 

@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/22 17:50:06 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/23 15:01:42 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,10 @@ void Channel::removeOperator(Client *operatorToRemove)
     _operators.erase(operatorToRemove);
 }
 
+void Channel::removeInvited(Client *invitedToRemove)
+{
+    _invited.erase(invitedToRemove);
+}
 bool Channel::channelIsFull()
 {
     if (_maxUsers < 0)
@@ -137,7 +141,7 @@ const std::string Channel::getCreationDate()
     struct tm *localeTime = localtime(&_presentTime); // convertit les secondes dans une structures (D/Y/M/...)
     char date[30];
     strftime(date, sizeof(date), "%a %b %d %H:%M:%S %Y", localeTime);
-    _creationDate = date;   
+    _creationDate = date;
     return (_creationDate);
 }
 const std::string Channel::getCreationDateIrssi() const
