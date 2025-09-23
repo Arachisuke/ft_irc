@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:47 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/23 14:19:58 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/23 18:02:45 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ void Server::privMsg()
         reply(401, this->_cmd[0], ERR_NOSUCHNICK, *this->_clientList[this->_nbrclient]);
         continue;
       }
+      if (list[i] == this->_clientList[this->_nbrclient]->getNickname())
+        continue ;
       int n = find_client(list[i]);
       std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PRIVMSG " + this->_clientList[n]->getNickname() + " : ";
       for (size_t i = 2; i < this->_cmd.size(); i++)
