@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/25 16:53:12 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/23 15:01:42 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/23 18:17:40 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,11 @@ void Channel::setModes(char modes, bool addOrRemove)
     if (addOrRemove == 1)
         _modes.insert(modes);
     else
-        _modes.erase(_modes.find(modes));
+    {
+        std::set<char>::iterator it = _modes.find(modes);
+        if (it != _modes.end())
+            _modes.erase(it);
+    }
 }
 void Channel::setMaxUsers(int maxUsers)
 {
