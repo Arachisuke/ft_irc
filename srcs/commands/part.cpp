@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/22 18:14:03 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/23 14:58:07 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,12 +56,17 @@ void Server::part()
         for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
             send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
 
+                std::set<Client *> users = this->_channeList[i]->getUsers();
+        for (std::set<Client *>::iterator it = users.begin(); it != users.end(); it++)
+            send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
+
         this->_clientList[this->_nbrclient]->removeMyChannel(this->_channeList[i]);
+        this->_channeList[i]->removeClient(this->_clientList[this->_nbrclient]);
 
         if (this->_channeList[i]->getUsers().empty())
         {
             delete this->_channeList[i];
-            this->_channeList[i]->removeClient(this->_clientList[this->_nbrclient]);
+            this->_channeList.erase(this->_channeList.begin() + i);
         }
     }
 }
