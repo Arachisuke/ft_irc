@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 17:13:43 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/23 15:04:49 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/24 14:57:56 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void Server::successfullJoin(int i)
 void Server::join()
 {
 	if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-		return (reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
+		return (reply(451, this->_cmd[0], ERR_NOTREGISTERED, *this->_clientList[this->_nbrclient]), (void)0);
 	if (this->_cmd.size() - 1 == 0)
 		return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
 	if (this->_cmd[1] == "#0" || this->_cmd[1] == "0")
@@ -102,7 +102,7 @@ void Server::join()
 		{
 			if (!checkChannelNorm(list[j]))
 			{
-				reply(476, this->_cmd[0], "Bad Channel Mask", *this->_clientList[this->_nbrclient]);
+				reply(476, this->_cmd[0], ERR_BADCHANMASK, *this->_clientList[this->_nbrclient]);
 				continue;
 			}
 
@@ -111,8 +111,7 @@ void Server::join()
 				int i = findChannel(list[j]);
 				if (this->_channeList[i]->isModeActif('i') && !_channeList[i]->isInvited(_clientList[_nbrclient]))
 				{
-					reply(473, list[j], "Cannot join channel (+i)",
-						  *this->_clientList[this->_nbrclient]);
+					reply(473, list[j], ERR_INVITEONLYCHAN, *this->_clientList[this->_nbrclient]);
 					continue;
 				}
 
@@ -121,8 +120,7 @@ void Server::join()
 					std::cout << "NAMEOFCHANEL = " << this->_channeList[i]->getName() << std::endl;
 					if (_cmd.size() < 3)
 					{
-						reply(475, list[j], "Cannot join channel (+k)",
-							  *this->_clientList[this->_nbrclient]);
+						reply(475, list[j], ERR_BADCHANNELKEY, *this->_clientList[this->_nbrclient]);
 						continue;
 					}
 					std::vector<std::string> key = ft_split(this->_cmd[2], ',');
@@ -132,8 +130,7 @@ void Server::join()
 					if (key[keynbr] != this->_channeList[i]->getPassword())
 					{
 						keynbr++;
-						reply(475, list[j], "Cannot join channel (+k)",
-							  *this->_clientList[this->_nbrclient]);
+						reply(475, list[j], ERR_BADCHANNELKEY, *this->_clientList[this->_nbrclient]);
 						continue;
 					}
 					if (keynbr < key.size() - 1)
@@ -141,13 +138,13 @@ void Server::join()
 				}
 				if (this->_channeList[i]->isModeActif('l') && this->_channeList[i]->getUsers().size() >= this->_channeList[i]->getMaxUsers())
 				{
-					reply(471, list[j], "Cannot join channel (+l)", *this->_clientList[this->_nbrclient]);
+					reply(471, list[j], ERR_CHANNELISFULL, *this->_clientList[this->_nbrclient]);
 					continue;
 				}
 
 				if (this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
 				{
-					reply(443, this->_channeList[i]->getName(), "is already on channel", *this->_clientList[this->_nbrclient]);
+					reply(443, this->_channeList[i]->getName(), ERR_USERONCHANNEL, *this->_clientList[this->_nbrclient]);
 					continue;
 				}
 				if (this->_channeList[i]->isInvited(this->_clientList[this->_nbrclient]))

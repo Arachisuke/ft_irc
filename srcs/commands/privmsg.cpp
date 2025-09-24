@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:47 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/23 18:02:45 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/24 14:59:15 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ std::vector<std::string> Server::ft_split(const std::string &str, char delimiter
 void Server::privMsg()
 {
   if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-    return (reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
+    return (reply(451, this->_cmd[0], ERR_NOTREGISTERED, *this->_clientList[this->_nbrclient]), (void)0);
   if (this->_cmd.size() - 1 == 0)
     return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
   std::vector<std::string> list;
