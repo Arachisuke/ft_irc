@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:06 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 15:15:45 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/24 13:36:44 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,25 +35,25 @@ void Server::errorMsg(int codeError, const std::string command, const std::strin
 void Server::invite()
 {
     if (!_clientList[_nbrclient]->getisRegistered()) // error not registered
-        return (errorMsg(451, _cmd[0], "You have not registered", *_clientList[_nbrclient]), (void)0);
+        return (errorMsg(451, _cmd[0], ERR_NOTREGISTERED, *_clientList[_nbrclient]), (void)0);
     if (_cmd.size() < 3) // error not enough params
         return (errorMsg(461, _cmd[0], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]), (void)0);
     int clientIndex = this->find_client(_cmd[1]);
     if (clientIndex == -1 || _clientList[_nbrclient]->getNickname() == _clientList[clientIndex]->getNickname()) // error client introuvable ou host lui meme
-        return (errorMsg(401, _cmd[0], "No such nick", *_clientList[_nbrclient]), (void)0);
+        return (errorMsg(401, _cmd[0], ERR_NOSUCHNICK, *_clientList[_nbrclient]), (void)0);
     if (!this->checkChannelNorm(_cmd[2])) // error  invalid channel name
-        return (errorMsg(476, _cmd[0], "Bad Channel Mask", *_clientList[_nbrclient]));
+        return (errorMsg(476, _cmd[0], ERR_BADCHANMASK, *_clientList[_nbrclient]));
     Channel *channel = this->findChannelPtr(_cmd[2]);
     if (!channel) // error channel n existe pas
         return (errorMsg(403, _cmd[2], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]), (void)0);
     if (!channel->isMember(_clientList[_nbrclient])) // error client qui invite n est pas dans le channel
-        return (errorMsg(442, _cmd[2], "You're not on that channel", *_clientList[_nbrclient]), (void)0);
+        return (errorMsg(442, _cmd[2],ERR_NOTONCHANNEL, *_clientList[_nbrclient]), (void)0);
     if (channel->isModeActif('i') && !channel->isOperator(_clientList[_nbrclient])) // error invite only et non operator
-        return (errorMsg(482, _cmd[2], "You're not channel operator", *_clientList[_nbrclient]), (void)0);
+        return (errorMsg(482, _cmd[2], ERR_CHANOPRIVSNEEDED, *_clientList[_nbrclient]), (void)0);
     if (channel->isMember(_clientList[clientIndex])) // error guest deja sur la channel
-        return (errorMsg(443, _cmd[1], "is already on channel", *_clientList[_nbrclient]), (void)0);
+        return (errorMsg(443, _cmd[1], ERR_USERONCHANNEL, *_clientList[_nbrclient]), (void)0);
     if (channel->channelIsFull()) // error channel is full
-        return (errorMsg(471, _cmd[1], "Cannot join channel (+l)", *_clientList[_nbrclient]), (void)0);
+        return (errorMsg(471, _cmd[1], ERR_CHANNELISFULL, *_clientList[_nbrclient]), (void)0);
     channel->inviteClient(_clientList[clientIndex]);
     std::ostringstream serverOst;
     std::ostringstream guestOst;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   mode.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:34 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/23 18:34:20 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/24 13:40:36 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
 {
+	bool enoughParam = 0;
 	bool addOrRemove = 1;
 	int param = 3;
 	std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
@@ -24,6 +25,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
 		addOrRemove = 1;
 	for (size_t i = 1; i < cmd[2].length(); i++)
 	{
+		enoughParam = 1;
 		std::ostringstream ost;
 		ost << ":" << addArobase << "!" << this->_clientList[this->_nbrclient]->getRealname() << "@localhost " << _cmd[0] << " " << channel->getName() << " " << cmd[2][0] << cmd[2][i] << "\r\n";
 		if (cmd[2][i] == 'i')
@@ -46,7 +48,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
 			}
 			else if (static_cast<size_t>(param) >= cmd.size() || cmd[param].empty())
 			{
-				errorMsg(461, _cmd[2], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]);
+				errorMsg(461, "+o", ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]);
 				continue;
 			}
 			channel->setModes('k', addOrRemove);
@@ -57,13 +59,13 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
 		{
 			if (static_cast<size_t>(param) >= cmd.size() || cmd[param].empty())
 			{
-				errorMsg(461, _cmd[2], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]);
+				errorMsg(461, "-o", ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]);
 				continue;
 			}
 			int i = find_client(cmd[param++]);
 			if (i == -1 || i == _nbrclient || !channel->isMember(_clientList[i]))
 			{
-				errorMsg(401, _cmd[2], "No such nick", *_clientList[_nbrclient]);
+				errorMsg(401, "+o", ERR_NOSUCHNICK, *_clientList[_nbrclient]);
 				continue;
 			}
 			if (addOrRemove)
@@ -91,7 +93,7 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
 				}
 				else
 				{
-					errorMsg(400, _cmd[0], "Invalid user limit", *_clientList[_nbrclient]);
+					errorMsg(400, "+l", ERR_UNKNOWNERROR, *_clientList[_nbrclient]);
 					continue;
 				}
 				broadcastMsg(channel, ost.str().c_str(), ost.str().size());
@@ -99,29 +101,32 @@ void Server::addModesChannel(Channel *channel, std::vector<std::string> cmd)
 		}
 		else
 		{
-			errorMsg(461, _cmd[2], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]);
+			std::string unknownMode;
+			unknownMode.push_back(cmd[2][i]);
+			errorMsg(472, unknownMode, ERR_UNKNOWNMODE, *_clientList[_nbrclient]);
 			continue;
 		}
 	}
+	if (enoughParam)
+		return;
+	errorMsg(461, _cmd[2], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]);
 }
 
 void Server::mode()
 {
 	if (!_clientList[_nbrclient]->getisRegistered())
-		return (errorMsg(451, this->_cmd[0], "You have not registered", *_clientList[_nbrclient]));
+		return (errorMsg(451, this->_cmd[0], ERR_NOTREGISTERED, *_clientList[_nbrclient]));
 	if (this->_cmd.size() < 2)
 		return (errorMsg(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]));
 	if (_cmd[1] == this->_clientList[this->_nbrclient]->getNickname())
 		return;
 	if (!this->checkChannelNorm(_cmd[1]))
-		return (errorMsg(476, "MODE", "Bad Channel Mask", *_clientList[_nbrclient]));
-	if (!this->checkChannelNorm(_cmd[1]))
-		return (errorMsg(476, _cmd[0], "Bad Channel Mask", *_clientList[_nbrclient]));
+		return (errorMsg(476, _cmd[0], ERR_BADCHANMASK, *_clientList[_nbrclient]));
 	Channel *channel = this->findChannelPtr(this->_cmd[1]);
 	if (!channel)
 		return (errorMsg(403, _cmd[2], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]));
 	if (!channel->isMember(_clientList[_nbrclient]))
-		return (errorMsg(442, _cmd[2], "You're not on that channel", *_clientList[_nbrclient]));
+		return (errorMsg(442, _cmd[2], ERR_NOTONCHANNEL, *_clientList[_nbrclient]));
 	if (_cmd.size() == 2 || (_cmd.size() > 2 && (_cmd[2][0] != '-' && _cmd[2][0] != '+')))
 	{
 		if (this->_clientList[this->_nbrclient]->getIrssi() == 1)
@@ -130,6 +135,6 @@ void Server::mode()
 			return (reply(324, _cmd[1], channel->getModes(), *_clientList[_nbrclient]), reply(329, _cmd[1], channel->getCreationDate(), *_clientList[_nbrclient]));
 	}
 	if (!channel->isOperator(_clientList[_nbrclient]))
-		return (errorMsg(482, _cmd[1], "You're not channel operator", *_clientList[_nbrclient]));
+		return (errorMsg(482, _cmd[1], ERR_CHANOPRIVSNEEDED, *_clientList[_nbrclient]));
 	addModesChannel(channel, _cmd);
 }
