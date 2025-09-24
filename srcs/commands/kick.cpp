@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/22 16:33:20 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/24 14:58:19 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,16 +36,16 @@ void Server::kickAllClient(std::string &clientsListToKick, std::string kicker, C
     {
         int clientIndex = this->find_client((*it));
         if (clientIndex == -1 || kicker == _clientList[clientIndex]->getNickname())
-        { // error client introuvable ou host lui meme
-            errorMsg(401, _cmd[0], "No such nick", *_clientList[_nbrclient]);
+        {
+            errorMsg(401, _cmd[0], ERR_NOSUCHNICK, *_clientList[_nbrclient]);
             continue;
         }
         if (!channel->isMember(_clientList[clientIndex]))
-        { // error client qui est kicked n est pas dans le channel
-            errorMsg(441, (*it), "They aren't on that channel", *_clientList[_nbrclient]);
+        {
+            errorMsg(441, (*it), ERR_USERNOTINCHANNEL, *_clientList[_nbrclient]);
             continue;
         }
-        std::ostringstream ost; // ajouter ici le message de remove
+        std::ostringstream ost;
         std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
         ost << ":" << addArobase << "!" << this->_clientList[this->_nbrclient]->getRealname() << "@localhost" << " KICK " << channel->getName() << " " << (*it) << " :" << reason << "\r\n";
         broadcastMsg(channel, ost.str().c_str(), ost.str().size());
@@ -59,18 +59,18 @@ void Server::kick()
 {
     std::string reason;
     if (!_clientList[_nbrclient]->getisRegistered())
-        return (errorMsg(451, _cmd[0], "You have not registered", *_clientList[_nbrclient]), (void)0);
-    if (_cmd.size() < 3) // error not enough params
+        return (errorMsg(451, _cmd[0], ERR_NOTREGISTERED, *_clientList[_nbrclient]), (void)0);
+    if (_cmd.size() < 3)
         return (errorMsg(461, _cmd[0], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]), (void)0);
-    if (!this->checkChannelNorm(_cmd[1])) // error  invalid channel name
-        return (errorMsg(476, _cmd[0], "Bad Channel Mask", *_clientList[_nbrclient]));
+    if (!this->checkChannelNorm(_cmd[1]))
+        return (errorMsg(476, _cmd[0], ERR_BADCHANMASK, *_clientList[_nbrclient]));
     Channel *channel = findChannelPtr(_cmd[1]);
     if (!channel)
         return (errorMsg(403, _cmd[1], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]), (void)0);
-    if (!channel->isMember(_clientList[_nbrclient])) // error client qui kick n est pas dans le channel
-        return (errorMsg(442, _cmd[1], "You're not on that channel", *_clientList[_nbrclient]), (void)0);
-    if (!channel->isOperator(_clientList[_nbrclient])) // error non operator
-        return (errorMsg(482, _cmd[1], "You're not channel operator", *_clientList[_nbrclient]), (void)0);
+    if (!channel->isMember(_clientList[_nbrclient]))
+        return (errorMsg(442, _cmd[1], ERR_NOTONCHANNEL, *_clientList[_nbrclient]), (void)0);
+    if (!channel->isOperator(_clientList[_nbrclient]))
+        return (errorMsg(482, _cmd[1], ERR_CHANOPRIVSNEEDED, *_clientList[_nbrclient]), (void)0);
     if (_cmd.size() > 3)
         reason = _cmd[3];
     else

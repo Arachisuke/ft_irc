@@ -3,27 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   Server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/18 15:36:13 by codespace        ###   ########.fr       */
+/*   Updated: 2025/09/24 16:57:45 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <iostream>
-#include <string>
 #include <cstring>
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <iostream>
 #include <arpa/inet.h>
 #include <sys/epoll.h>
-#include <vector>
 #include <map>
 #include <cstdlib>
 #include <cerrno>
@@ -34,6 +30,35 @@
 #include <iostream>
 #include "Client.hpp"
 #include "Channel.hpp"
+
+#define MAX_EVENTS 10
+#define ERR_NEEDMOREPARAMS "Not Enough Parameters"
+#define ERR_ALREADYREGISTRED "You may not reregister"
+#define ERR_PASSWDMISMATCH "Password Incorrect"
+#define ERR_ERRONEUSNICKNAME "Erroneus Nickname"
+#define ERR_NICKNAMEINUSE "Nickname is already in use"
+#define ERR_NONICKNAMEGIVEN "No nickname given"
+#define ERR_TOOMANYARGS "Too many arguments"
+#define ERR_UNKNOWNCOMMAND "Unknown command"
+#define ERR_NOSUCHNICK "No such nick"
+#define ERR_NOSUCHCHANNEL "No such channel"
+#define ERR_CANNOTSENDTOCHAN "Cannot send to channel"
+#define ERR_TOOMANYCHANNELS "Too many channels"
+#define ERR_WASNOSUCHNICK "There was no such nickname"
+#define ERR_USERSDONTMATCH "Cant change mode for other users"
+#define ERR_NOTREGISTERED "You have not registered"
+#define ERR_BADCHANMASK "Bad Channel Mask"
+#define RPL_NOTOPIC "No topic is set"
+#define ERR_USERONCHANNEL "is already on channel"
+#define ERR_NOTONCHANNEL "You're not on that channel"
+#define ERR_CHANOPRIVSNEEDED "You're not channel operator"
+#define ERR_CHANNELISFULL "Cannot join channel (+l)"
+#define ERR_UNKNOWNMODE "is unknown mode char to me)"
+#define ERR_INVITEONLYCHAN "Cannot join channel (+i)"
+#define ERR_BADCHANNELKEY "Cannot join channel (+k)"
+#define ERR_USERNOTINCHANNEL "They aren't on that channel"
+#define ERR_UNKNOWNERROR "Invalid user limit"
+
 
 class Client;
 class Channel;

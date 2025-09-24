@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/22 16:43:51 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/24 15:06:04 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,20 +19,7 @@
 #include <set>
 #include "Client.hpp"
 
-#define MAX_EVENTS 10
-#define ERR_NEEDMOREPARAMS "Not Enough Parameters"
-#define ERR_ALREADYREGISTRED "You may not reregister"
-#define ERR_PASSWDMISMATCH "Password Incorrect"
-#define ERR_ERRONEUSNICKNAME "Erroneus Nickname"
-#define ERR_NICKNAMEINUSE "Nickname is already in use"
-#define ERR_NONICKNAMEGIVEN "No nickname given"
-#define ERR_TOOMANYARGS "Too many arguments"
-#define ERR_UNKNOWNCOMMAND "Unknown command"
-#define ERR_NOSUCHNICK "No such nick/channel"
-#define ERR_NOSUCHCHANNEL "No such channel"
-#define ERR_CANNOTSENDTOCHAN "Cannot send to channel"
-#define ERR_TOOMANYCHANNELS "Too many channels"
-#define ERR_WASNOSUCHNICK "There was no such nickname"
+
 
 class Client;
 

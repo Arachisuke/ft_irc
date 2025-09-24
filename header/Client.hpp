@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Client.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/22 15:05:32 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/24 13:16:20 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,21 +35,7 @@
 #include <sstream>
 #include "Server.hpp"
 
-#define MAX_EVENTS 10
-#define ERR_NEEDMOREPARAMS "Not Enough Parameters"
-#define ERR_ALREADYREGISTRED "You may not reregister"
-#define ERR_PASSWDMISMATCH "Password Incorrect"
-#define ERR_ERRONEUSNICKNAME "Erroneus Nickname"
-#define ERR_NICKNAMEINUSE "Nickname is already in use"
-#define ERR_NONICKNAMEGIVEN "No nickname given"
-#define ERR_TOOMANYARGS "Too many arguments"
-#define ERR_UNKNOWNCOMMAND "Unknown command"
-#define ERR_NOSUCHNICK "No such nick/channel"
-#define ERR_NOSUCHCHANNEL "No such channel"
-#define ERR_CANNOTSENDTOCHAN "Cannot send to channel"
-#define ERR_TOOMANYCHANNELS "Too many channels"
-#define ERR_WASNOSUCHNICK "There was no such nickname"
-#define ERR_USERSDONTMATCH "Cant change mode for other users"
+
 
 class Server;
 class Channel;

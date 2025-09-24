@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/22 16:21:35 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/24 15:14:11 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,18 +46,5 @@ void Server::quit()
     msg2 += " )\r\n";
 
     send(this->_clientList[this->_nbrclient]->getFd(), msg2.c_str(), msg2.size(), MSG_DONTWAIT);
-    for (int i = this->_clientList[this->_nbrclient]->getMyChannel().size() - 1; i >= 0; --i)
-    {
-        this->_clientList[this->_nbrclient]->getMyChannel()[i]->removeClient(this->_clientList[this->_nbrclient]);
-        if (this->_clientList[this->_nbrclient]->getMyChannel()[i]->getUsers().empty())
-        {
-            int b = findChannel(this->_clientList[this->_nbrclient]->setMyChannel()[i]->getName());
-            delete this->_clientList[this->_nbrclient]->setMyChannel()[i];
-            this->_clientList[this->_nbrclient]->setMyChannel()[i] = NULL;
-            this->_clientList[this->_nbrclient]->setMyChannel().erase(this->_clientList[this->_nbrclient]->setMyChannel().begin() + i);
-            this->_channeList.erase(this->_channeList.begin() + b);
-        }
-    }
-
     throw std::runtime_error("");
 }

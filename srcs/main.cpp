@@ -13,7 +13,6 @@
 
 #include "Client.hpp"
 #include "Server.hpp"
-#include "Bot.hpp"
 
 bool stop = false;
 
