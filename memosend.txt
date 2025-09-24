@@ -1,0 +1,63 @@
+🎯 Objectif : envoyer un fichier via Irssi avec /dcc send, en mode client à client (DCC)
+
+--------------------------
+🔧 CONFIGURATION côté A (expéditeur)
+--------------------------
+
+1. Se connecter au serveur IRC :
+   /server 127.0.0.1 1081 password
+
+2. Définir l’IP réelle du client A :
+   /set dcc_own_ip 127.0.0.1        ← ou l’adresse IP visible par B
+
+3. Définir un port fixe pour DCC :
+   /set dcc_ports 5000
+
+4. Rejoindre un channel avec l’autre client :
+   /join #test
+
+5. Envoyer le fichier :
+   /dcc send B fichier.txt
+
+→ Irssi écoutera automatiquement sur 127.0.0.1:5000
+→ Il affichera : "DCC sending file fichier.txt for B [...] port 5000"
+
+--------------------------
+📥 Côté B (récepteur)
+--------------------------
+
+1. Se connecter au même serveur :
+   /server 127.0.0.1 1081 password
+
+2. Rejoindre le même channel :
+   /join #test
+
+3. Attendre la requête DCC :
+   → S’affiche : "DCC SEND from A [...] fichier.txt [9B]"
+
+⚠️ Si le transfert ne démarre pas automatiquement, lancer à la main :
+
+   nc 127.0.0.1 5000 > reçu.txt
+
+→ Vérifier avec : cat reçu.txt
+
+--------------------------
+✅ Vérification
+--------------------------
+
+- Pour voir les transferts :
+  /dcc list
+
+- Pour relancer un envoi :
+  /dcc send B fichier.txt
+
+- Pour vérifier les IP :
+  ip a
+
+--------------------------
+🧠 Notes
+--------------------------
+
+- dcc_own_ip : nécessaire si l'IP envoyée par défaut est invalide (ex : 127.0.0.1 vers un autre PC)
+- dcc_ports : permet d’éviter les ports aléatoires et facilite le debug
+- Irssi ne télécharge pas automatiquement : le client B doit se connecter avec nc ou un script

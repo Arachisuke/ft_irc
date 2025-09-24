@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:02 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/18 13:28:22 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/24 15:01:17 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,18 @@
 void Server::topic()
 {
 	if (!_clientList[_nbrclient]->getisRegistered())
-		return (errorMsg(451, _cmd[0], "You have not registered", *_clientList[_nbrclient]), (void)0);
+		return (errorMsg(451, _cmd[0], ERR_NOTREGISTERED, *_clientList[_nbrclient]), (void)0);
 	if (_cmd.size() < 2)
 		return (errorMsg(461, _cmd[0], ERR_NEEDMOREPARAMS, *_clientList[_nbrclient]), (void)0);
 	if (!this->checkChannelNorm(_cmd[1]))
-		return (errorMsg(476, this->_cmd[0], "Bad Channel Mask", *_clientList[_nbrclient]));
+		return (errorMsg(476, this->_cmd[0], ERR_BADCHANMASK, *_clientList[_nbrclient]), (void)0);
 	Channel *channel = findChannelPtr(_cmd[1]);
 	if (!channel)
 		return (errorMsg(403, _cmd[1], ERR_NOSUCHCHANNEL, *_clientList[_nbrclient]), (void)0);
 	if (_cmd.size() == 2)
 	{
 		if (channel->getTopic().empty())
-			reply(331, _cmd[1], "No topic is set", *_clientList[_nbrclient]);
+			reply(331, _cmd[1], RPL_NOTOPIC, *_clientList[_nbrclient]);
 		else
 		{
 			reply(332, _cmd[1], channel->getTopic(), *_clientList[_nbrclient]);
@@ -37,9 +37,9 @@ void Server::topic()
 		return;
 	}
 	if (!channel->isMember(_clientList[_nbrclient]))
-		return (errorMsg(442, _cmd[1], "You're not on that channel", *_clientList[_nbrclient]), (void)0);
+		return (errorMsg(442, _cmd[1], ERR_NOTONCHANNEL, *_clientList[_nbrclient]), (void)0);
 	if (channel->isModeActif('t') && !channel->isOperator(_clientList[_nbrclient]))
-		return (errorMsg(482, _cmd[1], "You're not channel operator", *_clientList[_nbrclient]), (void)0);
+		return (errorMsg(482, _cmd[1], ERR_CHANOPRIVSNEEDED, *_clientList[_nbrclient]), (void)0);
 	std::string newTopic;
 	if (_cmd[2][0] == ':')
 		newTopic = _cmd[2].substr(1);

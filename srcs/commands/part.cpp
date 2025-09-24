@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/23 15:48:13 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/24 15:08:38 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 void Server::part()
 {
     if (this->_clientList[this->_nbrclient]->getisRegistered() == 0)
-        return (reply(451, this->_cmd[0], "You have not registered", *this->_clientList[this->_nbrclient]), (void)0);
+        return (reply(451, this->_cmd[0], ERR_NOTREGISTERED, *this->_clientList[this->_nbrclient]), (void)0);
     if (this->_cmd.size() - 1 == 0)
         return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
     std::vector<std::string> list;
@@ -37,7 +37,7 @@ void Server::part()
         int i = findChannel(list[j]); // je cherche l'argument dans channelist.
         if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
         {
-            reply(442, this->_cmd[0], "You're not on that channel", *this->_clientList[this->_nbrclient]);
+            reply(442, this->_cmd[0], ERR_NOTONCHANNEL, *this->_clientList[this->_nbrclient]);
             continue;
         }
 
