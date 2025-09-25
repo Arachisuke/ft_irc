@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/24 15:37:30 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/25 14:32:23 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,7 +233,7 @@ void Server::ReadMsg(std::string &bufferClient)
 		return (this->closeClient("ERR_READ"));
 	else if (this->_bytes > 0)
 	{
-		bufferClient.append(lecture, this->_bytes); // marche aps.
+		bufferClient.append(lecture, this->_bytes);
 		pos = bufferClient.find("\r\n");
 		std::cout << "============ IN BUFFER ============" << std::endl
 				  << bufferClient << std::endl
