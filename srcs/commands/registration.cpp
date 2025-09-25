@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:57 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/24 15:00:20 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/25 16:16:35 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ void Server::pass()
 
 int Server::findNick()
 {
+    
     for (size_t i = 0; i < this->_clientList.size(); i++)
     {
         if (this->_clientList[i]->getNickname() == this->_cmd[1])
@@ -61,7 +62,7 @@ int Server::isprint(char c)
 void Server::successfullNick()
 {
     std::vector<int> alreadysent;
-    std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost NICK : " + this->_cmd[1] + "\r\n";
+    std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost NICK " + this->_cmd[1] + "\r\n";
     for (size_t i = 0; i < this->_clientList[this->_nbrclient]->getMyChannel().size(); i++)
     {
         const std::set<Client *> &users = this->_clientList[this->_nbrclient]->getMyChannel()[i]->getUsers();
@@ -81,8 +82,7 @@ void Server::nick()
     if (this->_cmd.size() - 1 == 0)
         return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
     if (!this->_clientList[this->_nbrclient]->getPassword_Status())    if (this->_clientList[this->_nbrclient]->getUsername_Status() == 1)
-
-        return (reply(461, this->_cmd[0], "ERR_PASSWORDBEFORE", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
+        return (reply(464, this->_cmd[0], ERR_PASSWDMISMATCH, *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
     if (nickpolicy())
         return (reply(432, this->_cmd[0], ERR_ERRONEUSNICKNAME, *this->_clientList[this->_nbrclient]), (void)0);
     if (findNick())
@@ -100,7 +100,7 @@ void Server::user()
     if (this->_clientList[this->_nbrclient]->getUsername_Status() == 0)
     {
         if (!this->_clientList[this->_nbrclient]->getPassword_Status() || !this->_clientList[this->_nbrclient]->getNickname_Status())
-            return (reply(461, this->_cmd[0], "ERR_NEEDPASSWORDORNICK", *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
+            return (reply(451, this->_cmd[0], ERR_NOTREGISTERED, *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
         if (this->_cmd[1].size() > 9 || this->_cmd[1].size() < 1)
             return (reply(432, this->_cmd[0], ERR_ERRONEUSNICKNAME, *this->_clientList[this->_nbrclient]), (void)0);
 
