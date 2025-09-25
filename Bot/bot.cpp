@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 13:02:53 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/25 16:31:22 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/25 16:39:30 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,10 @@ void sendMsg(std::string entry, int fd) // proteger le nickname et le msg ""
 {
     std::string nickname;
     size_t pos = entry.find("!");
-    nickname = entry.substr(1, pos);
+    nickname = entry.substr(1, pos - 1);
     std::cout << "NICKNAME : " << nickname << std::endl;
     pos = entry.find(":");
-    entry = entry.substr(1, pos); 
+    entry = entry.substr(1, pos);
     std::string prvmsg = "PRIVMSG";
     std::string msg = prvmsg + " tu as bien ecris ca ?\n" + entry + "\r\n";
 
@@ -138,21 +138,24 @@ int main(int ac, char **av)
     while (1)
     {
         bytes = recv(fd, &lecture, LECTURE_SIZE, 0);
-     if (bytes <= 0) {
+        if (bytes <= 0)
+        {
             std::cerr << "Connection closed by server" << std::endl;
             break;
         }
-        extractLine(bytes, fd, lecture, entry, buffer);
-        sendMsg(entry, fd);
+
+        if (extractLine(bytes, fd, lecture, entry, buffer) == 0)
+        {
+            if (entry.find("PRIVMSG WALL-E") != std::string::npos)
+                sendMsg(entry, fd);
+        }
     }
     close(fd);
     return (0);
 }
 
-
-
 // std::string privmsg = "REPLY ";
-    // std::string bot = ":bot!WALL-E:REPLY:";
+// std::string bot = ":bot!WALL-E:REPLY:";
 // entry -> je lui repond par "  " via PRIVMSG.
 
 // entry == find "bonjour" = 1
