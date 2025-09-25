@@ -6,7 +6,7 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 13:02:53 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/24 17:52:23 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/25 16:31:22 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,10 @@
 #include <cerrno>
 #include <string>
 #include <unistd.h>
+#include <cstdlib>
+#include <arpa/inet.h>
 
-#define BUFFER_SIZE 512
+#define LECTURE_SIZE 512
 
 int range_port(char *port)
 {
@@ -40,11 +42,13 @@ void clearsinzero(struct sockaddr_in *addr)
         addr->sin_zero[i] = 0;
 }
 
-int init(sockaddr_in hote, int fd, int port)
+int init(int port)
 {
+    int fd;
+    sockaddr_in hote;
     hote.sin_family = AF_INET;
     hote.sin_port = htons(port);
-    hote.sin_addr.s_addr = htonl(INADDR_ANY);
+    hote.sin_addr.s_addr = inet_addr("127.0.0.1");
     clearsinzero(&hote);
     fd = socket(AF_INET, SOCK_STREAM, 0);
     if (connect(fd, reinterpret_cast<struct sockaddr *>(&hote), sizeof(hote)) == -1)
@@ -52,13 +56,59 @@ int init(sockaddr_in hote, int fd, int port)
         close(fd);
         throw(std::runtime_error("ERR_CONNECT"));
     }
+    return (fd);
 }
 
 void sendToServer(int fd, std::string msg)
 {
     msg += "\r\n";
-    send(fd, msg.c_str(), msg.size(), MSG_DONTWAIT);
+    send(fd, msg.c_str(), msg.size(), 0);
 }
+
+int extractLine(int bytes, int fd, char *lecture, std::string &entry, std::string &buffer)
+{
+    size_t pos;
+    if (bytes == -1)
+    {
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
+            return (1);
+        std::cerr << "ERR_READ" << std::endl;
+        return (close(fd), 1);
+    }
+    else if (bytes == 0)
+    {
+        std::cerr << "ERR_READ" << std::endl;
+        return (close(fd), 1);
+    }
+    else if (bytes > 0)
+    {
+        buffer.append(lecture, bytes);
+        pos = buffer.find("\r\n");
+        while (pos != std::string::npos)
+        {
+            entry = buffer.substr(0, pos);
+            buffer.erase(0, pos + 2);
+            pos = buffer.find("\r\n");
+        }
+        return (0);
+    }
+    return (0);
+}
+
+void sendMsg(std::string entry, int fd) // proteger le nickname et le msg ""
+{
+    std::string nickname;
+    size_t pos = entry.find("!");
+    nickname = entry.substr(1, pos);
+    std::cout << "NICKNAME : " << nickname << std::endl;
+    pos = entry.find(":");
+    entry = entry.substr(1, pos); 
+    std::string prvmsg = "PRIVMSG";
+    std::string msg = prvmsg + " tu as bien ecris ca ?\n" + entry + "\r\n";
+
+    send(fd, msg.c_str(), msg.size(), 0);
+}
+
 int main(int ac, char **av)
 {
     if (ac != 3)
@@ -66,18 +116,49 @@ int main(int ac, char **av)
     std::string ip = av[1];
     int port = range_port(av[1]);
     int fd = -1;
-    sockaddr_in hote;
     try
     {
-        init(hote, fd, port);
+        fd = init(port);
     }
     catch (const std::exception &e)
     {
         std::cerr << e.what() << '\n';
-        return;
+        return (1);
     }
     std::string msg = "PASS " + static_cast<std::string>(av[2]);
+
     sendToServer(fd, msg);
     sendToServer(fd, "NICK WALL-E");
     sendToServer(fd, "USER WALL-E WALL-E 0 :IM WALL-E THE BOT");
+
+    int bytes;
+    char lecture[LECTURE_SIZE];
+    std::string entry;
+    std::string buffer;
+    while (1)
+    {
+        bytes = recv(fd, &lecture, LECTURE_SIZE, 0);
+     if (bytes <= 0) {
+            std::cerr << "Connection closed by server" << std::endl;
+            break;
+        }
+        extractLine(bytes, fd, lecture, entry, buffer);
+        sendMsg(entry, fd);
+    }
+    close(fd);
+    return (0);
 }
+
+
+
+// std::string privmsg = "REPLY ";
+    // std::string bot = ":bot!WALL-E:REPLY:";
+// entry -> je lui repond par "  " via PRIVMSG.
+
+// entry == find "bonjour" = 1
+//  ncikname = entry(substr(1, "!")
+//  msg = "ce que je veux"
+//  send(fdbidirectionel, "PRIVMSG+nickname+ msg", size etc etc);
+//  "PRIVMSG + MSG" => a analyser si ca marche
+//  proteger ce que je recois, si c'est trop long ou non, par contre le retour pas besoin de le proteger car cmest moi je le controle
+//
