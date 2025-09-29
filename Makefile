@@ -42,10 +42,10 @@ dirs:
 	@mkdir -p $(OBJ_SUBDIRS)
 	@mkdir -p $(BOT_OBJS_DIR)
 
-$(NAME): dirs $(OBJS)
+$(NAME):  $(OBJS)
 	$(CXX) -I$(HEADERS) $(OBJS) -o $@
 
-$(BOTNAME): dirs $(BOT_OBJS)
+$(BOTNAME):  $(BOT_OBJS)
 	$(CXX) -I$(HEADERS) $(BOT_OBJS) -o $@
 
 $(OBJS_DIR)/%.o: $(SRCS_DIR)/%.cpp

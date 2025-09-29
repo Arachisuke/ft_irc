@@ -330,3 +330,9 @@ JOIN -> invalid read size, je n'arrive pas a reproduire le cas.
 
 // bien faire des removes client, car ca enleve de tout , operator user etc.
 il faut voir si nick peut prendre plusieurs Parameters
+
+
+
+
+
+
