@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   privmsg.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:47 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/24 14:59:15 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/25 18:21:31 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void Server::privMsg()
     }
     else
     {
+      std::string local = "@localhost";
       if (find_client(list[i]) == -1)
       {
         reply(401, this->_cmd[0], ERR_NOSUCHNICK, *this->_clientList[this->_nbrclient]);
@@ -79,7 +80,9 @@ void Server::privMsg()
       if (list[i] == this->_clientList[this->_nbrclient]->getNickname())
         continue ;
       int n = find_client(list[i]);
-      std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PRIVMSG " + this->_clientList[n]->getNickname() + " : ";
+      if (this->_clientList[this->_nbrclient]->getNickname() == "WALL-E")
+        local = "@thebot";
+      std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + local + " PRIVMSG " + this->_clientList[n]->getNickname() + " : ";
       for (size_t i = 2; i < this->_cmd.size(); i++)
         msg += this->_cmd[i] + " ";
       msg += "\r\n";
