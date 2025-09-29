@@ -5,3 +5,4 @@ objs
 .replit
 vgcore.*
 wall-e
+.env
