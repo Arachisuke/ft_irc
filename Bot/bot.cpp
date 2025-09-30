@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 13:02:53 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/30 13:37:10 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/30 13:41:11 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <cerrno>
-#include <string>
+#include <cstring>
 #include <cstdlib>
 #include <arpa/inet.h>
 #include <algorithm>
