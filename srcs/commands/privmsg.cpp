@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:47 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/25 18:21:31 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/30 14:16:03 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void Server::privMsg()
         continue;
       }
       std::string addArobase = whatToDisplay(_channeList[n], this->_clientList[this->_nbrclient]);
-      std::string msg = ":" + addArobase + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PRIVMSG " + this->_channeList[n]->getName() + " : ";
+      std::string msg = ":" + addArobase + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " PRIVMSG " + this->_channeList[n]->getName() + " :";
 
       for (size_t i = 2; i < this->_cmd.size(); i++)
         msg += this->_cmd[i] + " ";
@@ -82,7 +82,7 @@ void Server::privMsg()
       int n = find_client(list[i]);
       if (this->_clientList[this->_nbrclient]->getNickname() == "WALL-E")
         local = "@thebot";
-      std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + local + " PRIVMSG " + this->_clientList[n]->getNickname() + " : ";
+      std::string msg = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" + this->_clientList[this->_nbrclient]->getUsername() + local + " PRIVMSG " + this->_clientList[n]->getNickname() + " :";
       for (size_t i = 2; i < this->_cmd.size(); i++)
         msg += this->_cmd[i] + " ";
       msg += "\r\n";

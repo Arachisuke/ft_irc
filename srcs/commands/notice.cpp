@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:37 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/23 18:03:40 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/30 14:15:58 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void Server::notice()
       continue;
       
       std::string addArobase = whatToDisplay(_channeList[n], this->_clientList[this->_nbrclient]);
-      std::string msg = ":" + addArobase + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " NOTICE " + this->_channeList[n]->getName() + " : ";
+      std::string msg = ":" + addArobase + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " NOTICE " + this->_channeList[n]->getName() + " :";
 
       for (size_t i = 2; i < this->_cmd.size(); i++)
         msg += this->_cmd[i] + " ";
@@ -52,7 +52,7 @@ void Server::notice()
         continue;
       int n = find_client(list[i]);
       std::string addArobase = whatToDisplay(_channeList[n], this->_clientList[this->_nbrclient]);
-      std::string msg = ":" + addArobase + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " NOTICE " + this->_clientList[n]->getNickname() + " : ";
+      std::string msg = ":" + addArobase + "!" + this->_clientList[this->_nbrclient]->getUsername() + "@localhost" + " NOTICE " + this->_clientList[n]->getNickname() + " :";
       for (size_t i = 2; i < this->_cmd.size(); i++)
         msg += this->_cmd[i] + " ";
       msg += "\r\n";
