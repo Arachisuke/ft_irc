@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 13:02:53 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/29 18:42:40 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/30 13:37:10 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,27 +15,15 @@
 #include <netinet/in.h>
 #include <cerrno>
 #include <string>
-#include <unistd.h>
 #include <cstdlib>
 #include <arpa/inet.h>
-#include <iostream>
-#include <string>
 #include <algorithm>
-#include <cstring>
 #include <fcntl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <unistd.h>
-#include <iostream>
-#include <arpa/inet.h>
-#include <sys/epoll.h>
 #include <vector>
-#include <cstdlib>
-#include <cerrno>
 #include <climits>
 #include <csignal>
 #include <map>
-#include <iostream>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sstream>
@@ -204,7 +192,7 @@ void sendMsg(std::string entry, int fd, std::string token) // proteger le nickna
     msg = msg.substr(pos + 27);
     pos = msg.find("refusal");
     msg = msg.substr(0, pos - 3);
-    msg = prvmsg + nickname + " " + msg;
+    msg = prvmsg + nickname + " :" + msg;
 
     sendToServer(fd, msg);
 }
@@ -234,6 +222,7 @@ int main(int ac, char **av, char **env)
 
     signal(SIGINT, &handler);
     signal(SIGQUIT, &handler);
+    signal(SIGPIPE, SIG_IGN);
     srand(time(NULL));
 
     std::string ip = av[1];
