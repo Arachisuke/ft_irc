@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/25 14:32:23 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/30 16:39:40 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,19 +88,19 @@ int Server::Init()
 
 void Server::load_cmd() // sans pass
 {
-	_commandList["NICK"] = &Server::nick;		// valide
-	_commandList["USER"] = &Server::user;		// valide
-	_commandList["QUIT"] = &Server::quit;		// pas fait
-	_commandList["JOIN"] = &Server::join;		// valide manque le mode
-	_commandList["PART"] = &Server::part;		// valide
-	_commandList["PRIVMSG"] = &Server::privMsg; // valide
-	_commandList["NOTICE"] = &Server::notice;	// valider
-	_commandList["MODE"] = &Server::mode;		// a faire
-	_commandList["TOPIC"] = &Server::topic;		// andy
-	_commandList["INVITE"] = &Server::invite;	// andy
-	_commandList["KICK"] = &Server::kick;		// andy
-	_commandList["PING"] = &Server::ping;		// valide
-	_commandList["PASS"] = &Server::pass;		// valide
+	_commandList["NICK"] = &Server::nick;		
+	_commandList["USER"] = &Server::user;		
+	_commandList["QUIT"] = &Server::quit;		
+	_commandList["JOIN"] = &Server::join;		
+	_commandList["PART"] = &Server::part;		
+	_commandList["PRIVMSG"] = &Server::privMsg; 
+	_commandList["NOTICE"] = &Server::notice;	
+	_commandList["MODE"] = &Server::mode;		
+	_commandList["TOPIC"] = &Server::topic;		
+	_commandList["INVITE"] = &Server::invite;	
+	_commandList["KICK"] = &Server::kick;
+	_commandList["PING"] = &Server::ping;		
+	_commandList["PASS"] = &Server::pass;		
 }
 
 void Server::create_server(int port, char *password)
@@ -111,7 +111,7 @@ void Server::create_server(int port, char *password)
 	this->Init();
 }
 
-int Server::find_client(std::string &nameClient) // une reference ?
+int Server::find_client(std::string &nameClient) 
 {
 	if (this->_clientList.empty())
 		return (-1);
@@ -181,8 +181,6 @@ int Server::wait_client()
 					this->closeClient("");
 				}
 			}
-			else if (this->_events[i].events & EPOLLOUT) // gerer le epollout
-				this->PushMsg("MON MSG");
 		}
 	}
 	return (0);
@@ -204,7 +202,6 @@ void Server::closeClient(std::string ERROR_MSG)
 		{
 			int b = findChannel(this->_clientList[this->_nbrclient]->setMyChannel()[i]->getName());
 			delete this->_clientList[this->_nbrclient]->setMyChannel()[i];
-			// this->_clientList[this->_nbrclient]->setMyChannel()[i] = NULL;
 			this->_clientList[this->_nbrclient]->setMyChannel().erase(this->_clientList[this->_nbrclient]->setMyChannel().begin() + i);
 			this->_channeList.erase(this->_channeList.begin() + b);
 		}
@@ -263,7 +260,7 @@ void removePrefix(std::string &wordPrefixLess)
 void Server::parseCmd(std::string &wordPrefixLess)
 {
 	bool isTrailing = 0;
-	std::istringstream iss(wordPrefixLess); // gerer le parse ":" // alias relire la doc du parse
+	std::istringstream iss(wordPrefixLess); 
 	std::string finalWord;
 	while (iss >> finalWord)
 	{
@@ -329,14 +326,14 @@ void Server::find_cmd()
 	send(this->_clientList[this->_nbrclient]->getFd(), "Command not found\r\n", 20, MSG_DONTWAIT);
 }
 
-void Server::PushMsg(std::string msg) // a gerer apres
+void Server::PushMsg(std::string msg) 
 {
 	msg.push_back('\r');
-	msg.push_back('\n'); // a verifie si c'est vraiment la norme.
+	msg.push_back('\n'); 
 	send(this->_clientList[this->_nbrclient]->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
 	this->_events[_nbrclient].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
 	this->_events[_nbrclient].data.fd = this->_clientList[_nbrclient]->getFd();
-	epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_clientList[_nbrclient]->getFd(), &this->_events[_nbrclient]); // 1 averifier
+	epoll_ctl(this->_epfd, EPOLL_CTL_MOD, this->_clientList[_nbrclient]->getFd(), &this->_events[_nbrclient]);
 }
 
 void Server::reply(int codeError, const std::string command, const std::string message, Client &client) const

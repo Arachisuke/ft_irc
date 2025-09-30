@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/24 15:08:38 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/09/30 16:12:29 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void Server::part()
             reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
             continue;
         }
-        int i = findChannel(list[j]); // je cherche l'argument dans channelist.
+        int i = findChannel(list[j]);
         if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
         {
             reply(442, this->_cmd[0], ERR_NOTONCHANNEL, *this->_clientList[this->_nbrclient]);

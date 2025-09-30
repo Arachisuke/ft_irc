@@ -6,7 +6,7 @@
 /*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:57 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/29 14:39:04 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/09/30 16:36:25 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void Server::nick()
     if (this->_cmd.size() - 1 == 0)
         return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
     if (!this->_clientList[this->_nbrclient]->getPassword_Status())    if (this->_clientList[this->_nbrclient]->getUsername_Status() == 1)
-        return (reply(464, this->_cmd[0], ERR_PASSWDMISMATCH, *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
+        return (reply(464, this->_cmd[0], ERR_PASSWDMISMATCH, *this->_clientList[this->_nbrclient]), (void)0); 
     if (nickpolicy())
         return (reply(432, this->_cmd[0], ERR_ERRONEUSNICKNAME, *this->_clientList[this->_nbrclient]), (void)0);
     if (findNick())
@@ -100,7 +100,7 @@ void Server::user()
     if (this->_clientList[this->_nbrclient]->getUsername_Status() == 0)
     {
         if (!this->_clientList[this->_nbrclient]->getPassword_Status() || !this->_clientList[this->_nbrclient]->getNickname_Status())
-            return (reply(451, this->_cmd[0], ERR_NOTREGISTERED, *this->_clientList[this->_nbrclient]), (void)0); // je renvoie quoi finalement ?
+            return (reply(451, this->_cmd[0], ERR_NOTREGISTERED, *this->_clientList[this->_nbrclient]), (void)0); 
         if (this->_cmd[1].size() > 9 || this->_cmd[1].size() < 1)
             return (reply(432, this->_cmd[0], ERR_ERRONEUSNICKNAME, *this->_clientList[this->_nbrclient]), (void)0);
 
@@ -113,5 +113,4 @@ void Server::user()
     }
     else
         return (reply(462, this->_cmd[0], ERR_ALREADYREGISTRED, *this->_clientList[this->_nbrclient]), (void)0);
-    // join j'ai enlever le epollout. etc etc
 }
