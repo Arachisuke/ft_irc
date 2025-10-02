@@ -6,22 +6,43 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/24 14:58:19 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/10/02 13:25:47 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 #include "Server.hpp"
 
-std::vector<std::string> splitClients(std::string &clientsListToKick)
+std::vector<int> Server::splitClients(std::string &clientsListToKick,std::string &kicker, Channel *channel, std::vector<std::string> &clientToKickOrdered)
 {
-    std::vector<std::string> clientToKick;
+    std::vector<std::string> splitClientToKick;
     std::stringstream ss(clientsListToKick);
     std::string buffer;
 
     while (std::getline(ss, buffer, ','))
-        clientToKick.push_back(buffer);
-    return (clientToKick);
+        splitClientToKick.push_back(buffer);
+    std::vector<int> splitClientTokickOrdered;
+    std::vector<std::string>::iterator it = splitClientToKick.begin();
+    for (; it < splitClientToKick.end(); it++)
+    {
+        int nbr = this->find_client((*it));
+        if (nbr == -1 || kicker == _clientList[nbr]->getNickname())
+        {
+            errorMsg(401, _cmd[0], ERR_NOSUCHNICK, *_clientList[_nbrclient]);
+            continue;
+        }
+        if (!channel->isMember(_clientList[nbr]))
+        {
+            errorMsg(441, _clientList[nbr]->getNickname(), ERR_USERNOTINCHANNEL, *_clientList[_nbrclient]);
+            continue;
+        }
+        splitClientTokickOrdered.push_back(this->find_client((*it)));
+        clientToKickOrdered.push_back((*it));
+    }
+    std::sort(splitClientTokickOrdered.begin(), splitClientTokickOrdered.end(), std::greater<int>());
+    std::sort(clientToKickOrdered.begin(), clientToKickOrdered.end(), std::greater<std::string>());
+
+    return (splitClientTokickOrdered);
 }
 void Server::broadcastMsg(Channel *channel, const char *msg, size_t size)
 {
@@ -31,27 +52,20 @@ void Server::broadcastMsg(Channel *channel, const char *msg, size_t size)
 
 void Server::kickAllClient(std::string &clientsListToKick, std::string kicker, Channel *channel, std::string reason)
 {
-    std::vector<std::string> clientToKick = splitClients(clientsListToKick);
-    for (std::vector<std::string>::iterator it = clientToKick.begin(); it < clientToKick.end(); it++)
+    
+    std::vector<std::string> ClientTokickOrdered;
+    std::vector<int> clientsToKick = splitClients(clientsListToKick, kicker, channel, ClientTokickOrdered);
+    std::vector<int>::iterator it = clientsToKick.begin();
+    std::vector<std::string>::iterator ite = ClientTokickOrdered.begin();
+    for (; it < clientsToKick.end() && ite < ClientTokickOrdered.end(); it++, ite++)
     {
-        int clientIndex = this->find_client((*it));
-        if (clientIndex == -1 || kicker == _clientList[clientIndex]->getNickname())
-        {
-            errorMsg(401, _cmd[0], ERR_NOSUCHNICK, *_clientList[_nbrclient]);
-            continue;
-        }
-        if (!channel->isMember(_clientList[clientIndex]))
-        {
-            errorMsg(441, (*it), ERR_USERNOTINCHANNEL, *_clientList[_nbrclient]);
-            continue;
-        }
         std::ostringstream ost;
         std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
-        ost << ":" << addArobase << "!" << this->_clientList[this->_nbrclient]->getRealname() << "@localhost" << " KICK " << channel->getName() << " " << (*it) << " :" << reason << "\r\n";
+        ost << ":" << addArobase << "!" << this->_clientList[this->_nbrclient]->getRealname() << "@localhost" << " KICK " << channel->getName() << " " << (*ite) << " :" << reason << "\r\n";
         broadcastMsg(channel, ost.str().c_str(), ost.str().size());
-        channel->removeClient(_clientList[clientIndex]);
+        channel->removeClient(_clientList[(*it)]);
         int i = whereIsMyChannel(channel->getName());
-        _clientList[clientIndex]->setMyChannel().erase(_clientList[clientIndex]->setMyChannel().begin() + i);
+        _clientList[(*it)]->setMyChannel().erase(_clientList[(*it)]->setMyChannel().begin() + i);
     }
 }
 

@@ -6,28 +6,31 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:23:54 by macos             #+#    #+#             */
-/*   Updated: 2025/09/24 16:57:45 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/10/02 13:33:42 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
+#include <iostream>
+#include <string>
+#include <algorithm>
 #include <cstring>
-#include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/epoll.h>
-#include <map>
+#include <vector>
 #include <cstdlib>
 #include <cerrno>
 #include <climits>
 #include <csignal>
-#include <vector>
-#include <string>
-#include <iostream>
+#include <map>
+#include <sstream>
+#include <set>
+#include <functional>
 #include "Client.hpp"
 #include "Channel.hpp"
 
@@ -58,7 +61,6 @@
 #define ERR_BADCHANNELKEY "Cannot join channel (+k)"
 #define ERR_USERNOTINCHANNEL "They aren't on that channel"
 #define ERR_UNKNOWNERROR "Invalid user limit"
-
 
 class Client;
 class Channel;
@@ -103,7 +105,8 @@ public:
   void printParsedCmd();
   void broadcastMsg(Channel *channel, const char *msg, size_t size);
   void addModesChannel(Channel *channel, std::vector<std::string> cmd);
-  
+  std::vector<int> splitClients(std::string &clientsListToKick, std::string &kicker, Channel *channel, std::vector<std::string> &clientToKickOrdered);
+
   int findNick();
   int nickpolicy();
   int findChannel(std::string channel);
@@ -113,7 +116,7 @@ public:
   int find_client(std::string &nameClient);
   int wait_client();
   bool checkChannelNorm(const std::string &channelName) const;
-  
+
   std::string whatToDisplay(Channel *channel, Client *client);
   const std::string getPrefiksServer() const;
 

@@ -6,20 +6,14 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:45:39 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/24 15:06:04 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/10/01 13:55:58 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
-#include <iostream>
-#include <string>
-#include <vector>
-#include <set>
 #include "Client.hpp"
-
-
 
 class Client;
 
@@ -33,7 +27,7 @@ public:
     // Clients Status
     bool isMember(Client *client) const;
     bool isOperator(Client *client) const;
-    bool isInvited(Client *client) const; // check set _invited si deja dans la liste
+    bool isInvited(Client *client) const; 
     bool isModeActif(char mode);
     bool channelIsFull();
 

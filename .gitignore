@@ -6,3 +6,4 @@ objs
 vgcore.*
 wall-e
 .env
+memosend.txt

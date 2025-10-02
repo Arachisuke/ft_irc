@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/09/30 16:39:40 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/10/01 15:20:33 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,16 +77,14 @@ int Server::Init()
 		close(this->_fd);
 		throw(std::runtime_error("ERR_LISTEN"));
 	}
-	fcntl(_fd, F_SETFL, O_NONBLOCK);
 	this->_events[0].events = EPOLLIN | EPOLLHUP | EPOLLERR | EPOLLRDHUP;
 	this->_events[0].data.fd = this->_fd;
 	epoll_ctl(this->_epfd, EPOLL_CTL_ADD, this->_fd, &this->_events[0]);
 	return (0);
 }
 
-// Server Server();
 
-void Server::load_cmd() // sans pass
+void Server::load_cmd()
 {
 	_commandList["NICK"] = &Server::nick;		
 	_commandList["USER"] = &Server::user;		
@@ -175,7 +173,7 @@ int Server::wait_client()
 				{
 					this->ReadMsg(this->_clientList[this->_nbrclient]->setBuffer());
 				}
-				catch (std::exception &e)
+				catch (const std::exception &e)
 				{
 					this->PushMsg(e.what());
 					this->closeClient("");

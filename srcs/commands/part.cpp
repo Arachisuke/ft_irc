@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/30 16:12:29 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/10/02 12:14:29 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,24 +20,35 @@ void Server::part()
         return (reply(451, this->_cmd[0], ERR_NOTREGISTERED, *this->_clientList[this->_nbrclient]), (void)0);
     if (this->_cmd.size() - 1 == 0)
         return (reply(461, this->_cmd[0], ERR_NEEDMOREPARAMS, *this->_clientList[this->_nbrclient]), (void)0);
+
     std::vector<std::string> list;
+    std::vector<int> channelsToDelete;
     list = ft_split(this->_cmd[1], ',');
-    for (int j = list.size() - 1; j >= 0; --j)
+
+    for (size_t j = 0; j < list.size(); ++j)
     {
         if (list[j][0] != '#')
         {
-            reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
+            reply(403, list[j], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
             continue;
         }
         if (findChannel(list[j]) == -1)
         {
-            reply(403, this->_cmd[0], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
-            continue;
+            reply(403, list[j], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
+
+            if (this->_clientList[this->_nbrclient]->getIrssi())
+            {
+                std::string forcedPart = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" +
+                                         this->_clientList[this->_nbrclient]->getUsername() + "@localhost" +
+                                         " PART " + list[j] + " :Channel no longer exists\r\n";
+                send(this->_clientList[this->_nbrclient]->getFd(), forcedPart.c_str(), forcedPart.size(), MSG_DONTWAIT);
+                continue;
+            }
         }
         int i = findChannel(list[j]);
         if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
         {
-            reply(442, this->_cmd[0], ERR_NOTONCHANNEL, *this->_clientList[this->_nbrclient]);
+            reply(442, list[j], ERR_NOTONCHANNEL, *this->_clientList[this->_nbrclient]);
             continue;
         }
 
@@ -55,8 +66,14 @@ void Server::part()
 
         if (this->_channeList[i]->getUsers().empty())
         {
-            delete this->_channeList[i];
-            this->_channeList.erase(this->_channeList.begin() + i);
+            if (std::find(channelsToDelete.begin(), channelsToDelete.end(), i) == channelsToDelete.end())
+                channelsToDelete.push_back(i);
         }
+    }
+    std::sort(channelsToDelete.begin(), channelsToDelete.end(), std::greater<int>());
+    for (std::vector<int>::iterator it = channelsToDelete.begin(); it != channelsToDelete.end(); ++it)
+    {
+        delete this->_channeList[*it];
+        this->_channeList.erase(this->_channeList.begin() + *it);
     }
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   bot.cpp                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/23 13:02:53 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/30 14:15:49 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/10/01 15:26:18 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <cstdlib>
 #include <arpa/inet.h>
 #include <algorithm>
-#include <fcntl.h>
 #include <unistd.h>
 #include <vector>
 #include <climits>
@@ -89,7 +88,7 @@ int sendToServer(int fd, std::string msg)
 int extractLine(int bytes, int fd, char *lecture, std::string &entry, std::string &buffer)
 {
     size_t pos;
-    if (bytes == -1) // ca ne peut pas arrive.. vu que c'est le server qui lui envoie des msg
+    if (bytes == -1)
     {
         if (errno == EAGAIN || errno == EWOULDBLOCK)
             return (1);
@@ -114,7 +113,7 @@ int extractLine(int bytes, int fd, char *lecture, std::string &entry, std::strin
 std::string callGrok(int fd, std::string entry, std::string token)
 {
     if (stop)
-        throw("ERROR");
+        throw(std::runtime_error("ERROR"));
     std::string norme = "Réponds sur 3-4 lignes maximum uniquement en texte brut, sans aucune mise en page, sans retour à la ligne, sans liste, sans balises, sans markdown, sans gras, sans italique";
     std::vector<std::string> args;
     args.push_back("-s");
@@ -131,20 +130,18 @@ std::string callGrok(int fd, std::string entry, std::string token)
     pid_t pid;
 
     if (pipe(pipe_fd) == -1)
-        throw("ERROR PIPE");
+        throw(std::runtime_error("ERROR PIPE"));
     pid = fork();
     if (pid == -1)
-        throw("ERROR FORK");
+        throw(std::runtime_error("ERROR FORK"));
 
     if (pid == 0)
     {
-        // Enfant : redirige stdout vers le pipe et exécute curl
         close(pipe_fd[0]);
         dup2(pipe_fd[1], STDOUT_FILENO);
         close(pipe_fd[1]);
         close(fd);
 
-        // Prépare les arguments pour execvp
         std::vector<char *> argv;
         argv.push_back(const_cast<char *>("curl"));
         for (size_t i = 0; i < args.size(); ++i)
@@ -152,11 +149,10 @@ std::string callGrok(int fd, std::string entry, std::string token)
         argv.push_back(NULL);
 
         execvp("curl", argv.data());
-        _exit(1); // Si exec échoue
+        _exit(1);
     }
     else
     {
-        // Parent : lit la sortie de curl
         close(pipe_fd[1]);
         std::string result;
         char buffer[4096];
@@ -172,10 +168,10 @@ std::string callGrok(int fd, std::string entry, std::string token)
     }
 }
 
-void sendMsg(std::string entry, int fd, std::string token) // proteger le nickname et le msg ""
+void sendMsg(std::string entry, int fd, std::string token)
 {
     if (stop)
-        throw("ERROR");
+        throw(std::runtime_error("ERROR"));
 
     std::string nickname;
     size_t pos = entry.find("!");
@@ -265,30 +261,14 @@ int main(int ac, char **av, char **env)
                 {
                     sendMsg(entry, fd, token);
                 }
-                catch (std::exception &e)
+                catch (const std::exception &e)
                 {
                     std::cerr << e.what() << std::endl;
                     break;
                 }
-                catch (const char *msg)
-                {
-                    std::cerr << msg << std::endl;
-                    break;
-                }
             }
         }
-        // si c'est 0, ca veut dire controle C dans le server, mais vu que je dontwait il aura souvent des 0. je dontwait car il reagissait pas au controle C dans le bot.
     }
     close(fd);
     return (0);
 }
-
-// lancer double bot @@@@
-// controle C reaction @@@@@
-// controle C server -> on ne reagis pas @@@@
-// same name -> pas besoin de gerer en vrai @@@
-// test de same name en temps reel. @@@@
-
-
-
-// erreur dans le bot avec valgrind quand on coupe le server -> SIGPIPE !!!!!

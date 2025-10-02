@@ -6,36 +6,14 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 14:29:51 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/24 13:16:20 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/10/01 13:47:36 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CLIENT_HPP
 #define CLIENT_HPP
 
-#include <iostream>
-#include <string>
-#include <algorithm>
-
-#include <cstring>
-#include <fcntl.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <iostream>
-#include <arpa/inet.h>
-#include <sys/epoll.h>
-#include <vector>
-#include <cstdlib>
-#include <cerrno>
-#include <climits>
-#include <csignal>
-#include <map>
-#include <iostream>
-#include <sstream>
 #include "Server.hpp"
-
-
 
 class Server;
 class Channel;

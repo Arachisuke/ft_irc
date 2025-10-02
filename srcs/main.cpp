@@ -42,6 +42,7 @@ int main(int argc, char **argv)
 		return (std::cerr << "Usage: ./ircserv <port> <password>" << std::endl, 1);
 	signal(SIGINT, &handler);
 	signal(SIGQUIT, &handler);
+	signal(SIGPIPE, SIG_IGN);
 	Server server;
 	int port = range_port(argv[1]);
 	if (port < 0)
@@ -52,7 +53,7 @@ int main(int argc, char **argv)
 		while (!stop)
 			server.wait_client();
 	}
-	catch (std::exception &e)
+	catch (const std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
 		return (1);

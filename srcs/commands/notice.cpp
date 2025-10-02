@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   notice.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
+/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:37 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/30 14:15:58 by wzeraig          ###   ########.fr       */
+/*   Updated: 2025/10/01 15:21:17 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ void Server::notice()
           send((*it)->getFd(), msg.c_str(), msg.size(), MSG_DONTWAIT);
       }
     }
-    else // client
+    else
     {
       if (find_client(list[i]) == -1)
         continue;
