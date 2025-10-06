@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   join.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/09/22 17:13:43 by ankammer          #+#    #+#             */
-/*   Updated: 2025/09/24 14:57:56 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/10/06 14:05:45 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,15 +117,12 @@ void Server::join()
 
 				if (this->_channeList[i]->isModeActif('k'))
 				{
-					std::cout << "NAMEOFCHANEL = " << this->_channeList[i]->getName() << std::endl;
 					if (_cmd.size() < 3)
 					{
 						reply(475, list[j], ERR_BADCHANNELKEY, *this->_clientList[this->_nbrclient]);
 						continue;
 					}
 					std::vector<std::string> key = ft_split(this->_cmd[2], ',');
-					std::cout << "getpassword = " << this->_channeList[i]->getPassword() << std::endl;
-					std::cout << "keyyy = " << key[keynbr] << std::endl;
 
 					if (key[keynbr] != this->_channeList[i]->getPassword())
 					{

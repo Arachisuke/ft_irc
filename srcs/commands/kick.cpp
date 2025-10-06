@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   kick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/10/06 11:32:33 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/10/06 13:14:23 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ std::vector<int> Server::splitClients(std::string &clientsListToKick,std::string
 {
     std::stringstream ss(clientsListToKick);
     std::string buffer;
-    std::vector<std::pair<int, std::string> > pairNickIndex;
+    std::set<std::pair<int, std::string>, std::greater<std::pair<int, std::string> > > pairNickIndex;
     std::vector<std::string> tempNames;
     
     while (std::getline(ss, buffer, ','))
@@ -35,11 +35,10 @@ std::vector<int> Server::splitClients(std::string &clientsListToKick,std::string
             errorMsg(441, _clientList[nbr]->getNickname(), ERR_USERNOTINCHANNEL, *_clientList[_nbrclient]);
             continue;
         }
-        pairNickIndex.push_back(std::make_pair(nbr, *it));
+        pairNickIndex.insert(std::make_pair(nbr, *it));
     }
-    std::sort(pairNickIndex.begin(), pairNickIndex.end(), std::greater<std::pair<int, std::string> >());
     std::vector<int> clientIndexToKick;
-    for (std::vector<std::pair<int, std::string> >::iterator it = pairNickIndex.begin(); it != pairNickIndex.end(); ++it)
+    for (std::set<std::pair<int, std::string>, std::greater<std::pair<int, std::string> > >::iterator it = pairNickIndex.begin(); it != pairNickIndex.end(); ++it)
     {
         clientIndexToKick.push_back(it->first);
         clientNameToKick.push_back(it->second);
@@ -59,16 +58,26 @@ void Server::kickAllClient(std::string &clientsListToKick, std::string kicker, C
     std::vector<std::string> clientNameToKick;
     std::vector<int> clientIndexToKick = splitClients(clientsListToKick, kicker, channel, clientNameToKick);
     std::vector<int>::iterator it = clientIndexToKick.begin();
-    std::vector<std::string>::iterator ite = clientNameToKick.begin();
+    std::vector<std::string>::iterator ite = clientNameToKick.begin(); 
+    // 
     for (; it != clientIndexToKick.end(); it++, ite++)
     {
         std::ostringstream ost;
+        std::cout << "NAME : " << *ite << " INDEX : " <<  *it << std::endl;
         std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
         ost << ":" << addArobase << "!" << this->_clientList[this->_nbrclient]->getRealname() << "@localhost" << " KICK " << channel->getName() << " " << (*ite) << " :" << reason << "\r\n";
         broadcastMsg(channel, ost.str().c_str(), ost.str().size());
         channel->removeClient(_clientList[(*it)]);
-        int i = whereIsMyChannel(channel->getName());
-        _clientList[(*it)]->setMyChannel().erase(_clientList[(*it)]->setMyChannel().begin() + i);
+        
+        std::vector<Channel *> &myChannel = _clientList[(*it)]->setMyChannel();
+        for (size_t i = 0; i < myChannel.size(); i++)
+        {
+            if (myChannel[i]->getName() == channel->getName())
+            {
+                myChannel.erase(myChannel.begin() + i);
+                break;
+            }
+        }
     }
 }
 

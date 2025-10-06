@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 12:42:01 by macos             #+#    #+#             */
-/*   Updated: 2025/10/01 15:20:33 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/10/06 11:53:24 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,10 @@ void Server::Finish()
 			delete this->_channeList[i];
 	}
 	if (this->_fd > 0)
+	{
 		close(this->_fd);
+		close(this->_epfd);
+	}
 }
 Server::~Server()
 {

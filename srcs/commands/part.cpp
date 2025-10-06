@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   part.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wzeraig <wzeraig@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:41 by ankammer          #+#    #+#             */
-/*   Updated: 2025/10/02 12:14:29 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/10/06 12:15:01 by wzeraig          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,15 +35,7 @@ void Server::part()
         if (findChannel(list[j]) == -1)
         {
             reply(403, list[j], ERR_NOSUCHCHANNEL, *this->_clientList[this->_nbrclient]);
-
-            if (this->_clientList[this->_nbrclient]->getIrssi())
-            {
-                std::string forcedPart = ":" + this->_clientList[this->_nbrclient]->getNickname() + "!" +
-                                         this->_clientList[this->_nbrclient]->getUsername() + "@localhost" +
-                                         " PART " + list[j] + " :Channel no longer exists\r\n";
-                send(this->_clientList[this->_nbrclient]->getFd(), forcedPart.c_str(), forcedPart.size(), MSG_DONTWAIT);
-                continue;
-            }
+            continue;
         }
         int i = findChannel(list[j]);
         if (!this->_channeList[i]->isMember(this->_clientList[this->_nbrclient]))
