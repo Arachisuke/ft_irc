@@ -6,24 +6,23 @@
 /*   By: ankammer <ankammer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/26 12:44:31 by ankammer          #+#    #+#             */
-/*   Updated: 2025/10/02 13:25:47 by ankammer         ###   ########.fr       */
+/*   Updated: 2025/10/06 11:32:33 by ankammer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 #include "Server.hpp"
 
-std::vector<int> Server::splitClients(std::string &clientsListToKick,std::string &kicker, Channel *channel, std::vector<std::string> &clientToKickOrdered)
+std::vector<int> Server::splitClients(std::string &clientsListToKick,std::string &kicker, Channel *channel, std::vector<std::string> &clientNameToKick)
 {
-    std::vector<std::string> splitClientToKick;
     std::stringstream ss(clientsListToKick);
     std::string buffer;
-
+    std::vector<std::pair<int, std::string> > pairNickIndex;
+    std::vector<std::string> tempNames;
+    
     while (std::getline(ss, buffer, ','))
-        splitClientToKick.push_back(buffer);
-    std::vector<int> splitClientTokickOrdered;
-    std::vector<std::string>::iterator it = splitClientToKick.begin();
-    for (; it < splitClientToKick.end(); it++)
+        tempNames.push_back(buffer);
+    for (std::vector<std::string>::iterator it = tempNames.begin(); it < tempNames.end(); it++)
     {
         int nbr = this->find_client((*it));
         if (nbr == -1 || kicker == _clientList[nbr]->getNickname())
@@ -36,13 +35,17 @@ std::vector<int> Server::splitClients(std::string &clientsListToKick,std::string
             errorMsg(441, _clientList[nbr]->getNickname(), ERR_USERNOTINCHANNEL, *_clientList[_nbrclient]);
             continue;
         }
-        splitClientTokickOrdered.push_back(this->find_client((*it)));
-        clientToKickOrdered.push_back((*it));
+        pairNickIndex.push_back(std::make_pair(nbr, *it));
     }
-    std::sort(splitClientTokickOrdered.begin(), splitClientTokickOrdered.end(), std::greater<int>());
-    std::sort(clientToKickOrdered.begin(), clientToKickOrdered.end(), std::greater<std::string>());
+    std::sort(pairNickIndex.begin(), pairNickIndex.end(), std::greater<std::pair<int, std::string> >());
+    std::vector<int> clientIndexToKick;
+    for (std::vector<std::pair<int, std::string> >::iterator it = pairNickIndex.begin(); it != pairNickIndex.end(); ++it)
+    {
+        clientIndexToKick.push_back(it->first);
+        clientNameToKick.push_back(it->second);
+    }
 
-    return (splitClientTokickOrdered);
+    return (clientIndexToKick);
 }
 void Server::broadcastMsg(Channel *channel, const char *msg, size_t size)
 {
@@ -53,11 +56,11 @@ void Server::broadcastMsg(Channel *channel, const char *msg, size_t size)
 void Server::kickAllClient(std::string &clientsListToKick, std::string kicker, Channel *channel, std::string reason)
 {
     
-    std::vector<std::string> ClientTokickOrdered;
-    std::vector<int> clientsToKick = splitClients(clientsListToKick, kicker, channel, ClientTokickOrdered);
-    std::vector<int>::iterator it = clientsToKick.begin();
-    std::vector<std::string>::iterator ite = ClientTokickOrdered.begin();
-    for (; it < clientsToKick.end() && ite < ClientTokickOrdered.end(); it++, ite++)
+    std::vector<std::string> clientNameToKick;
+    std::vector<int> clientIndexToKick = splitClients(clientsListToKick, kicker, channel, clientNameToKick);
+    std::vector<int>::iterator it = clientIndexToKick.begin();
+    std::vector<std::string>::iterator ite = clientNameToKick.begin();
+    for (; it != clientIndexToKick.end(); it++, ite++)
     {
         std::ostringstream ost;
         std::string addArobase = whatToDisplay(channel, this->_clientList[this->_nbrclient]);
